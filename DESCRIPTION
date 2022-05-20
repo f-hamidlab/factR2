@@ -1,0 +1,25 @@
+Package: factR2
+Title: Functional Annotation of Custom Transcriptomes v2
+Version: 0.99.0
+Authors@R: person("Fursham", "Hamid", 
+    email = "fursham.h@gmail.com", 
+    role = c("aut", "cre"))
+Description: factR contain tools to process and interact with custom-assembled 
+    transcriptomes (GTF). At its core, factR constructs CDS information on 
+    custom transcripts and subsequently predicts its functional output. 
+    In addition,  factR has tools capable of plotting transcripts, 
+    correcting chromosome and gene information and shortlisting new transcripts.
+Depends: R (>= 4.2)
+biocViews: ?
+Imports:
+    BiocGenerics (>= 0.38)
+License: file LICENSE
+Encoding: UTF-8
+ByteCompile: true
+RoxygenNote: 7.1.2
+Suggests: 
+    AnnotationHub (>= 2.22)
+VignetteBuilder: knitr
+LazyData: FALSE
+BiocType: Software
+
