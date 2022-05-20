@@ -12,14 +12,17 @@ Description: factR contain tools to process and interact with custom-assembled
 Depends: R (>= 4.2)
 biocViews: ?
 Imports:
-    BiocGenerics (>= 0.38)
+    BiocGenerics (>= 0.38),
+    factR,
+    rlang
 License: file LICENSE
 Encoding: UTF-8
 ByteCompile: true
 RoxygenNote: 7.1.2
 Suggests: 
-    AnnotationHub (>= 2.22)
+    AnnotationHub (>= 2.22),
+    testthat (>= 3.0.0)
 VignetteBuilder: knitr
 LazyData: FALSE
 BiocType: Software
-
+Config/testthat/edition: 3
