@@ -20,7 +20,7 @@ Plot <- function(object, ..., rescale_introns = FALSE, ncol = 1) {
 
 
     # prepare features
-    x <- methods::slot(object, "ranges")$custom
+    x <- methods::slot(object, "custom")$ranges
     featmeta <- tryCatch(
         {
             GenomicRanges::mcols(x) %>%
