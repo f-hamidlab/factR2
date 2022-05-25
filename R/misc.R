@@ -27,3 +27,5 @@ ListSupportedGenomes <- function(){
     data("genomes")
     genomes[c("ID","species","database","release.date")]
 }
+
+factR2version <- "0.99.0"

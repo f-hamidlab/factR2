@@ -56,6 +56,7 @@ CreatefactRObject <- function(gtf, reference,
         rlang::abort(sprintf("File '%s' is not a GTF", gtf))
     } else {
         obj <- methods::new("factR")
+        obj@version <- factR2version
         if(verbose){
             rlang::inform("Importing custom GTF")
         }
