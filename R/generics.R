@@ -65,8 +65,8 @@ setClass("factR",
 #'
 #' @return ggplot2 object. If multiple genes are detected, plots will be
 #' combined using patchwork
-#' @export plot
-#' @rdname plot
+#' @export Plot
+#' @rdname Plot
 #'
 #' @author Fursham Hamid
 #'
@@ -98,6 +98,6 @@ setClass("factR",
 #' viewTranscripts(GRCm38_gtf, "Ptbp1", "Ptbp2")
 #' }
 #'
-plot <- function(object, ..., rescale_introns = FALSE, ncol = 1) {
+Plot <- function(object, ..., rescale_introns = FALSE, ncol = 1) {
     UseMethod(generic = 'plot', object = object)
 }
