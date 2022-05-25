@@ -110,7 +110,7 @@ CreatefactRObject <- function(gtf, reference,
     } else {
         # get custom annotation
         if(verbose){
-            rlang::inform("Retrieving custom reference")
+            rlang::inform("Retrieving user-specified reference")
         }
 
         custom.gtf <- .smartimport(use_own_annotation, ".gtf", verbose)
@@ -127,6 +127,65 @@ CreatefactRObject <- function(gtf, reference,
         obj@reference$species <- "custom"
         obj@reference$db <- "custom"
     }
+
+    # match chromosomes and gene ID
+    if(verbose){
+        rlang::inform("Matching chromosome names")
+    }
+    obj@custom$ranges <- factR::matchChromosomes(obj@custom$ranges,
+                                                 obj@reference$genome)
+    obj@reference$ranges <- suppressWarnings(factR::matchChromosomes(obj@reference$ranges,
+                                                 obj@reference$ranges))
+    ## try find variables that contain gene ids
+    if(verbose){
+        rlang::inform("Matching gene names")
+    }
+    custom.df <- as.data.frame(obj@custom$ranges)
+    potential_id_vars <- apply(custom.df, 2, function(x) any(grepl("ENS",x)))
+    potential_id <- names(potential_id_vars)[potential_id_vars]
+    potential_id <- potential_id[-which("transcript_id" %in% potential_id)]
+    if(length(potential_id > 1)){
+        if(verbose){
+            obj@custom$ranges <- factR::matchGeneInfo(obj@custom$ranges,
+                                                       obj@reference$ranges,
+                                                       primary_gene_id = "gene_id",
+                                                       secondary_gene_id = potential_id)
+        } else {
+            obj@custom$ranges <- suppressMessages(
+                factR::matchGeneInfo(obj@custom$ranges,
+                                     obj@reference$ranges,
+                                     primary_gene_id = "gene_id",
+                                     secondary_gene_id = potential_id))
+        }
+
+    } else {
+        if(verbose){
+            obj@custom$ranges <- factR::matchGeneInfo(obj@custom$ranges,
+                                                      obj@reference$ranges,
+                                                      primary_gene_id = "gene_id")
+        } else {
+            obj@custom$ranges <- suppressMessages(
+                factR::matchGeneInfo(obj@custom$ranges,
+                                     obj@reference$ranges,
+                                     primary_gene_id = "gene_id"))
+        }
+    }
+
+    # create genetxs dataframe
+    if(verbose){
+        rlang::inform("Creating a list of identified transcripts")
+    }
+    obj@custom$genetxs <- as.data.frame(obj@custom$ranges) %>%
+        dplyr::select(gene_id, gene_name, transcript_id, match_level) %>%
+        dplyr::distinct()
+
+    # annotate new transcripts
+    newtxs <- suppressMessages(factR::subsetNewTranscripts(obj@custom$ranges,
+                                                           obj@reference$ranges,
+                                                           refine.by = "intron"))
+    obj@custom$genetxs$novel <- ifelse(obj@custom$genetxs$transcript_id %in% newtxs$transcript_id,
+                                       "yes", "no")
+
     return(obj)
 }
 
