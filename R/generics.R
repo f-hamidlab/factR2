@@ -1,3 +1,46 @@
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# Class definitions
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+#' Create factRObject
+#'
+#' @description
+#' factRObject stores all imported inputs, intermediate objects and results of
+#' factR workflow. To construct a factRObject, you need a custom transcriptome
+#' in GTF format, a reference annotation and a genome sequence. See examples
+#' [NOT COMPLETE]
+#'
+#'
+#' @slot ranges a list of GenomicRanges GTF objects
+#' @slot genome genome sequence
+#' @slot domains a dataFrame of predicted protein domains
+#' @slot nmd a list of NMD-related objects
+#' @slot misc  a list of miscellaneous information
+#' @slot version version of factR this object was built under
+#'
+#' @return A factRObject
+#' @name factRObject-class
+#' @rdname factRObject-class
+#' @exportClass factR
+#'
+#' @importFrom dplyr %>%
+#'
+setClass("factR",
+         slots = c(
+             custom = "list",
+             reference = "list",
+             ASplicings = "list",
+             domains = "data.frame",
+             nmd = "list",
+             misc = "list",
+             version = "character"
+         )
+)
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# Class generics
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 #' Plot custom transcripts
 #'
 #' @description
