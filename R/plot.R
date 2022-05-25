@@ -1,6 +1,6 @@
-#' @rdname plot
-#' @export plot
-plot <- function(object, ..., rescale_introns = FALSE, ncol = 1) {
+#' @rdname Plot
+#' @export Plot
+Plot <- function(object, ..., rescale_introns = FALSE, ncol = 1) {
 
     gene_name <- gene_id <- transcript_id <- NULL
     transcript_id <- meta <- val <- n <- type <-  NULL
