@@ -14,7 +14,13 @@ biocViews: ?
 Imports:
     BiocGenerics (>= 0.38),
     factR,
-    rlang
+    rlang,
+    dplyr,
+    stringr,
+    BSgenome,
+    patchwork,
+    ggplot2,
+    wiggleplotr
 License: file LICENSE
 Encoding: UTF-8
 ByteCompile: true
