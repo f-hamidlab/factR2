@@ -4,27 +4,32 @@
 
 
 #' @param gtf path to custom GTF file.
-#' @param annotation a reference transcriptome annotation. Input can be (1) a
-#' GenomicRanges object containing transcriptome GTF information, (2) a path
-#' to a reference GTF file on local computer or (3) a character value representing
-#' one of the genome IDs that we support. Run \code{\link{ListGenomes}} for our
-#' list of supported genomes
-#' @param genome genome sequence. Input can be (1) a
-#' BSgenome object containing genome sequence, (2) a path
-#' to a reference GTF file on local computer or (3) a character value representing
-#' one of the genome IDs that we support. Run \code{\link{ListGenomes}} for our
-#' list of supported genomes
+#' @param reference a character value of supported reference ID. Run
+#' \code{\link{ListSupportedGenomes}} for a list of supported reference. Input
+#' can also be a reference species name ("Mouse" or "Mus musculus or "Mmusculus").
+#' To use your own annotation and genome, leave this parameter blank and provide
+#' inputs to `use_own_annotation` and `use_own_genome`
+#' @param use_own_annotation can be a (1) GenomicRanges object containing
+#' reference transcript annotation, (2) path to local GTF file, (3) AnnotationHub
+#' ID or (4) URL to an online GTF file.
+#' @param use_own_genome can be a (1) BSgenome or DNAStringSet object containing
+#' genome sequence, (2) path to local genome fasta file, (3) AnnotationHub
+#' ID or (4) URL to an online genome fasta file.
+#' @param verbose if TRUE, show progress messages
 #'
 #' @name factRObject-class
 #' @rdname factRObject-class
-#' @return factR object
+#' @return
 #' @export
 #'
 #' @examples
-#' library(BSgenome.Mmusculus.UCSC.mm10)
+#' # Create factRObject using sample GTF and supported reference
 #' gtf <- system.file("extdata", "sc_merged_sample.gtf.gz", package = "factR")
+#' obj <- CreatefactRObject(gtf, "vM25")
 #'
-#' sample.factr <- CreatefactRObject(gtf, "vM25", Mmusculus)
+#' # Create factRObject using custom reference
+#' library(BSgenome.Mmusculus.UCSC.mm10)
+#' obj <- CreatefactRObject(gtf, use_own_annotation = "AH49547", use_own_genome = Mmusculus)
 CreatefactRObject <- function(gtf, reference,
                               use_own_annotation = NULL,
                               use_own_genome = NULL,
@@ -186,6 +191,8 @@ CreatefactRObject <- function(gtf, reference,
                                                            refine.by = "intron"))
     obj@custom$genetxs$novel <- ifelse(obj@custom$genetxs$transcript_id %in% newtxs$transcript_id,
                                        "yes", "no")
+    obj@custom$genetxs$cds <- "no"
+    obj@custom$genetxs$nmd <- "no"
 
     return(obj)
 }
