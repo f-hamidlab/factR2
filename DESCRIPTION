@@ -39,3 +39,4 @@ Collate:
     'object-functions.R'
     'plot.R'
     'runfactR.R'
+    'splicing.R'
