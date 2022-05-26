@@ -32,3 +32,10 @@ VignetteBuilder: knitr
 LazyData: FALSE
 BiocType: Software
 Config/testthat/edition: 3
+Collate: 
+    'generics.R'
+    'misc.R'
+    'object-constructor.R'
+    'object-functions.R'
+    'plot.R'
+    'runfactR.R'
