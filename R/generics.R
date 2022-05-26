@@ -101,22 +101,88 @@ setGeneric("tail", function(object,  n = 6L) standardGeneric("tail"))
 #'
 #' @examples
 #' data(factRsample)
-#' View(factRsample, "Selenop")
+#' Plot(factRsample, "Selenop")
 setGeneric("Plot", function(object, ..., type = "transcripts",
                             rescale_introns = FALSE, ncol = 1) standardGeneric("Plot"))
 
 
 
-#' Test
+#' Run factR workflow
 #'
-#' @param object
-#' @param verbose
+#' @description This wrapper function will perform the core factR workflow which
+#' include (1) building of CDSs, (2) predicting of NMD-sensitive transcripts
+#' and (3) labelling of alternative splicing segments.
 #'
-#' @return
+#' @param object factRObject
+#' @param verbose whether to display workflow progress
+#'
+#' @return Updated factRObject
 #' @export
+#' @seealso \code{\link{BuildCDS}}, \code{\link{PredictNMD}}, \code{\link{FindAltSplicing}}
 #'
+#' @rdname RunfactR
 #' @examples
+#' data(factRsample)
+#' factRsample <- RunfactR(factRsample)
 setGeneric("RunfactR", function(object, verbose = FALSE) standardGeneric("RunfactR"))
+
+
+#' Build coding sequence on custom transcriptome
+#'
+#' @description This function constructs coding sequences on custom transcriptomes.
+#' This is done based on the core functionality of factR's buildCDS function.
+#'
+#' @param object factRObject
+#' @param verbose whether to display workflow progress
+#'
+#' @return Updated factRObject
+#' @export
+#' @seealso \code{\link[factR]{buildCDS}}, \code{\link{RunfactR}}
+#'
+#' @rdname BuildCDS
+#' @examples
+#' data(factRsample)
+#' factRsample <- BuildCDS(factRsample)
+setGeneric("BuildCDS", function(object, verbose = FALSE) standardGeneric("BuildCDS"))
+
+
+#' Predict NMD sensitivity on coding transcripts
+#'
+#' @description This function predicts the sensitivity of protein-coding
+#' transcripts to nonsense-mediated decay.
+#'
+#' @param object factRObject
+#' @param NMD_threshold Minimum distance of stop_codon to last exon junction (EJ)
+#' which triggers NMD. Default = 50bp
+#' @param verbose whether to display workflow progress
+#'
+#' @return Updated factRObject
+#' @export
+#' @seealso \code{\link[factR]{predictNMD}}, \code{\link{RunfactR}}
+#'
+#' @rdname PredictNMD
+#' @examples
+#' data(factRsample)
+#' factRsample <- BuildCDS(factRsample)
+#' factRsample <- PredictNMD(factRsample)
+setGeneric("PredictNMD", function(object, NMD_threshold = 50, verbose = FALSE) standardGeneric("PredictNMD"))
+
+#' Find alternative splicing events
+#'
+#' @description This function identifies all alternative splicing events that
+#' occur in the custom transcriptome.
+#'
+#' @param object factRObject
+#'
+#' @return Updated factRObject
+#' @export
+#' @seealso \code{\link{RunfactR}}
+#'
+#' @rdname FindAltSplicing
+#' @examples
+#' data(factRsample)
+#' factRsample <- FindAltSplicing(factRsample)
+setGeneric("FindAltSplicing", function(object) standardGeneric("FindAltSplicing"))
 
 
 
