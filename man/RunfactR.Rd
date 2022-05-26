@@ -2,16 +2,27 @@
 % Please edit documentation in R/generics.R
 \name{RunfactR}
 \alias{RunfactR}
-\title{Test}
+\title{Run factR workflow}
 \usage{
 RunfactR(object, verbose = FALSE)
 }
 \arguments{
-\item{verbose}{}
+\item{object}{factRObject}
+
+\item{verbose}{whether to display workflow progress}
 }
 \value{
-
+Updated factRObject
 }
 \description{
-Test
+This wrapper function will perform the core factR workflow which
+include (1) building of CDSs, (2) predicting of NMD-sensitive transcripts
+and (3) labelling of alternative splicing segments.
+}
+\examples{
+data(factRsample)
+factRsample <- RunfactR(factRsample)
+}
+\seealso{
+\code{\link{BuildCDS}}, \code{\link{PredictNMD}}, \code{\link{FindAltSplicing}}
 }

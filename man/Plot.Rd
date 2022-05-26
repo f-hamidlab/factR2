@@ -30,7 +30,7 @@ selected genes
 }
 \examples{
 data(factRsample)
-View(factRsample, "Selenop")
+Plot(factRsample, "Selenop")
 }
 \author{
 Fursham Hamid
