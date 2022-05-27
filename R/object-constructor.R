@@ -138,7 +138,7 @@ CreatefactRObject <- function(gtf, reference,
     if(verbose){
         rlang::inform("Matching chromosome names")
     }
-    obj@custom$ranges <- factR::matchChromosomes(obj@custom$ranges,
+    obj@custom <- factR::matchChromosomes(obj@custom,
                                                  obj@reference$genome)
     obj@reference$ranges <- suppressWarnings(factR::matchChromosomes(obj@reference$ranges,
                                                  obj@reference$ranges))
@@ -146,19 +146,19 @@ CreatefactRObject <- function(gtf, reference,
     if(verbose){
         rlang::inform("Matching gene names")
     }
-    custom.df <- as.data.frame(obj@custom$ranges)
+    custom.df <- as.data.frame(obj@custom)
     potential_id_vars <- apply(custom.df, 2, function(x) any(grepl("ENS",x)))
     potential_id <- names(potential_id_vars)[potential_id_vars]
     potential_id <- potential_id[-which("transcript_id" %in% potential_id)]
     if(length(potential_id > 1)){
         if(verbose){
-            obj@custom$ranges <- factR::matchGeneInfo(obj@custom$ranges,
+            obj@custom <- factR::matchGeneInfo(obj@custom,
                                                        obj@reference$ranges,
                                                        primary_gene_id = "gene_id",
                                                        secondary_gene_id = potential_id)
         } else {
-            obj@custom$ranges <- suppressMessages(
-                factR::matchGeneInfo(obj@custom$ranges,
+            obj@custom <- suppressMessages(
+                factR::matchGeneInfo(obj@custom,
                                      obj@reference$ranges,
                                      primary_gene_id = "gene_id",
                                      secondary_gene_id = potential_id))
@@ -166,12 +166,12 @@ CreatefactRObject <- function(gtf, reference,
 
     } else {
         if(verbose){
-            obj@custom$ranges <- factR::matchGeneInfo(obj@custom$ranges,
+            obj@custom <- factR::matchGeneInfo(obj@custom,
                                                       obj@reference$ranges,
                                                       primary_gene_id = "gene_id")
         } else {
-            obj@custom$ranges <- suppressMessages(
-                factR::matchGeneInfo(obj@custom$ranges,
+            obj@custom <- suppressMessages(
+                factR::matchGeneInfo(obj@custom,
                                      obj@reference$ranges,
                                      primary_gene_id = "gene_id"))
         }
@@ -181,7 +181,7 @@ CreatefactRObject <- function(gtf, reference,
     if(verbose){
         rlang::inform("Creating a list of identified transcripts")
     }
-    obj@txdata <- as.data.frame(obj@custom$ranges) %>%
+    obj@txdata <- as.data.frame(obj@custom) %>%
         dplyr::select(gene_id, gene_name, transcript_id, match_level) %>%
         dplyr::distinct()
 
