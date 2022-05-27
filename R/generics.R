@@ -42,9 +42,15 @@ setClass("factR",
 # Class generics
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-#' Preview custom transcriptome from factR object
+#' Preview factR object
 #'
-#' @description Test test
+#' @description A set of functions to view the contents of a factR object.
+#' \itemize{
+#'  \item{view: }{view contents of custom transcriptome in spreadsheet-style format}
+#'  \item{head: }{prints out the first n lines of custom transcriptome}
+#'  \item{tail: }{prints out the last n lines of custom transcriptome}
+#' }
+#'
 #' @param object factRObject
 #' @param ... Optional: a list of features to view. Input
 #' can be a mixture of names from gene_id, gene_name or transcript_id metadata.
