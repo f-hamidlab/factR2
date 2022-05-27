@@ -129,7 +129,7 @@ setGeneric("plotTranscripts", function(object, ...,
 #'
 #' @return Updated factRObject
 #' @export
-#' @seealso \code{\link{BuildCDS}}, \code{\link{PredictNMD}}, \code{\link{FindAltSplicing}}
+#' @seealso \code{\link{buildCDS}}, \code{\link{predictNMD}}, \code{\link{findAltSplicing}}
 #'
 #' @rdname RunfactR
 #' @examples
@@ -150,11 +150,11 @@ setGeneric("runfactR", function(object, verbose = FALSE) standardGeneric("runfac
 #' @export
 #' @seealso \code{\link[factR]{buildCDS}}, \code{\link{runfactR}}
 #'
-#' @rdname BuildCDS
+#' @rdname buildCDS
 #' @examples
 #' data(factRsample)
-#' factRsample <- BuildCDS(factRsample)
-setGeneric("BuildCDS", function(object, verbose = FALSE) standardGeneric("BuildCDS"))
+#' factRsample <- buildCDS(factRsample)
+setGeneric("buildCDS", function(object, verbose = FALSE) standardGeneric("buildCDS"))
 
 
 #' Predict NMD sensitivity on coding transcripts
@@ -171,12 +171,12 @@ setGeneric("BuildCDS", function(object, verbose = FALSE) standardGeneric("BuildC
 #' @export
 #' @seealso \code{\link[factR]{predictNMD}}, \code{\link{runfactR}}
 #'
-#' @rdname PredictNMD
+#' @rdname predictNMD
 #' @examples
 #' data(factRsample)
-#' factRsample <- BuildCDS(factRsample)
-#' factRsample <- PredictNMD(factRsample)
-setGeneric("PredictNMD", function(object, NMD_threshold = 50, verbose = FALSE) standardGeneric("PredictNMD"))
+#' factRsample <- buildCDS(factRsample)
+#' factRsample <- predictNMD(factRsample)
+setGeneric("predictNMD", function(object, NMD_threshold = 50, verbose = FALSE) standardGeneric("predictNMD"))
 
 #' Find alternative splicing events
 #'
@@ -189,11 +189,11 @@ setGeneric("PredictNMD", function(object, NMD_threshold = 50, verbose = FALSE) s
 #' @export
 #' @seealso \code{\link{runfactR}}
 #'
-#' @rdname FindAltSplicing
+#' @rdname findAltSplicing
 #' @examples
 #' data(factRsample)
-#' factRsample <- FindAltSplicing(factRsample)
-setGeneric("FindAltSplicing", function(object) standardGeneric("FindAltSplicing"))
+#' factRsample <- findAltSplicing(factRsample)
+setGeneric("findAltSplicing", function(object) standardGeneric("findAltSplicing"))
 
 
 

@@ -79,8 +79,8 @@ test_that("Test .runAS functionality", {
     expect_equal(out$AStype, c("AL", "CE", "AA", "RI", "AD", "AF"))
 })
 
-test_that("Test FindAltSplicing generics", {
-    out <- FindAltSplicing(factRsample)
+test_that("Test findAltSplicing generics", {
+    out <- findAltSplicing(factRsample)
     expect_equal(as.character(class(out@ASplicings)), "GRanges")
     expect_equal(length(out@ASplicings), 143)
 })

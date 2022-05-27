@@ -1,14 +1,14 @@
 #' @include generics.R
 #'
 setMethod("runfactR", "factR", function(object, verbose = FALSE) {
-    object <- BuildCDS(object, verbose)
-    object <- PredictNMD(object, verbose)
+    object <- buildCDS(object, verbose)
+    object <- predictNMD(object, verbose)
     object <- FindAltSplicing(object)
     object
 })
 
 
-setMethod("BuildCDS", "factR", function(object, verbose = FALSE) {
+setMethod("buildCDS", "factR", function(object, verbose = FALSE) {
     gtf <- slot(object, "custom")
 
     if(verbose){
@@ -33,12 +33,12 @@ setMethod("BuildCDS", "factR", function(object, verbose = FALSE) {
     return(object)
 })
 
-setMethod("PredictNMD", "factR", function(object, NMD_threshold = 50, verbose = FALSE) {
+setMethod("predictNMD", "factR", function(object, NMD_threshold = 50, verbose = FALSE) {
     gtf <- slot(object, "custom")
     genetxs <- slot(object, "txdata")
 
     if(! "CDS" %in% gtf$type){
-        rlang::abort("No CDSs found. Please run BuildCDS() first")
+        rlang::abort("No CDSs found. Please run buildCDS() first")
     }
 
     if(verbose){

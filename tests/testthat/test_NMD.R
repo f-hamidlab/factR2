@@ -1,9 +1,9 @@
 data("factRsample")
 
 test_that("Test .runAS functionality", {
-    expect_error(PredictNMD(factRsample))
+    expect_error(predictNMD(factRsample))
     obj <- BuildCDS(factRsample)
-    obj <- PredictNMD(obj)
+    obj <- predictNMD(obj)
 
     expect_equal(as.character(class(obj@nmd))[1], "tbl_df")
     expect_equal(nrow(obj@nmd), 50)

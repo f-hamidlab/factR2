@@ -1,4 +1,4 @@
-setMethod("FindAltSplicing", "factR", function(object) {
+setMethod("findAltSplicing", "factR", function(object) {
     gtf <- slot(object, "custom")
     slot(object, "ASplicings") <- .runAS(gtf[gtf$type == "exon"])
     return(object)
