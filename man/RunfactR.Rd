@@ -24,5 +24,5 @@ data(factRsample)
 factRsample <- runfactR(factRsample)
 }
 \seealso{
-\code{\link{BuildCDS}}, \code{\link{PredictNMD}}, \code{\link{FindAltSplicing}}
+\code{\link{buildCDS}}, \code{\link{predictNMD}}, \code{\link{findAltSplicing}}
 }
