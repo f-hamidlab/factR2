@@ -79,6 +79,12 @@ setGeneric("head", function(object, n = 6L) standardGeneric("head"))
 #' @rdname preview-methods
 setGeneric("tail", function(object,  n = 6L) standardGeneric("tail"))
 
+#' @param object factRObject
+#'
+#' @export
+#' @rdname preview-methods
+setGeneric("txData", function(object) standardGeneric("txData"))
+
 
 
 

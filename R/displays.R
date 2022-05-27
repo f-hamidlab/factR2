@@ -66,7 +66,9 @@ setMethod("view", "factR", function(object, ...,
 
 })
 
-
+setMethod("txData", "factR", function(object) {
+    methods::slot(object, name = "txdata")
+})
 
 
 
