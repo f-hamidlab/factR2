@@ -3,7 +3,7 @@
 setMethod("runfactR", "factR", function(object, verbose = FALSE) {
     object <- buildCDS(object, verbose)
     object <- predictNMD(object, verbose)
-    object <- FindAltSplicing(object)
+    object <- findAltSplicing(object)
     object
 })
 
