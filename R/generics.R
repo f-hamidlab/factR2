@@ -27,12 +27,13 @@
 #'
 setClass("factR",
          slots = c(
-             custom = "list",
-             reference = "list",
+             custom = "GenomicRanges",
+             txdata = "data.frame",
              ASplicings = "list",
              domains = "data.frame",
              nmd = "data.frame",
              misc = "list",
+             reference = "list",
              version = "character"
          )
 )
