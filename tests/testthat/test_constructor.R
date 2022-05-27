@@ -1,6 +1,6 @@
 #context("Test factR object")
 
-obj <- CreatefactRObject(gtf, "Mouse")
+obj <- CreatefactRObject(gtf, "vM25")
 
 test_that("Test input arguments", {
     expect_error(CreatefactRObject())
