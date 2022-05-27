@@ -1,6 +1,6 @@
 setMethod("FindAltSplicing", "factR", function(object) {
-    gtf <- slot(object, "custom")$ranges
-    slot(object, "ASplicings")$ranges <- .runAS(gtf[gtf$type == "exon"])
+    gtf <- slot(object, "custom")
+    slot(object, "ASplicings") <- .runAS(gtf[gtf$type == "exon"])
     return(object)
 })
 
