@@ -13,8 +13,8 @@ test_that("Test input arguments", {
 
 
 test_that("Test correct object structure", {
-    expect_equal(as.character(class(obj@custom$ranges)), "GRanges")
+    expect_equal(as.character(class(obj@custom)), "GRanges")
     expect_equal(as.character(class(obj@reference$ranges)), "GRanges")
-    expect_equal(length(obj@custom$ranges), 500)
+    expect_equal(length(obj@custom), 500)
     expect_equal(as.character(class(obj@reference$genome)), "BSgenome")
 })

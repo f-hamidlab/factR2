@@ -65,7 +65,7 @@ CreatefactRObject <- function(gtf, reference,
         if(verbose){
             rlang::inform("Importing custom GTF")
         }
-        obj@custom$ranges <- factR::importGTF(gtf)  # import GTF
+        obj@custom <- factR::importGTF(gtf)  # import GTF
     }
 
 
@@ -181,18 +181,18 @@ CreatefactRObject <- function(gtf, reference,
     if(verbose){
         rlang::inform("Creating a list of identified transcripts")
     }
-    obj@custom$genetxs <- as.data.frame(obj@custom$ranges) %>%
+    obj@txdata <- as.data.frame(obj@custom$ranges) %>%
         dplyr::select(gene_id, gene_name, transcript_id, match_level) %>%
         dplyr::distinct()
 
     # annotate new transcripts
-    newtxs <- suppressMessages(factR::subsetNewTranscripts(obj@custom$ranges,
+    newtxs <- suppressMessages(factR::subsetNewTranscripts(obj@custom,
                                                            obj@reference$ranges,
                                                            refine.by = "intron"))
-    obj@custom$genetxs$novel <- ifelse(obj@custom$genetxs$transcript_id %in% newtxs$transcript_id,
+    obj@txdata$novel <- ifelse(obj@txdata$transcript_id %in% newtxs$transcript_id,
                                        "yes", "no")
-    obj@custom$genetxs$cds <- "no"
-    obj@custom$genetxs$nmd <- "no"
+    obj@txdata$cds <- "no"
+    obj@txdata$nmd <- "no"
 
     return(obj)
 }
