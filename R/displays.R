@@ -1,10 +1,12 @@
+#' @include generics.R
+
 setMethod("show",
           "factR",
           function(object) {
-              ngenes <- length(unique(object@custom$genetxs$gene_id))
-              ntxs <- length(unique(object@custom$genetxs$transcript_id))
-              nnovel <- sum(object@custom$genetxs$novel == "yes")
-              ncds <- sum(object@custom$genetxs$cds == "yes")
+              ngenes <- length(unique(object@txdata$gene_id))
+              ntxs <- length(unique(object@txdata$transcript_id))
+              nnovel <- sum(object@txdata$novel == "yes")
+              ncds <- sum(object@txdata$cds == "yes")
               cat(sprintf("factR object [version %s]\n", object@version))
               cat(sprintf("## Total number of genes: %s\n", ngenes))
               cat(sprintf("## Total number of transcripts: %s [%s novel]\n", ntxs, nnovel))
@@ -17,11 +19,11 @@ setMethod("show",
 
 
 setMethod("head", "factR", function(object, n = 6L) {
-    return(object@custom$ranges[1:n])
+    return(object@custom[1:n])
 })
 
 setMethod("tail", "factR", function(object, n = 6L) {
-    return(utils::tail(object@custom$ranges, n))
+    return(utils::tail(object@custom, n))
 })
 
 setMethod("View", "factR", function(object, ...,
@@ -29,7 +31,7 @@ setMethod("View", "factR", function(object, ...,
                                     in_console = FALSE) {
 
     # check features
-    genetxs <- methods::slot(object, name = "custom")$genetxs
+    genetxs <- methods::slot(object, name = "txdata")
     if(missing(...)){
         txs <- genetxs$transcript_id
     } else {
@@ -49,7 +51,7 @@ setMethod("View", "factR", function(object, ...,
 
     # select features by data
     if(type == "transcripts"){
-        gtf <- methods::slot(object, "custom")$ranges
+        gtf <- methods::slot(object, "custom")
         data.to.view <- gtf[gtf$transcript_id %in% txs]
 
     }

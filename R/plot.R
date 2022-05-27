@@ -2,7 +2,7 @@ setMethod("Plot", "factR", function(object, ..., type = "transcripts",
                                     rescale_introns = FALSE, ncol = 1) {
 
     # check features
-    genetxs <- methods::slot(object, name = "custom")$genetxs
+    genetxs <- methods::slot(object, name = "txdata")
     if(missing(...)){
         txs <- genetxs$transcript_id
     } else {
@@ -22,7 +22,7 @@ setMethod("Plot", "factR", function(object, ..., type = "transcripts",
 
     # select features by data
     if(type == "transcripts"){
-        x <- methods::slot(object, "custom")$ranges
+        x <- methods::slot(object, "custom")
         x <- x[x$transcript_id %in% txs]
 
         genes <- unique(x$gene_name)

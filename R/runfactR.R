@@ -9,7 +9,7 @@ setMethod("RunfactR", "factR", function(object, verbose = FALSE) {
 
 
 setMethod("BuildCDS", "factR", function(object, verbose = FALSE) {
-    gtf <- slot(object, "custom")$ranges
+    gtf <- slot(object, "custom")
 
     if(verbose){
         gtf <- factR::buildCDS(gtf,
@@ -22,20 +22,20 @@ setMethod("BuildCDS", "factR", function(object, verbose = FALSE) {
                             slot(object, "reference")$genome))
     }
 
-    slot(object, "custom")$ranges <- gtf
+    slot(object, "custom") <- gtf
 
     # update cds transcripts
     cdss <- unique(gtf[gtf$type == "CDS"]$transcript_id)
-    genetxs <- slot(object, "custom")$genetxs
-    slot(object, "custom")$genetxs$cds <- ifelse(genetxs$transcript_id %in% cdss,
+    genetxs <- slot(object, "txdata")
+    slot(object, "txdata")$cds <- ifelse(genetxs$transcript_id %in% cdss,
                                                  "yes",
                                                  genetxs$cds)
     return(object)
 })
 
 setMethod("PredictNMD", "factR", function(object, NMD_threshold = 50, verbose = FALSE) {
-    gtf <- slot(object, "custom")$ranges
-    genetxs <- slot(object, "custom")$genetxs
+    gtf <- slot(object, "custom")
+    genetxs <- slot(object, "txdata")
 
     if(! "CDS" %in% gtf$type){
         rlang::abort("No CDSs found. Please run BuildCDS() first")
@@ -52,7 +52,7 @@ setMethod("PredictNMD", "factR", function(object, NMD_threshold = 50, verbose = 
 
     slot(object, "nmd") <- nmd.out
     nmd.out.true <- nmd.out[nmd.out$is_NMD,]$transcript
-    slot(object, "custom")$genetxs$nmd <- ifelse(genetxs$transcript_id %in% nmd.out.true,
+    slot(object, "txdata")$nmd <- ifelse(genetxs$transcript_id %in% nmd.out.true,
                                                  "yes",
                                                  genetxs$nmd)
     return(object)
