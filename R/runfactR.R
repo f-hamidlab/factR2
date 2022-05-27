@@ -58,11 +58,7 @@ setMethod("PredictNMD", "factR", function(object, NMD_threshold = 50, verbose = 
     return(object)
 })
 
-setMethod("FindAltSplicing", "factR", function(object) {
-    gtf <- slot(object, "custom")$ranges
-    slot(object, "ASplicings")$ranges <- .runAS(gtf[gtf$type == "exon"])
-    return(object)
-})
+
 
 
 
