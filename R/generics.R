@@ -29,7 +29,7 @@ setClass("factR",
          slots = c(
              custom = "GenomicRanges",
              txdata = "data.frame",
-             ASplicings = "list",
+             ASplicings = "GenomicRanges",
              domains = "data.frame",
              nmd = "data.frame",
              misc = "list",
