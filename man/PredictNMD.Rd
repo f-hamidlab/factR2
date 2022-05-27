@@ -27,5 +27,5 @@ factRsample <- BuildCDS(factRsample)
 factRsample <- PredictNMD(factRsample)
 }
 \seealso{
-\code{\link[factR]{predictNMD}}, \code{\link{RunfactR}}
+\code{\link[factR]{predictNMD}}, \code{\link{runfactR}}
 }

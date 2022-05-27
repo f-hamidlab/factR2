@@ -1,6 +1,6 @@
 #' @include generics.R
 #'
-setMethod("RunfactR", "factR", function(object, verbose = FALSE) {
+setMethod("runfactR", "factR", function(object, verbose = FALSE) {
     object <- BuildCDS(object, verbose)
     object <- PredictNMD(object, verbose)
     object <- FindAltSplicing(object)

@@ -134,8 +134,8 @@ setGeneric("plotTranscripts", function(object, ...,
 #' @rdname RunfactR
 #' @examples
 #' data(factRsample)
-#' factRsample <- RunfactR(factRsample)
-setGeneric("RunfactR", function(object, verbose = FALSE) standardGeneric("RunfactR"))
+#' factRsample <- runfactR(factRsample)
+setGeneric("runfactR", function(object, verbose = FALSE) standardGeneric("runfactR"))
 
 
 #' Build coding sequence on custom transcriptome
@@ -148,7 +148,7 @@ setGeneric("RunfactR", function(object, verbose = FALSE) standardGeneric("Runfac
 #'
 #' @return Updated factRObject
 #' @export
-#' @seealso \code{\link[factR]{buildCDS}}, \code{\link{RunfactR}}
+#' @seealso \code{\link[factR]{buildCDS}}, \code{\link{runfactR}}
 #'
 #' @rdname BuildCDS
 #' @examples
@@ -169,7 +169,7 @@ setGeneric("BuildCDS", function(object, verbose = FALSE) standardGeneric("BuildC
 #'
 #' @return Updated factRObject
 #' @export
-#' @seealso \code{\link[factR]{predictNMD}}, \code{\link{RunfactR}}
+#' @seealso \code{\link[factR]{predictNMD}}, \code{\link{runfactR}}
 #'
 #' @rdname PredictNMD
 #' @examples
@@ -187,7 +187,7 @@ setGeneric("PredictNMD", function(object, NMD_threshold = 50, verbose = FALSE) s
 #'
 #' @return Updated factRObject
 #' @export
-#' @seealso \code{\link{RunfactR}}
+#' @seealso \code{\link{runfactR}}
 #'
 #' @rdname FindAltSplicing
 #' @examples

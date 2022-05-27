@@ -21,5 +21,5 @@ data(factRsample)
 factRsample <- FindAltSplicing(factRsample)
 }
 \seealso{
-\code{\link{RunfactR}}
+\code{\link{runfactR}}
 }

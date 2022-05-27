@@ -23,5 +23,5 @@ data(factRsample)
 factRsample <- BuildCDS(factRsample)
 }
 \seealso{
-\code{\link[factR]{buildCDS}}, \code{\link{RunfactR}}
+\code{\link[factR]{buildCDS}}, \code{\link{runfactR}}
 }
