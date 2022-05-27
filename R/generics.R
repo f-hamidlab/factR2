@@ -61,9 +61,8 @@ setClass("factR",
 #' @export
 #' @rdname preview-methods
 #' @author Fursham Hamid
-setGeneric("View", function(object, ...,
-                            type = "transcripts",
-                            in_console = FALSE) standardGeneric("View"))
+setGeneric("view", function(object, ...,
+                            in_console = FALSE) standardGeneric("view"))
 
 #' @param object factRObject
 #' @param n an integer of the length to display

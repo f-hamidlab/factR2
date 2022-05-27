@@ -26,8 +26,7 @@ setMethod("tail", "factR", function(object, n = 6L) {
     return(utils::tail(object@custom, n))
 })
 
-setMethod("View", "factR", function(object, ...,
-                                    type = "transcripts",
+setMethod("view", "factR", function(object, ...,
                                     in_console = FALSE) {
 
     # check features
@@ -49,14 +48,10 @@ setMethod("View", "factR", function(object, ...,
         txs <- genetxs.features$tx
     }
 
-    # select features by data
-    if(type == "transcripts"){
-        gtf <- methods::slot(object, "custom")
-        data.to.view <- gtf[gtf$transcript_id %in% txs]
-
-    }
 
     # display data
+    gtf <- methods::slot(object, "custom")
+    data.to.view <- gtf[gtf$transcript_id %in% txs]
     if(in_console){
         data.to.view
     } else {

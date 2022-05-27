@@ -6,8 +6,8 @@ test_that("Test head/tail", {
 })
 
 test_that("Test View", {
-    expect_error(View(factRsample, "WRONGENE"))
-    expect_warning(View(factRsample, "WRONGENE", "Selenop"))
+    expect_error(view(factRsample, "WRONGENE"))
+    expect_warning(view(factRsample, "WRONGENE", "Selenop"))
 })
 
 test_that("Test Plot", {
