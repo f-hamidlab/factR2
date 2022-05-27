@@ -4,6 +4,7 @@
 \alias{view}
 \alias{head}
 \alias{tail}
+\alias{txData}
 \title{Preview factR object}
 \usage{
 view(object, ..., in_console = FALSE)
@@ -11,6 +12,8 @@ view(object, ..., in_console = FALSE)
 head(object, n = 6L)
 
 tail(object, n = 6L)
+
+txData(object)
 }
 \arguments{
 \item{object}{factRObject}
