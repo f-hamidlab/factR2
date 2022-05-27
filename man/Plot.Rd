@@ -2,7 +2,7 @@
 % Please edit documentation in R/generics.R
 \name{plotTranscripts}
 \alias{plotTranscripts}
-\title{Visualize RNA transcripts or translated proteins}
+\title{Visualize RNA transcripts}
 \usage{
 plotTranscripts(object, ..., rescale_introns = FALSE, ncol = 1)
 }
@@ -11,26 +11,23 @@ plotTranscripts(object, ..., rescale_introns = FALSE, ncol = 1)
 
 \item{...}{Optional: a list of features to plot. Input
 can be a mixture of names from gene_id, gene_name or transcript_id metadata.
-If missing, function will plot transcripts/proteins from the first 9 genes
+If missing, function will plot transcripts from the first 9 genes
 of the custom transcriptome}
 
 \item{rescale_introns}{when plotting transcripts, whether to rescale introns}
 
 \item{ncol}{number of columns to combine multiple feature plots to}
-
-\item{type}{data to show. Can be "transcripts" or "proteins"}
 }
 \value{
 ggplot2 object. If multiple genes are detected, plots will be
 combined using patchwork
 }
 \description{
-Plots out transcript architecture or translated protein domains from
-selected genes
+Plots out transcripts from custom transcriptome
 }
 \examples{
 data(factRsample)
-Plot(factRsample, "Selenop")
+plotTranscripts(factRsample, "Selenop")
 }
 \author{
 Fursham Hamid

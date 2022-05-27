@@ -56,7 +56,6 @@ setClass("factR",
 #' @param ... Optional: a list of features to view. Input
 #' can be a mixture of names from gene_id, gene_name or transcript_id metadata.
 #' If missing, function will return all features
-#' @param type data to show. Can be "transcripts" or "proteins"
 #' @param in_console whether to print custom transcriptome in console
 #'
 #' @export
@@ -90,18 +89,16 @@ setGeneric("txData", function(object) standardGeneric("txData"))
 
 
 
-#' Visualize RNA transcripts or translated proteins
+#' Visualize RNA transcripts
 #'
 #' @description
-#' Plots out transcript architecture or translated protein domains from
-#' selected genes
+#' Plots out transcripts from custom transcriptome
 #'
 #' @param object  factRObject
 #' @param ... Optional: a list of features to plot. Input
 #' can be a mixture of names from gene_id, gene_name or transcript_id metadata.
-#' If missing, function will plot transcripts/proteins from the first 9 genes
+#' If missing, function will plot transcripts from the first 9 genes
 #' of the custom transcriptome
-#' @param type data to show. Can be "transcripts" or "proteins"
 #' @param rescale_introns when plotting transcripts, whether to rescale introns
 #' @param ncol number of columns to combine multiple feature plots to
 #'

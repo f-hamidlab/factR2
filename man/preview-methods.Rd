@@ -25,8 +25,6 @@ If missing, function will return all features}
 \item{in_console}{whether to print custom transcriptome in console}
 
 \item{n}{an integer of the length to display}
-
-\item{type}{data to show. Can be "transcripts" or "proteins"}
 }
 \value{
 GenomicRanges object
