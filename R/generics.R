@@ -115,8 +115,9 @@ setGeneric("txData", function(object) standardGeneric("txData"))
 #' @examples
 #' data(factRsample)
 #' Plot(factRsample, "Selenop")
-setGeneric("Plot", function(object, ..., type = "transcripts",
-                            rescale_introns = FALSE, ncol = 1) standardGeneric("Plot"))
+setGeneric("plotTranscripts", function(object, ...,
+                            rescale_introns = FALSE,
+                            ncol = 1) standardGeneric("plotTranscripts"))
 
 
 

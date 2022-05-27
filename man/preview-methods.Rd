@@ -34,9 +34,10 @@ GenomicRanges object
 \description{
 A set of functions to view the contents of a factR object.
 \itemize{
- \item{view: }{view contents of custom transcriptome in spreadsheet-style format}
- \item{head: }{prints out the first n lines of custom transcriptome}
- \item{tail: }{prints out the last n lines of custom transcriptome}
+ \item{view(): }{view contents of custom transcriptome in spreadsheet-style format}
+ \item{head(): }{prints out the first n lines of custom transcriptome}
+ \item{tail(): }{prints out the last n lines of custom transcriptome}
+ \item{txData(): }{prints out transcript metadata}
 }
 }
 \author{

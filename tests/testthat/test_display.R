@@ -11,8 +11,8 @@ test_that("Test View", {
 })
 
 test_that("Test Plot", {
-    expect_error(Plot(factRsample, "WRONGENE"))
-    expect_warning(Plot(factRsample, "WRONGENE", "Selenop"))
-    plot <- Plot(factRsample, "Selenop")
+    expect_error(plotTranscripts(factRsample, "WRONGENE"))
+    expect_warning(plotTranscripts(factRsample, "WRONGENE", "Selenop"))
+    plot <- plotTranscripts(factRsample, "Selenop")
     expect_equal(c("patchwork", "gg","ggplot"), as.character(class(plot)))
 })
