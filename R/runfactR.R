@@ -4,6 +4,7 @@ setMethod("runfactR", "factR", function(object, verbose = FALSE) {
     object <- buildCDS(object, verbose)
     object <- predictNMD(object, verbose)
     object <- findAltSplicing(object)
+    object <- getAAsequence(object, verbose)
     object
 })
 
@@ -59,6 +60,23 @@ setMethod("predictNMD", "factR", function(object, NMD_threshold = 50, verbose = 
 })
 
 
+setMethod("getAAsequence", "factR", function(object, verbose = FALSE) {
+    gtf <- slot(object, "custom")
+    if(! "CDS" %in% gtf$type){
+        rlang::abort("No CDSs found. Please run buildCDS() first")
+    }
+    genetxs <- txData(object)
+    txs <- genetxs[genetxs$cds == "yes",]$transcript_id
+
+    gtf <- slot(object, "custom")
+    gtf <- gtf[gtf$transcript_id %in% txs]
+    cds <- S4Vectors::split(gtf[gtf$type == "CDS"], ~transcript_id)
+    slot(object, "domains")$sequence <- .getSequence(cds,
+                                                     slot(object, "reference")$genome,
+                                                     verbose)
+
+    return(object)
+})
 
 
 
