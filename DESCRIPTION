@@ -24,7 +24,7 @@ Imports:
 License: file LICENSE
 Encoding: UTF-8
 ByteCompile: true
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.0
 Suggests: 
     AnnotationHub (>= 2.22),
     testthat (>= 3.0.0)
@@ -36,6 +36,7 @@ Collate:
     'constructor.R'
     'generics.R'
     'displays.R'
+    'domains.R'
     'misc.R'
     'plot.R'
     'runfactR.R'

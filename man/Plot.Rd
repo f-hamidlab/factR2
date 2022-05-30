@@ -2,9 +2,12 @@
 % Please edit documentation in R/generics.R
 \name{plotTranscripts}
 \alias{plotTranscripts}
-\title{Visualize RNA transcripts}
+\alias{plotDomains}
+\title{Visualize custom transcriptome and proteins}
 \usage{
 plotTranscripts(object, ..., rescale_introns = FALSE, ncol = 1)
+
+plotDomains(object, ..., ncol = 1)
 }
 \arguments{
 \item{object}{factRObject}
@@ -23,11 +26,16 @@ ggplot2 object. If multiple genes are detected, plots will be
 combined using patchwork
 }
 \description{
-Plots out transcripts from custom transcriptome
+Plots out transcripts or protein domains from custom transcriptome
 }
 \examples{
+# plot transcripts
 data(factRsample)
 plotTranscripts(factRsample, "Selenop")
+
+# plot protein domains
+factRsample <- runfactR(factRsample)
+plotDomains(factRsample, "Prkaa1")
 }
 \author{
 Fursham Hamid

@@ -34,7 +34,7 @@ ID or (4) URL to an online genome fasta file.}
 \item{verbose}{if TRUE, show progress messages}
 }
 \value{
-
+factR object
 
 A factRObject
 }
