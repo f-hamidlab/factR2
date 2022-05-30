@@ -30,7 +30,7 @@ setClass("factR",
              custom = "GenomicRanges",
              txdata = "data.frame",
              ASplicings = "GenomicRanges",
-             domains = "data.frame",
+             domains = "list",
              nmd = "data.frame",
              misc = "list",
              reference = "list",
@@ -89,10 +89,10 @@ setGeneric("txData", function(object) standardGeneric("txData"))
 
 
 
-#' Visualize RNA transcripts
+#' Visualize custom transcriptome and proteins
 #'
 #' @description
-#' Plots out transcripts from custom transcriptome
+#' Plots out transcripts or protein domains from custom transcriptome
 #'
 #' @param object  factRObject
 #' @param ... Optional: a list of features to plot. Input
@@ -110,6 +110,7 @@ setGeneric("txData", function(object) standardGeneric("txData"))
 #' @author Fursham Hamid
 #'
 #' @examples
+#' # plot transcripts
 #' data(factRsample)
 #' plotTranscripts(factRsample, "Selenop")
 setGeneric("plotTranscripts", function(object, ...,
@@ -195,12 +196,70 @@ setGeneric("predictNMD", function(object, NMD_threshold = 50, verbose = FALSE) s
 #' factRsample <- findAltSplicing(factRsample)
 setGeneric("findAltSplicing", function(object) standardGeneric("findAltSplicing"))
 
+#' Predict functional domains
+#'
+#' @description This function predicts the functional domains found on
+#' proteins
+#'
+#' @param object factRObject
+#' @param ... a list of features to perform prediction on. Input
+#' can be a mixture of names from gene_id, gene_name or transcript_id metadata.
+#' If missing, function will predict domains on all proteins in the GTF
+#' @param database character string specifying the database to search. Currently
+#' support "superfamily" (Default) and "pfam"
+#' @param ncores number of cores to run function (Default: 4)
+#'
+#' @return Updated factRObject
+#' @export
+#'
+#' @rdname predictDomain
+#' @examples
+#' data(factRsample)
+#' factRsample <- buildCDS(factRsample)
+#' factRsample <- predictNMD(factRsample)
+setGeneric("predictDomain", function(object, ...,
+                                     database = "superfamily",
+                                     ncores = 4) standardGeneric("predictDomain"))
 
 
 
+#' @param object  factRObject
+#' @param ... Optional: a list of features to plot. Input
+#' can be a mixture of names from gene_id, gene_name or transcript_id metadata.
+#' If missing, function will plot transcripts from the first 9 genes
+#' of the custom transcriptome
+#' @param ncol number of columns to combine multiple feature plots to
+#'
+#' @export
+#' @rdname Plot
+#'
+#' @author Fursham Hamid
+#'
+#' @examples
+#'
+#' # plot protein domains
+#' factRsample <- runfactR(factRsample)
+#' plotDomains(factRsample, "Prkaa1")
+setGeneric("plotDomains", function(object, ..., ncol = 1) standardGeneric("plotDomains"))
 
 
-
+#' Get protein coding sequences
+#'
+#' @description This function xxx
+#'
+#' @param object factRObject
+#' @param verbose whether to display workflow progress
+#'
+#' @return Updated factRObject
+#' @export
+#' @seealso \code{\link{runfactR}}
+#'
+#' @rdname getAAsequence
+#' @examples
+#' data(factRsample)
+#' factRsample <- buildCDS(factRsample)
+#' factRsample <- getAAsequence(factRsample)
+setGeneric("getAAsequence", function(object, verbose = FALSE) standardGeneric("getAAsequence"))
 
 
 
