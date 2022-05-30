@@ -19,7 +19,7 @@
 #'
 #' @name factRObject-class
 #' @rdname factRObject-class
-#' @return
+#' @return factR object
 #' @export
 #'
 #' @examples
