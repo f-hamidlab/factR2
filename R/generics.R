@@ -24,6 +24,7 @@
 #' @exportClass factR
 #'
 #' @importFrom dplyr %>%
+#' @importFrom methods slot
 #'
 setClass("factR",
          slots = c(
@@ -47,8 +48,7 @@ setClass("factR",
 #' @description A set of functions to view the contents of a factR object.
 #' \itemize{
 #'  \item{view(): }{view contents of custom transcriptome in spreadsheet-style format}
-#'  \item{head(): }{prints out the first n lines of custom transcriptome}
-#'  \item{tail(): }{prints out the last n lines of custom transcriptome}
+#'  \item{txRanges(): }{prints out transcript ranges}
 #'  \item{txData(): }{prints out transcript metadata}
 #' }
 #'
@@ -61,23 +61,23 @@ setClass("factR",
 #' @export
 #' @rdname preview-methods
 #' @author Fursham Hamid
-setGeneric("view", function(object, ...,
-                            in_console = FALSE) standardGeneric("view"))
+#' @examples
+#'
+#' # Ranges of custom transcriptome can be printed out in several ways:
+#' factRsample
+#' head(factRsample)
+#' head(factRsample, 10)
+#' tail(factRsample)
+#'
+#'
+setGeneric("view", function(object, ...) standardGeneric("view"))
 
 #' @param object factRObject
-#' @param n an integer of the length to display
 #'
-#' @return GenomicRanges object
 #' @export
 #' @rdname preview-methods
-setGeneric("head", function(object, n = 6L) standardGeneric("head"))
+setGeneric("txRanges", function(object, ...) standardGeneric("txRanges"))
 
-#' @param object factRObject
-#' @param n an integer of the length to display
-#'
-#' @export
-#' @rdname preview-methods
-setGeneric("tail", function(object,  n = 6L) standardGeneric("tail"))
 
 #' @param object factRObject
 #'
@@ -289,11 +289,6 @@ setGeneric("getAAsequence", function(object, verbose = FALSE) standardGeneric("g
 #' factRsample <- buildCDS(factRsample)
 #' factRsample <- testASNMDevents(factRsample)
 setGeneric("testASNMDevents", function(object) standardGeneric("testASNMDevents"))
-
-
-
-
-
 
 
 
