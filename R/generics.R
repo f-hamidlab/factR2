@@ -137,6 +137,13 @@ setGeneric("plotTranscripts", function(object, ...,
 #' data(factRsample)
 #' factRsample <- runfactR(factRsample)
 setGeneric("runfactR", function(object, verbose = FALSE) standardGeneric("runfactR"))
+setMethod("runfactR", "factR", function(object, verbose = FALSE) {
+    object <- buildCDS(object, verbose)
+    object <- predictNMD(object, verbose)
+    object <- findAltSplicing(object)
+    object <- getAAsequence(object, verbose)
+    object
+})
 
 
 #' Build coding sequence on custom transcriptome
@@ -245,7 +252,9 @@ setGeneric("plotDomains", function(object, ..., ncol = 1) standardGeneric("plotD
 
 #' Get protein coding sequences
 #'
-#' @description This function xxx
+#' @description This function will translate coding transcript sequences into
+#' amino acid sequences and stores them as a dataframe in the object's
+#' domain slot
 #'
 #' @param object factRObject
 #' @param verbose whether to display workflow progress
@@ -260,15 +269,6 @@ setGeneric("plotDomains", function(object, ..., ncol = 1) standardGeneric("plotD
 #' factRsample <- buildCDS(factRsample)
 #' factRsample <- getAAsequence(factRsample)
 setGeneric("getAAsequence", function(object, verbose = FALSE) standardGeneric("getAAsequence"))
-
-
-
-
-
-
-
-
-
 
 
 
@@ -289,6 +289,15 @@ setGeneric("getAAsequence", function(object, verbose = FALSE) standardGeneric("g
 #' factRsample <- buildCDS(factRsample)
 #' factRsample <- testASNMDevents(factRsample)
 setGeneric("testASNMDevents", function(object) standardGeneric("testASNMDevents"))
+
+
+
+
+
+
+
+
+
 
 
 
