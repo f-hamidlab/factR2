@@ -3,22 +3,7 @@ setMethod("plotTranscripts", "factR", function(object, ...,
 
     # check features
     genetxs <- methods::slot(object, name = "txdata")
-    if(missing(...)){
-        txs <- genetxs$transcript_id
-    } else {
-        genetxs.features <- genetxs %>%
-            dplyr::mutate(tx = transcript_id) %>%
-            tidyr::gather("type", "feature", gene_id, gene_name, transcript_id) %>%
-            dplyr::filter(feature %in% c(...))
-        if (nrow(genetxs.features) == 0) {
-            rlang::abort("No features found in object")
-        } else if(!all(c(...) %in% genetxs.features$feature)){
-            absent.features <- c(...)[which(!c(...) %in% genetxs.features$feature)]
-            rlang::warn(sprintf("These features are not found in object: %s",
-                                paste(absent.features, collapse = ", ")))
-        }
-        txs <- genetxs.features$tx
-    }
+    txs <- .getTxs(object, ...)
 
     # select features by data
     x <- methods::slot(object, "custom")
