@@ -2,16 +2,13 @@
 % Please edit documentation in R/generics.R
 \name{view}
 \alias{view}
-\alias{head}
-\alias{tail}
+\alias{txRanges}
 \alias{txData}
 \title{Preview factR object}
 \usage{
-view(object, ..., in_console = FALSE)
+view(object, ...)
 
-head(object, n = 6L)
-
-tail(object, n = 6L)
+txRanges(object, ...)
 
 txData(object)
 }
@@ -23,20 +20,24 @@ can be a mixture of names from gene_id, gene_name or transcript_id metadata.
 If missing, function will return all features}
 
 \item{in_console}{whether to print custom transcriptome in console}
-
-\item{n}{an integer of the length to display}
-}
-\value{
-GenomicRanges object
 }
 \description{
 A set of functions to view the contents of a factR object.
 \itemize{
  \item{view(): }{view contents of custom transcriptome in spreadsheet-style format}
- \item{head(): }{prints out the first n lines of custom transcriptome}
- \item{tail(): }{prints out the last n lines of custom transcriptome}
+ \item{txRanges(): }{prints out transcript ranges}
  \item{txData(): }{prints out transcript metadata}
 }
+}
+\examples{
+
+# Ranges of custom transcriptome can be printed out in several ways:
+factRsample
+head(factRsample)
+head(factRsample, 10)
+tail(factRsample)
+
+
 }
 \author{
 Fursham Hamid
