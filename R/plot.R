@@ -73,7 +73,7 @@ setMethod("plotDomains", "factR", function(object, ..., ncol = 1){
     # check if all transcripts have been tested
     untested.txs <- txs[!txs %in% slot(object, "domains")$tested]
     if(length(untested.txs) > 0){
-        object <- predictDomain(object, txs, verbose = F)
+        object <- predictDomain(object, txs)
     }
 
     datatoplot <- object@domains$data
