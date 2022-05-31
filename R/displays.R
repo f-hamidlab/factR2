@@ -1,6 +1,10 @@
 #' @include generics.R
 
-setMethod("show",
+setMethod("show", "factR", function(object){
+    print(object@custom)
+})
+
+setMethod("summary",
           "factR",
           function(object) {
               ngenes <- length(unique(object@txdata$gene_id))
@@ -18,16 +22,15 @@ setMethod("show",
 
 
 
-setMethod("head", "factR", function(object, n = 6L) {
-    return(object@custom[1:n])
-})
+# setMethod("head", "factR", function(object, n = 6L) {
+#     return(object@custom[1:n])
+# })
+#
+# setMethod("tail", "factR", function(object, n = 6L) {
+#     return(utils::tail(object@custom, n))
+# })
 
-setMethod("tail", "factR", function(object, n = 6L) {
-    return(utils::tail(object@custom, n))
-})
-
-setMethod("view", "factR", function(object, ...,
-                                    in_console = FALSE) {
+setMethod("view", "factR", function(object, ...) {
 
     # check features
     genetxs <- methods::slot(object, name = "txdata")
@@ -37,20 +40,21 @@ setMethod("view", "factR", function(object, ...,
     # display data
     gtf <- methods::slot(object, "custom")
     data.to.view <- gtf[gtf$transcript_id %in% txs]
-    if(in_console){
-        data.to.view
+    data.to.view <- as.data.frame(data.to.view)
+    if(nrow(data.to.view) > 1000){
+        rlang::warn("Viewing first 1000 entries")
+        tibble::view(data.to.view[1:1000], title = "factRObject")
     } else {
-        data.to.view <- as.data.frame(data.to.view)
-        if(nrow(data.to.view) > 1000){
-            rlang::warn("Viewing first 1000 entries")
-            tibble::view(data.to.view[1:1000], title = "factRObject")
-        } else {
-            tibble::view(data.to.view, title = "factRObject")
-        }
+        tibble::view(data.to.view, title = "factRObject")
     }
 
 })
-
+setMethod("txRanges", "factR", function(object, ...) {
+    gtf <- methods::slot(object, "custom")
+    txs <- tryCatch(.getTxs(object, ...),
+                error = function(e) rlang::abort("Feature not found"))
+    gtf[gtf$transcript_id %in% txs]
+})
 setMethod("txData", "factR", function(object) {
     methods::slot(object, name = "txdata")
 })
@@ -58,12 +62,46 @@ setMethod("txData", "factR", function(object) {
 
 
 
+setMethod("[", signature("factR"), function (x, i, j){
+      # check features
+      gtf <- methods::slot(x, "custom")
+      genetxs <- methods::slot(x, name = "txdata")
+      if(missing(i)){
+          gtf <- gtf
+      } else if(typeof(i) %in% c("integer", "double")){
+          gtf <- gtf[i]
+      } else if(typeof(i) %in% c("logical")){
+          gtf <- gtf[i]
+      } else {
+          txs <- tryCatch(.getTxs(x, i),
+                          error = function(e) rlang::abort("Feature not found"))
+          gtf <- gtf[gtf$transcript_id %in% txs]
+      }
+      gtf[,j]
+})
+
+.DollarNames.factR <- function(x, pattern = "")
+    grep(pattern, colnames(as.data.frame(x@custom)), value=TRUE)
+setMethod("$", signature("factR"), function (x, name) {
+    # check features
+    x <- as.data.frame(x@custom)
+    x[[name]]
+
+})
+
+setMethod("$<-", "factR", function(x, name, value){
+                     mcols(x@custom)[[name]] <- value
+                     x
+})
 
 
 
-
-
-
+setMethod("head", "factR", function(x, n = 6L){
+    utils::head(x@custom, n)
+})
+setMethod("tail", "factR", function(x, n = 6L){
+    utils::tail(x@custom, n)
+})
 
 
 
