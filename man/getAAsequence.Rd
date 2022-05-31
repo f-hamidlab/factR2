@@ -15,7 +15,9 @@ getAAsequence(object, verbose = FALSE)
 Updated factRObject
 }
 \description{
-This function xxx
+This function will translate coding transcript sequences into
+amino acid sequences and stores them as a dataframe in the object's
+domain slot
 }
 \examples{
 data(factRsample)

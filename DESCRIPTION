@@ -33,11 +33,13 @@ LazyData: FALSE
 BiocType: Software
 Config/testthat/edition: 3
 Collate: 
-    'constructor.R'
+    'addremovesegments.R'
     'generics.R'
+    'asnmd.R'
+    'cds.R'
+    'constructor.R'
     'displays.R'
     'domains.R'
     'misc.R'
     'plot.R'
-    'runfactR.R'
     'splicing.R'
