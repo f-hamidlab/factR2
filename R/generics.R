@@ -273,6 +273,22 @@ setGeneric("getAAsequence", function(object, verbose = FALSE) standardGeneric("g
 
 
 
+#' Identify AS-NMD events
+#'
+#' @description This function will xxx
+#'
+#' @param object factRObject
+#'
+#' @return Updated factRObject
+#' @export
+#' @seealso \code{\link{runfactR}}
+#'
+#' @rdname testASNMDevents
+#' @examples
+#' data(factRsample)
+#' factRsample <- buildCDS(factRsample)
+#' factRsample <- testASNMDevents(factRsample)
+setGeneric("testASNMDevents", function(object) standardGeneric("testASNMDevents"))
 
 
 
