@@ -22,13 +22,13 @@ setMethod("summary",
 
 
 
-# setMethod("head", "factR", function(object, n = 6L) {
-#     return(object@custom[1:n])
-# })
-#
-# setMethod("tail", "factR", function(object, n = 6L) {
-#     return(utils::tail(object@custom, n))
-# })
+setMethod("head", "factR", function(x, n = 6L){
+    utils::head(x@custom, n)
+})
+setMethod("tail", "factR", function(x, n = 6L){
+    utils::tail(x@custom, n)
+})
+
 
 setMethod("view", "factR", function(object, ...) {
 
