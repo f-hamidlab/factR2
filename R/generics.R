@@ -28,14 +28,24 @@
 #'
 setClass("factR",
          slots = c(
-             custom = "GenomicRanges",
-             txdata = "data.frame",
-             ASplicings = "GenomicRanges",
+             assays = "list",
+             colData = "data.frame",
+             transcriptome = "GenomicRanges",
              domains = "list",
-             nmd = "data.frame",
-             misc = "list",
+             design = "formula",
+             active.assay = "character",
              reference = "list",
+             misc = "list",
              version = "character"
+         )
+)
+
+setClass("factRassay",
+         slots = c(
+             counts = "matrix",
+             data = "matrix",
+             rowData = "data.frame",
+             comparisons = "data.frame"
          )
 )
 
