@@ -35,6 +35,7 @@ setClass("factR",
              domains = "list",
              design = "formula",
              active.assay = "character",
+             active.ident = "character",
              reference = "list",
              misc = "list",
              version = "character"
