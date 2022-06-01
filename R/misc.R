@@ -23,7 +23,7 @@ is_gtf <- function(...) {
 #'
 #' @examples
 #' ListGenomes()
-ListSupportedGenomes <- function(){
+listSupportedGenomes <- function(){
     data("genomes")
     genomes[c("ID","species","database","release.date")]
 }
