@@ -29,8 +29,9 @@
 setClass("factR",
          slots = c(
              assays = "list",
-             colData = "data.frame",
              transcriptome = "GenomicRanges",
+             colData = "data.frame",
+             txData = "data.frame",
              domains = "list",
              design = "formula",
              active.assay = "character",

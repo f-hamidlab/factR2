@@ -56,7 +56,7 @@ setMethod("txRanges", "factR", function(object, ...) {
     gtf[gtf$transcript_id %in% txs]
 })
 setMethod("txData", "factR", function(object) {
-    methods::slot(object, name = "txdata")
+    methods::slot(object, name = "txData")
 })
 
 

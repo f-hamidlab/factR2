@@ -3,14 +3,17 @@
 \docType{class}
 \name{factRObject-class}
 \alias{factRObject-class}
-\alias{CreatefactRObject}
+\alias{createfactRObject}
 \title{Create factRObject}
 \usage{
-CreatefactRObject(
+createfactRObject(
   gtf,
   reference,
   use_own_annotation = NULL,
   use_own_genome = NULL,
+  counts,
+  psi,
+  assays = "transcript",
   verbose = FALSE
 )
 }
@@ -63,9 +66,9 @@ in GTF format, a reference annotation and a genome sequence. See examples
 \examples{
 # Create factRObject using sample GTF and supported reference
 gtf <- system.file("extdata", "sc_merged_sample.gtf.gz", package = "factR")
-obj <- CreatefactRObject(gtf, "vM25")
+obj <- createfactRObject(gtf, "vM25")
 
 # Create factRObject using custom reference
 library(BSgenome.Mmusculus.UCSC.mm10)
-obj <- CreatefactRObject(gtf, use_own_annotation = "AH49547", use_own_genome = Mmusculus)
+obj <- createfactRObject(gtf, use_own_annotation = "AH49547", use_own_genome = Mmusculus)
 }

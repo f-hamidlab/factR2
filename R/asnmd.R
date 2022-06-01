@@ -1,8 +1,9 @@
 #' @include generics.R
 #'
 setMethod("predictNMD", "factR", function(object, NMD_threshold = 50, verbose = FALSE) {
-    gtf <- slot(object, "custom")
-    genetxs <- slot(object, "txdata")
+    gtf <- slot(object, "transcriptome")
+    gtf <- gtf[gtf$type != "AS"]
+    genetxs <- txData(object)
 
     if(! "CDS" %in% gtf$type){
         rlang::abort("No CDSs found. Please run buildCDS() first")
@@ -17,17 +18,17 @@ setMethod("predictNMD", "factR", function(object, NMD_threshold = 50, verbose = 
                               progress_bar = FALSE))
     }
 
-    slot(object, "nmd") <- nmd.out
-    nmd.out.true <- nmd.out[nmd.out$is_NMD,]$transcript
-    slot(object, "txdata")$nmd <- ifelse(genetxs$transcript_id %in% nmd.out.true,
-                                         "yes",
-                                         genetxs$nmd)
+
+    genetxs <- dplyr::left_join(genetxs, nmd.out, by = c("transcript_id"="transcript"))
+    genetxs$nmd <- ifelse(genetxs$is_NMD & !is.na(genetxs$is_NMD), "yes", genetxs$nmd)
+    slot(object, "txData") <- genetxs
     return(object)
 })
 
 setMethod("testASNMDevents", "factR", function(object) {
 
-    genes <- slot(object, "txdata")
+    genes <- txData(object)
+    gtf <- slot(object, "transcriptome")
     if(all(genes$cds == "no") & all(genes$nmd == "no")){
         rlang::abort("No CDSs found. Please run runfactR() first")
     } else if(any(genes$cds == "yes") & all(genes$nmd == "no")){
@@ -35,7 +36,7 @@ setMethod("testASNMDevents", "factR", function(object) {
     }
 
     # check if splicing data is present
-    ASevents <- slot(object, "ASplicings")
+    ASevents <- gtf[gtf$type == "AS"]
     if(length(ASevents) == 1){
         rlang::abort("No AS events found. Please run findAltSplicing() first")
     }
@@ -55,11 +56,11 @@ setMethod("testASNMDevents", "factR", function(object) {
         ASNMD.hits <- IRanges::findOverlaps(ASevents, ASNMDevents,
                                             type = "equal")
         ASevents$ASNMDtype <- "NA"
-        ASevents[queryHits(ASNMD.hits)]$ASNMDtype <- ASNMDevents[subjectHits(ASNMD.hits)]$NMDtype
+        ASevents[S4Vectors::queryHits(ASNMD.hits)]$ASNMDtype <- ASNMDevents[S4Vectors::subjectHits(ASNMD.hits)]$NMDtype
         ASevents$ASNMD.in.cds <- "NA"
-        ASevents[queryHits(ASNMD.hits)]$ASNMD.in.cds <- as.character(ASNMDevents[subjectHits(ASNMD.hits)]$within.CDS)
-
-        slot(object, "ASplicings") <- ASevents
+        ASevents[S4Vectors::queryHits(ASNMD.hits)]$ASNMD.in.cds <- as.character(ASNMDevents[S4Vectors::subjectHits(ASNMD.hits)]$within.CDS)
+        gtf.others <- gtf[gtf$type != "AS"]
+        slot(object, "transcriptome") <- c(gtf.others, ASevents)
     }
 
     return(object)
@@ -70,7 +71,7 @@ setMethod("testASNMDevents", "factR", function(object) {
     #rlang::inform("Selecting best reference mRNAs")
     # get reference CDS transcript for each gene
     ## get sizes of all CDSs
-    x <- slot(object, "custom")
+    x <- slot(object, "transcriptome")
     genes <- txData(object)
 
     cds.sizes <- sum(BiocGenerics::width(S4Vectors::split(x[x$type == "CDS"],
@@ -85,7 +86,7 @@ setMethod("testASNMDevents", "factR", function(object) {
         dplyr::slice_max(n = 1, order_by = cds.sizes, with_ties = FALSE)
 
 
-    return(x[x$transcript_id %in% cds.reference$transcript_id])
+    return(x[x$transcript_id %in% cds.reference$transcript_id & x$type != "AS"])
 }
 
 
@@ -94,8 +95,8 @@ setMethod("testASNMDevents", "factR", function(object) {
 .runidentifynmdexons <- function(object, ref) {
 
     #rlang::inform("Finding NMD causing exons")
-    x <- slot(object, "custom")
-    ASevents <- slot(object, "ASplicings")
+    x <- slot(object, "transcriptome")
+    ASevents <- x[x$type == "AS"]
     genes <- txData(object)
     NMD.pos <- genes[genes$nmd == "yes",]$transcript_id
 

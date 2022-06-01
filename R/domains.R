@@ -1,12 +1,12 @@
 setMethod("getAAsequence", "factR", function(object, verbose = FALSE) {
-    gtf <- slot(object, "custom")
+    gtf <- slot(object, "transcriptome")
     if(! "CDS" %in% gtf$type){
         rlang::abort("No CDSs found. Please run buildCDS() first")
     }
     genetxs <- txData(object)
     txs <- genetxs[genetxs$cds == "yes",]$transcript_id
 
-    gtf <- slot(object, "custom")
+    gtf <- slot(object, "transcriptome")
     gtf <- gtf[gtf$transcript_id %in% txs]
     cds <- S4Vectors::split(gtf[gtf$type == "CDS"], ~transcript_id)
     slot(object, "domains")$sequence <- .getSequence(cds,
@@ -24,7 +24,7 @@ setMethod("predictDomain", "factR", function(object,
                                               ncores = 4) {
 
     # check if CDS have been built
-    gtf <- slot(object, "custom")
+    gtf <- slot(object, "transcriptome")
     if(! "CDS" %in% gtf$type){
         rlang::abort("No CDSs found. Please run buildCDS() first")
     }

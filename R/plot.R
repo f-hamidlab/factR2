@@ -2,11 +2,11 @@ setMethod("plotTranscripts", "factR", function(object, ...,
                                     rescale_introns = FALSE, ncol = 1) {
 
     # check features
-    genetxs <- methods::slot(object, name = "txdata")
+    genetxs <- txData(object)
     txs <- .getTxs(object, ...)
 
     # select features by data
-    x <- methods::slot(object, "custom")
+    x <- methods::slot(object, "transcriptome")
     x <- x[x$transcript_id %in% txs]
 
     genes <- unique(x$gene_name)
@@ -45,14 +45,14 @@ setMethod("plotTranscripts", "factR", function(object, ...,
 
 setMethod("plotDomains", "factR", function(object, ..., ncol = 1){
     # check if CDS have been built
-    gtf <- slot(object, "custom")
+    gtf <- slot(object, "transcriptome")
     if(! "CDS" %in% gtf$type){
         rlang::abort("No CDSs found. Please run buildCDS() first")
     }
 
     # get transcripts to test
     txs <- .getTxs(object, ...)
-    genetxs <- slot(object, "txdata")
+    genetxs <- txData(object)
 
 
     # check if all transcripts have been tested

@@ -25,14 +25,17 @@
 #' @examples
 #' # Create factRObject using sample GTF and supported reference
 #' gtf <- system.file("extdata", "sc_merged_sample.gtf.gz", package = "factR")
-#' obj <- CreatefactRObject(gtf, "vM25")
+#' obj <- createfactRObject(gtf, "vM25")
 #'
 #' # Create factRObject using custom reference
 #' library(BSgenome.Mmusculus.UCSC.mm10)
-#' obj <- CreatefactRObject(gtf, use_own_annotation = "AH49547", use_own_genome = Mmusculus)
-CreatefactRObject <- function(gtf, reference,
+#' obj <- createfactRObject(gtf, use_own_annotation = "AH49547", use_own_genome = Mmusculus)
+createfactRObject <- function(gtf, reference,
                               use_own_annotation = NULL,
                               use_own_genome = NULL,
+                              counts,
+                              psi,
+                              assays = "transcript",
                               verbose = FALSE){
 
     # catch missing args
@@ -65,7 +68,7 @@ CreatefactRObject <- function(gtf, reference,
         if(verbose){
             rlang::inform("Importing custom GTF")
         }
-        obj@custom <- factR::importGTF(gtf)  # import GTF
+        obj@transcriptome <- factR::importGTF(gtf)  # import GTF
     }
 
 
@@ -138,7 +141,7 @@ CreatefactRObject <- function(gtf, reference,
     if(verbose){
         rlang::inform("Matching chromosome names")
     }
-    obj@custom <- factR::matchChromosomes(obj@custom,
+    obj@transcriptome <- factR::matchChromosomes(obj@transcriptome,
                                                  obj@reference$genome)
     obj@reference$ranges <- suppressWarnings(factR::matchChromosomes(obj@reference$ranges,
                                                  obj@reference$ranges))
@@ -146,19 +149,19 @@ CreatefactRObject <- function(gtf, reference,
     if(verbose){
         rlang::inform("Matching gene names")
     }
-    custom.df <- as.data.frame(obj@custom)
+    custom.df <- as.data.frame(obj@transcriptome)
     potential_id_vars <- apply(custom.df, 2, function(x) any(grepl("ENS",x)))
     potential_id <- names(potential_id_vars)[potential_id_vars]
     potential_id <- potential_id[-which("transcript_id" %in% potential_id)]
     if(length(potential_id > 1)){
         if(verbose){
-            obj@custom <- factR::matchGeneInfo(obj@custom,
+            obj@transcriptome <- factR::matchGeneInfo(obj@transcriptome,
                                                        obj@reference$ranges,
                                                        primary_gene_id = "gene_id",
                                                        secondary_gene_id = potential_id)
         } else {
-            obj@custom <- suppressMessages(
-                factR::matchGeneInfo(obj@custom,
+            obj@transcriptome <- suppressMessages(
+                factR::matchGeneInfo(obj@transcriptome,
                                      obj@reference$ranges,
                                      primary_gene_id = "gene_id",
                                      secondary_gene_id = potential_id))
@@ -166,12 +169,12 @@ CreatefactRObject <- function(gtf, reference,
 
     } else {
         if(verbose){
-            obj@custom <- factR::matchGeneInfo(obj@custom,
+            obj@transcriptome <- factR::matchGeneInfo(obj@transcriptome,
                                                       obj@reference$ranges,
                                                       primary_gene_id = "gene_id")
         } else {
-            obj@custom <- suppressMessages(
-                factR::matchGeneInfo(obj@custom,
+            obj@transcriptome <- suppressMessages(
+                factR::matchGeneInfo(obj@transcriptome,
                                      obj@reference$ranges,
                                      primary_gene_id = "gene_id"))
         }
@@ -179,20 +182,20 @@ CreatefactRObject <- function(gtf, reference,
 
     # create genetxs dataframe
     if(verbose){
-        rlang::inform("Creating a list of identified transcripts")
+        rlang::inform("Creating assays")
     }
-    obj@txdata <- as.data.frame(obj@custom) %>%
+    obj@txData <- as.data.frame(obj@transcriptome) %>%
         dplyr::select(gene_id, gene_name, transcript_id, match_level) %>%
         dplyr::distinct()
 
     # annotate new transcripts
-    newtxs <- suppressMessages(factR::subsetNewTranscripts(obj@custom,
+    newtxs <- suppressMessages(factR::subsetNewTranscripts(obj@transcriptome,
                                                            obj@reference$ranges,
                                                            refine.by = "intron"))
-    obj@txdata$novel <- ifelse(obj@txdata$transcript_id %in% newtxs$transcript_id,
+    obj@txData$novel <- ifelse(obj@txData$transcript_id %in% newtxs$transcript_id,
                                        "yes", "no")
-    obj@txdata$cds <- "no"
-    obj@txdata$nmd <- "no"
+    obj@txData$cds <- "no"
+    obj@txData$nmd <- "no"
 
     return(obj)
 }

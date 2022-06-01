@@ -1,6 +1,7 @@
 setMethod("findAltSplicing", "factR", function(object) {
-    gtf <- slot(object, "custom")
-    slot(object, "ASplicings") <- .runAS(gtf[gtf$type == "exon"])
+    gtf <- slot(object, "transcriptome")
+    gtf <- c(gtf, .runAS(gtf[gtf$type == "exon"]))
+    slot(object, "transcriptome") <- gtf
     return(object)
 })
 

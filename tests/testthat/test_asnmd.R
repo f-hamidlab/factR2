@@ -7,6 +7,7 @@ test_that("Test .getbestref function", {
 })
 
 test_that("Test testASNMDevents function", {
+    ASevents <- obj@transcriptome[obj@transcriptome$type == "AS"]
     expect_equal(obj@ASplicings$ASNMDtype[1:5],
                  c("Repressing",rep("Stimulating", 4)))
 })

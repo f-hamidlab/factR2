@@ -74,9 +74,9 @@ names(grl2) <- c("test4", "test5", "test6")
 
 test_that("Test .addExonstoTx function", {
     out <- .addExonstoTx(grl1, exonset1)
-    expect_equal(ranges(out[[1]]), ranges(gr2))
-    expect_equal(ranges(out[[2]]), ranges(gr3))
-    expect_equal(ranges(out[[3]]), ranges(gr4))
+    expect_equal(IRanges::ranges(out[[1]]), IRanges::ranges(gr2))
+    expect_equal(IRanges::ranges(out[[2]]), IRanges::ranges(gr3))
+    expect_equal(IRanges::ranges(out[[3]]), IRanges::ranges(gr4))
 
     # test lengths of x and y
     expect_error(.addExonstoTx(grl2, c(exon1,exon2)))
@@ -123,9 +123,9 @@ test_that("Test .addExonstoTx function", {
 test_that("Test .removeExonsfromTx function", {
     # test general functionality
     out <- .removeExonsfromTx(grl2, exonset1)
-    expect_equal(ranges(out[[1]]), ranges(gr1))
-    expect_equal(ranges(out[[2]]), ranges(gr1))
-    expect_equal(ranges(out[[3]]), ranges(gr1))
+    expect_equal(IRanges::ranges(out[[1]]), IRanges::ranges(gr1))
+    expect_equal(IRanges::ranges(out[[2]]), IRanges::ranges(gr1))
+    expect_equal(IRanges::ranges(out[[3]]), IRanges::ranges(gr1))
 
     # test lengths of x and y
     expect_error(.removeExonsfromTx(grl2, c(exon1,exon2)))
