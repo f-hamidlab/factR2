@@ -62,46 +62,8 @@ setMethod("txData", "factR", function(object) {
 
 
 
-setMethod("[", signature("factR"), function (x, i, j){
-      # check features
-      gtf <- methods::slot(x, "custom")
-      genetxs <- methods::slot(x, name = "txdata")
-      if(missing(i)){
-          gtf <- gtf
-      } else if(typeof(i) %in% c("integer", "double")){
-          gtf <- gtf[i]
-      } else if(typeof(i) %in% c("logical")){
-          gtf <- gtf[i]
-      } else {
-          txs <- tryCatch(.getTxs(x, i),
-                          error = function(e) rlang::abort("Feature not found"))
-          gtf <- gtf[gtf$transcript_id %in% txs]
-      }
-      gtf[,j]
-})
-
-.DollarNames.factR <- function(x, pattern = "")
-    grep(pattern, colnames(as.data.frame(x@custom)), value=TRUE)
-setMethod("$", signature("factR"), function (x, name) {
-    # check features
-    x <- as.data.frame(x@custom)
-    x[[name]]
-
-})
-
-setMethod("$<-", "factR", function(x, name, value){
-                     mcols(x@custom)[[name]] <- value
-                     x
-})
 
 
-
-setMethod("head", "factR", function(x, n = 6L){
-    utils::head(x@custom, n)
-})
-setMethod("tail", "factR", function(x, n = 6L){
-    utils::tail(x@custom, n)
-})
 
 
 
