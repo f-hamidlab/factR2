@@ -28,14 +28,12 @@
 #'
 setClass("factR",
          slots = c(
-             assays = "list",
+             sets = "list",
              transcriptome = "GenomicRanges",
              colData = "data.frame",
-             txData = "data.frame",
              domains = "list",
              design = "formula",
-             active.assay = "character",
-             active.ident = "character",
+             active.set = "character",
              reference = "list",
              misc = "list",
              version = "character"
@@ -65,26 +63,6 @@ setClass("factRassay",
 #' }
 #'
 #' @param object factRObject
-#' @param ... Optional: a list of features to view. Input
-#' can be a mixture of names from gene_id, gene_name or transcript_id metadata.
-#' If missing, function will return all features
-#' @param in_console whether to print custom transcriptome in console
-#'
-#' @export
-#' @rdname preview-methods
-#' @author Fursham Hamid
-#' @examples
-#'
-#' # Ranges of custom transcriptome can be printed out in several ways:
-#' factRsample
-#' head(factRsample)
-#' head(factRsample, 10)
-#' tail(factRsample)
-#'
-#'
-setGeneric("view", function(object, ...) standardGeneric("view"))
-
-#' @param object factRObject
 #'
 #' @export
 #' @rdname preview-methods
@@ -97,6 +75,11 @@ setGeneric("txRanges", function(object, ...) standardGeneric("txRanges"))
 #' @rdname preview-methods
 setGeneric("txData", function(object) standardGeneric("txData"))
 
+setGeneric("txData$", function(object, ...) standardGeneric("txData$"))
+setGeneric("txData<-", function(object, value) standardGeneric("txData<-"))
+setGeneric("txData$<-", function(object, ..., value) standardGeneric("txData$<-"))
+
+setGeneric("sampleData", function(object) standardGeneric("sampleData"))
 
 
 
@@ -152,7 +135,6 @@ setGeneric("runfactR", function(object, verbose = FALSE) standardGeneric("runfac
 setMethod("runfactR", "factR", function(object, verbose = FALSE) {
     object <- buildCDS(object, verbose)
     object <- predictNMD(object, verbose)
-    object <- findAltSplicing(object)
     object <- getAAsequence(object, verbose)
     object
 })

@@ -58,7 +58,19 @@ createfactRObject <- function(gtf, reference,
     }
 
     # check existence of GTF input and try to import
-    if (!file.exists(gtf)){
+    if(is.object(gtf)){
+        if(!is_gtf(gtf)){
+            rlang::abort("Input is not a GRanges GTF object")
+        } else {
+            obj <- methods::new("factR")
+            obj@version <- factR2version
+            if(verbose){
+                rlang::inform("Reading custom GTF")
+            }
+            obj@transcriptome <- gtf  # import GTF
+        }
+    }
+    else if (!file.exists(gtf)){
         rlang::abort(sprintf("File '%s' does not exist", gtf))
     } else if (!grepl("gtf", tolower(gtf))){
         rlang::abort(sprintf("File '%s' is not a GTF", gtf))
@@ -180,22 +192,39 @@ createfactRObject <- function(gtf, reference,
         }
     }
 
+
     # create genetxs dataframe
     if(verbose){
         rlang::inform("Creating assays")
     }
-    obj@txData <- as.data.frame(obj@transcriptome) %>%
-        dplyr::select(gene_id, gene_name, transcript_id, match_level) %>%
+    obj@active.set <- "transcript"
+    obj@sets$gene <- methods::new("factRassay")
+    obj@sets$gene@rowData <- as.data.frame(obj@transcriptome) %>%
+        dplyr::select(gene_id, gene_name, width, match_level) %>%
+        dplyr::distinct()
+    
+    obj@sets$transcript <- methods::new("factRassay")
+    obj@sets$transcript@rowData <- as.data.frame(obj@transcriptome) %>%
+        dplyr::filter(type %in% "transcript") %>%
+        dplyr::select(gene_id, gene_name, transcript_id, width) %>%
+        dplyr::distinct()
+    
+    obj@sets$AS <- methods::new("factRassay")
+    obj <- findAltSplicing(obj)
+    obj@sets$AS@rowData <- as.data.frame(obj@transcriptome) %>%
+        dplyr::filter(type %in% "AS") %>%
+        dplyr::mutate(coord = paste0(seqnames, ":", start, "-", end)) %>%
+        dplyr::select(gene_id, gene_name, transcript_id, coord, AStype, width) %>%
         dplyr::distinct()
 
     # annotate new transcripts
     newtxs <- suppressMessages(factR::subsetNewTranscripts(obj@transcriptome,
                                                            obj@reference$ranges,
                                                            refine.by = "intron"))
-    obj@txData$novel <- ifelse(obj@txData$transcript_id %in% newtxs$transcript_id,
-                                       "yes", "no")
-    obj@txData$cds <- "no"
-    obj@txData$nmd <- "no"
+    # obj@txData$novel <- ifelse(obj@txData$transcript_id %in% newtxs$transcript_id,
+    #                                    "yes", "no")
+    # obj@txData$cds <- "no"
+    # obj@txData$nmd <- "no"
 
     return(obj)
 }

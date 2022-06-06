@@ -32,11 +32,11 @@ factR2version <- "0.99.0"
 
 
 .getTxs <- function(object, ...){
-    genetxs <- txData(object)
     if(missing(...)){
-        txs <- genetxs$transcript_id
+        txs <- unique(obj@transcriptome$transcript_id)
     } else {
-        genetxs.features <- genetxs %>%
+        genetxs.features <- obj@transcriptome %>%
+            as.data.frame() %>%
             dplyr::mutate(tx = transcript_id) %>%
             tidyr::gather("type", "feature", gene_id, gene_name, transcript_id) %>%
             dplyr::filter(feature %in% c(...))
