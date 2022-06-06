@@ -2,8 +2,11 @@
 #'
 setMethod("predictNMD", "factR", function(object, NMD_threshold = 50, verbose = FALSE) {
     gtf <- slot(object, "transcriptome")
-    gtf <- gtf[gtf$type != "AS"]
-    genetxs <- txData(object)
+    gtf <- gtf[!gtf$type %in% c("gene", "AS")]
+
+    active.set <- object@active.set
+    object <- object[["transcript"]]
+    genetxs <- featureData(object)
 
     if(! "CDS" %in% gtf$type){
         rlang::abort("No CDSs found. Please run buildCDS() first")
