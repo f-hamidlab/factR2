@@ -66,7 +66,7 @@ setClass("factRassay",
 #'
 #' @export
 #' @rdname preview-methods
-setGeneric("txRanges", function(object, ...) standardGeneric("txRanges"))
+setGeneric("rangesData", function(object, ..., set = NULL) standardGeneric("rangesData"))
 
 
 #' @param object factRObject

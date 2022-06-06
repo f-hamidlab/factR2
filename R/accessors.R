@@ -45,7 +45,7 @@ setMethod("tail", "factR", function(x, n = 6L){
 #     }
 # 
 # })
-setMethod("txRanges", "factR", function(object, ...) {
+setMethod("rangesData", "factR", function(object, ..., set = NULL) {
     gtf <- methods::slot(object, "transcriptome")
     txs <- tryCatch(.getTxs(object, ...),
                 error = function(e) rlang::abort("Feature not found"))
