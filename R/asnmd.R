@@ -21,11 +21,11 @@ setMethod("predictNMD", "factR", function(object, NMD_threshold = 50, verbose = 
                               progress_bar = FALSE))
     }
 
-
     genetxs <- dplyr::left_join(genetxs, nmd.out, by = c("transcript_id"="transcript"))
     genetxs$nmd <- ifelse(genetxs$is_NMD & !is.na(genetxs$is_NMD), "yes", genetxs$nmd)
-    slot(object, "txData") <- genetxs
-    return(object)
+    genetxs$is_NMD <- NULL
+    featureData(object) <- genetxs
+    return(object[[active.set]])
 })
 
 setMethod("testASNMDevents", "factR", function(object) {

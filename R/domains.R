@@ -3,15 +3,16 @@ setMethod("getAAsequence", "factR", function(object, verbose = FALSE) {
     if(! "CDS" %in% gtf$type){
         rlang::abort("No CDSs found. Please run buildCDS() first")
     }
-    genetxs <- txData(object)
+
+    genetxs <- featureData(object, set = "transcript")
     txs <- genetxs[genetxs$cds == "yes",]$transcript_id
 
-    gtf <- slot(object, "transcriptome")
     gtf <- gtf[gtf$transcript_id %in% txs]
     cds <- S4Vectors::split(gtf[gtf$type == "CDS"], ~transcript_id)
-    slot(object, "domains")$sequence <- .getSequence(cds,
-                                                     slot(object, "reference")$genome,
-                                                     verbose)
+    out <- .getSequence(cds,slot(object, "reference")$genome, verbose)
+    outseq <- Biostrings::AAStringSet(out$x)
+    names(outseq) <- out$id
+    object@domains$sequence <- outseq
 
     return(object)
 })
@@ -30,8 +31,8 @@ setMethod("predictDomain", "factR", function(object,
     }
 
     # get transcripts to test
-    genetxs <- txData(object)
-    txs <- .getTxs(object, ...)
+    genetxs <- featureData(object, ..., set = "transcript")
+    txs <- genetxs$transcript_id
 
 
     # see if txs to test have already been tested
@@ -41,18 +42,18 @@ setMethod("predictDomain", "factR", function(object,
 
     if(length(txs.to.test) > 0){
         cdss <- slot(object, "domains")$sequence
-        cdss.to.test <- cdss[cdss$id %in% txs.to.test,]
+        cdss.to.test <- cdss[which(names(cdss) %in% txs.to.test)]
 
-        if(nrow(cdss.to.test) == 0){
+        if(length(cdss.to.test) == 0){
             rlang::warn("None of the transcripts to test contain CDSs")
             return(object)
-        } else if(nrow(cdss.to.test) < length(txs.to.test)){
+        } else if(length(cdss.to.test) < length(txs.to.test)){
             rlang::warn(sprintf("Skipped %s non-coding transcripts",
-                                length(txs.to.test)-nrow(cdss.to.test)))
+                                length(txs.to.test)-length(cdss.to.test)))
         }
 
 
-        if(nrow(cdss.to.test) > 1000){
+        if(length(cdss.to.test) > 1000){
             continue <- ""
             while(!continue %in% c("y","n")){
                 continue <- readline("Predicting domains for >1000 proteins. Continue? [y/n]  ")
@@ -134,33 +135,33 @@ setMethod("predictDomain", "factR", function(object,
     )
 
     # run search for each protein sequence
-    output <- BiocParallel::bplapply(seq_len(nrow(aaSeq)), function(y) {
+    output <- BiocParallel::bplapply(names(aaSeq), function(y) {
         #print(aaSeq[y,]$id)
 
         # account for return errors
         report <- tryCatch(
-            .getdomains(url, url.opts, aaSeq[y, ]$x,
-                        aaSeq[y, ]$id, db),
+            .getdomains(url, url.opts, as.character(aaSeq[[y]]),
+                        y, db),
             error = function(e) NULL
         )
 
         if (is.null(report)) {
             return(tibble::tibble(type = "CHAIN",
-                                  description = aaSeq[y, ]$id,
+                                  description = y,
                                   eval = NA,
                                   begin = 1,
-                                  end = nchar(aaSeq[y, ]$x),
-                                  entryName = aaSeq[y, ]$id,
+                                  end = length(aaSeq[[y]]),
+                                  entryName = y,
                                   database = db))
         } else {
             return(dplyr::bind_rows(
                 report,
                 tibble::tibble(type = "CHAIN",
-                               description = aaSeq[y, ]$id,
+                               description = y,
                                eval = NA,
                                begin = 1,
-                               end = nchar(aaSeq[y, ]$x),
-                               entryName = aaSeq[y, ]$id,
+                               end = length(aaSeq[[y]]),
+                               entryName = y,
                                database = db)
             ))
         }

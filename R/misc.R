@@ -31,14 +31,15 @@ listSupportedGenomes <- function(){
 factR2version <- "0.99.0"
 
 
-.getTxs <- function(object, ...){
+.getFeat <- function(object, ..., out = "transcript_id"){
     if(missing(...)){
-        txs <- unique(obj@transcriptome$transcript_id)
+        return(unique(S4Vectors::mcols(object@transcriptome)[[out]]))
     } else {
-        genetxs.features <- obj@transcriptome %>%
+        genetxs.features <- object@transcriptome %>%
             as.data.frame() %>%
-            dplyr::mutate(tx = transcript_id) %>%
-            tidyr::gather("type", "feature", gene_id, gene_name, transcript_id) %>%
+            dplyr::filter(!type %in% "gene") %>%
+            dplyr::mutate(tx = transcript_id, gene = gene_id) %>%
+            tidyr::gather("type", "feature", gene, gene_name, tx) %>%
             dplyr::filter(feature %in% c(...))
         if (nrow(genetxs.features) == 0) {
             rlang::abort("No features found in object")
@@ -47,7 +48,6 @@ factR2version <- "0.99.0"
             rlang::warn(sprintf("These features are not found in object: %s",
                                 paste(absent.features, collapse = ", ")))
         }
-        txs <- genetxs.features$tx
+        return(unique(genetxs.features[[out]]))
     }
-    txs
 }

@@ -40,7 +40,7 @@ setClass("factR",
          )
 )
 
-setClass("factRassay",
+setClass("factRset",
          slots = c(
              counts = "matrix",
              data = "matrix",
@@ -53,33 +53,63 @@ setClass("factRassay",
 # Class generics
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+################################################################################
+## General object preview
+################################################################################
+
+
+
+
+################################################################################
+## Sets-related functions
+################################################################################
+
+setGeneric("activeSet", function(object) standardGeneric("activeSet"))
+setGeneric("activeSet<-", function(object, value) standardGeneric("activeSet<-"))
+setGeneric("listSets", function(object) standardGeneric("listSets"))
+
+################################################################################
+## Previewing rangesData
+################################################################################
+
+#' @export
+#' @rdname preview-methods
+setGeneric("rangesData", function(object, ..., set = NULL)
+    standardGeneric("rangesData"))
+
+################################################################################
+## Previewing and modifying featureData
+################################################################################
+
 #' Preview factR object
 #'
 #' @description A set of functions to view the contents of a factR object.
 #' \itemize{
 #'  \item{view(): }{view contents of custom transcriptome in spreadsheet-style format}
 #'  \item{txRanges(): }{prints out transcript ranges}
-#'  \item{txData(): }{prints out transcript metadata}
+#'  \item{featureData(): }{prints out transcript metadata}
 #' }
 #'
 #' @param object factRObject
 #'
 #' @export
 #' @rdname preview-methods
-setGeneric("rangesData", function(object, ..., set = NULL) standardGeneric("rangesData"))
+setGeneric("featureData", function(object, ..., set = NULL) standardGeneric("featureData"))
 
+setGeneric("featureData$", function(object, ...) standardGeneric("featureData$"))
+setGeneric("featureData<-", function(object, value) standardGeneric("featureData<-"))
+setGeneric("featureData$<-", function(object, ..., value) standardGeneric("featureData$<-"))
+setGeneric("addFeatureData", function(object, ..., set = NULL) standardGeneric("addFeatureData"))
 
-#' @param object factRObject
-#'
-#' @export
-#' @rdname preview-methods
-setGeneric("txData", function(object) standardGeneric("txData"))
-
-setGeneric("txData$", function(object, ...) standardGeneric("txData$"))
-setGeneric("txData<-", function(object, value) standardGeneric("txData<-"))
-setGeneric("txData$<-", function(object, ..., value) standardGeneric("txData$<-"))
+################################################################################
+## Previewing and modifying sampleData
+################################################################################
 
 setGeneric("sampleData", function(object) standardGeneric("sampleData"))
+setGeneric("sampleData$", function(object, ...) standardGeneric("sampleData$"))
+setGeneric("sampleData<-", function(object, value) standardGeneric("sampleData<-"))
+setGeneric("sampleData$<-", function(object, ..., value) standardGeneric("sampleData$<-"))
+setGeneric("addSampleData", function(object, ..., set = NULL) standardGeneric("addSampleData"))
 
 
 

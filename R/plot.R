@@ -2,8 +2,7 @@ setMethod("plotTranscripts", "factR", function(object, ...,
                                     rescale_introns = FALSE, ncol = 1) {
 
     # check features
-    genetxs <- txData(object)
-    txs <- .getTxs(object, ...)
+    txs <- featureData(object, ...,set = "transcript")$transcript_id
 
     # select features by data
     x <- methods::slot(object, "transcriptome")
@@ -50,15 +49,19 @@ setMethod("plotDomains", "factR", function(object, ..., ncol = 1){
         rlang::abort("No CDSs found. Please run buildCDS() first")
     }
 
+
     # get transcripts to test
-    txs <- .getTxs(object, ...)
-    genetxs <- txData(object)
+    genetxs <- featureData(object, ..., set = "transcript")
+    txs <- genetxs$transcript_id
 
 
     # check if all transcripts have been tested
     untested.txs <- txs[!txs %in% slot(object, "domains")$tested]
     if(length(untested.txs) > 0){
         object <- predictDomain(object, txs)
+
+        argnames <- as.character(match.call())[-1]
+        assign(argnames[1], object, envir = .GlobalEnv)
     }
 
     datatoplot <- object@domains$data

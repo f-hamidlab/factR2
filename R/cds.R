@@ -2,26 +2,28 @@
 #'
 setMethod("buildCDS", "factR", function(object, verbose = FALSE) {
     gtf <- slot(object, "transcriptome")
+    gtf <- gtf[!gtf$type %in% "CDS"]
 
     if(verbose){
-        gtf <- factR::buildCDS(gtf,
+        out.gtf <- factR::buildCDS(gtf,
                                slot(object, "reference")$ranges,
                                slot(object, "reference")$genome)
     } else {
-        gtf <- suppressMessages(
+        out.gtf <- suppressMessages(
             factR::buildCDS(gtf,
                             slot(object, "reference")$ranges,
                             slot(object, "reference")$genome))
     }
-
+    out.gtf <- out.gtf[out.gtf$type %in% "CDS"]
+    gtf <- c(gtf, out.gtf)
     slot(object, "transcriptome") <- gtf
 
     # update cds transcripts
     cdss <- unique(gtf[gtf$type == "CDS"]$transcript_id)
-    genetxs <- slot(object, "txData")
-    slot(object, "txData")$cds <- ifelse(genetxs$transcript_id %in% cdss,
+    txs <- featureData(object, set = "transcript")
+    object@sets$transcript@rowData$cds <- ifelse(txs$transcript_id %in% cdss,
                                                  "yes",
-                                                 genetxs$cds)
+                                                 txs$cds)
     return(object)
 })
 

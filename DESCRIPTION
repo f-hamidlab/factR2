@@ -41,7 +41,6 @@ Collate:
     'constructor.R'
     'domains.R'
     'misc.R'
-    'modify.R'
     'plot.R'
     'splicing.R'
     'subset.R'
