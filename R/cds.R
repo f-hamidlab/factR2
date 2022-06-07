@@ -1,6 +1,12 @@
 #' @include generics.R
 #'
 setMethod("buildCDS", "factR", function(object, verbose = FALSE) {
+
+    # check if transcriptome has been prepped
+    if(length(object@sets) == 0){
+        rlang::abort("Transcriptome not prepped, please run prepTranscriptome()")
+    }
+
     gtf <- slot(object, "transcriptome")
     gtf <- gtf[!gtf$type %in% "CDS"]
 
