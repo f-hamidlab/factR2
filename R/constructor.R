@@ -193,70 +193,7 @@ createfactRObject <- function(gtf, reference,
                                      primary_gene_id = "gene_id"))
         }
     }
-
-    # Add 'gene' type in GTF
-    if(!"gene" %in% obj@transcriptome$type){
-        genes.gtf <- obj@transcriptome
-        gene.names <- genes.gtf %>%
-            as.data.frame() %>%
-            dplyr::group_by(gene_id, gene_name) %>%
-            dplyr::arrange(dplyr::desc(match_level)) %>%
-            dplyr::distinct(gene_id, gene_name, .keep_all = T) %>%
-            dplyr::ungroup() %>%
-            dplyr::select(gene_id, gene_name, match_level)
-        genes.list <- range(
-            S4Vectors::split(genes.gtf[genes.gtf$type %in% "transcript"],
-                             ~gene_id))
-        genes.gtf <- genes.list %>%
-            as.data.frame() %>%
-            dplyr::group_by(group) %>%
-            dplyr::mutate(start = min(start), end = max(end)) %>%
-            dplyr::ungroup() %>%
-            dplyr::rename(gene_id = group_name) %>%
-            dplyr::select(-width, -group) %>%
-            dplyr::mutate(source = "factR2", type = "gene") %>%
-            dplyr::distinct(gene_id, .keep_all = T) %>%
-            dplyr::left_join(gene.names, by = "gene_id") %>%
-            GenomicRanges::makeGRangesFromDataFrame(keep.extra.columns = T)
-        obj@transcriptome <- c(genes.gtf, obj@transcriptome)
     }
-
-
-    # create genetxs dataframe
-    if(verbose){
-        rlang::inform("Creating assays")
-    }
-    obj@active.set <- "transcript"
-    obj@sets$gene <- methods::new("factRset")
-    obj@sets$gene@rowData <- as.data.frame(obj@transcriptome) %>%
-        dplyr::filter(type %in% "gene") %>%
-        dplyr::select(gene_id, gene_name, width, match_level) %>%
-        dplyr::distinct()
-    rownames(obj@sets$gene@rowData) <- obj@sets$gene@rowData$gene_id
-
-    obj@sets$transcript <- methods::new("factRset")
-    obj@sets$transcript@rowData <- as.data.frame(obj@transcriptome) %>%
-        dplyr::filter(type %in% "transcript") %>%
-        dplyr::select(gene_id, gene_name, transcript_id, width) %>%
-        dplyr::distinct()
-    rownames(obj@sets$transcript@rowData) <- obj@sets$transcript@rowData$transcript_id
-
-    obj@sets$AS <- methods::new("factRset")
-    obj <- findAltSplicing(obj)
-    obj@sets$AS@rowData <- as.data.frame(obj@transcriptome) %>%
-        dplyr::filter(type %in% "AS") %>%
-        dplyr::mutate(coord = paste0(seqnames, ":", start, "-", end)) %>%
-        dplyr::select(gene_id, gene_name, transcript_id, coord, AStype, width) %>%
-        dplyr::distinct()
-
-    # annotate new transcripts
-    newtxs <- suppressMessages(factR::subsetNewTranscripts(obj@transcriptome,
-                                                           obj@reference$ranges,
-                                                           refine.by = "intron"))
-    featureData(obj)$novel <- ifelse(featureData(obj)$transcript_id %in% newtxs$transcript_id,
-                                     "yes", "no")
-    featureData(obj)$cds <- "no"
-    featureData(obj)$nmd <- "no"
 
     return(obj)
 }

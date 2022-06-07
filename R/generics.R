@@ -162,12 +162,7 @@ setGeneric("plotTranscripts", function(object, ...,
 #' data(factRsample)
 #' factRsample <- runfactR(factRsample)
 setGeneric("runfactR", function(object, verbose = FALSE) standardGeneric("runfactR"))
-setMethod("runfactR", "factR", function(object, verbose = FALSE) {
-    object <- buildCDS(object, verbose)
-    object <- predictNMD(object, verbose)
-    object <- getAAsequence(object, verbose)
-    object
-})
+
 
 
 #' Build coding sequence on custom transcriptome
@@ -315,7 +310,7 @@ setGeneric("getAAsequence", function(object, verbose = FALSE) standardGeneric("g
 setGeneric("testASNMDevents", function(object) standardGeneric("testASNMDevents"))
 
 
-
+setGeneric("prepTranscriptome", function(object, ...) standardGeneric("prepTranscriptome"))
 
 
 
