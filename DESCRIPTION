@@ -42,5 +42,6 @@ Collate:
     'domains.R'
     'misc.R'
     'plot.R'
+    'runfactR.R'
     'splicing.R'
     'subset.R'
