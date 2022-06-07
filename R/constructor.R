@@ -2,7 +2,8 @@
 # Functions
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
+#' Construct a factRObject
+#'
 #' @param gtf path to custom GTF file.
 #' @param reference a character value of supported reference ID. Run
 #' \code{\link{ListSupportedGenomes}} for a list of supported reference. Input
@@ -17,8 +18,6 @@
 #' ID or (4) URL to an online genome fasta file.
 #' @param verbose if TRUE, show progress messages
 #'
-#' @name factRObject-class
-#' @rdname factRObject-class
 #' @return factR object
 #' @export
 #'
