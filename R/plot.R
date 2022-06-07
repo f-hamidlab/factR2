@@ -2,7 +2,7 @@ setMethod("plotTranscripts", "factR", function(object, ...,
                                     rescale_introns = FALSE, ncol = 1) {
 
     # check features
-    txs <- featureData(object, ...,set = "transcript")$transcript_id
+    txs <- .getFeat(object, ...)
 
     # select features by data
     x <- methods::slot(object, "transcriptome")
