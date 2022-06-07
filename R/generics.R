@@ -2,23 +2,36 @@
 # Class definitions
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-#' Create factRObject
+#' factRObject
 #'
 #' @description
-#' factRObject stores all imported inputs, intermediate objects and results of
-#' factR workflow. To construct a factRObject, you need a custom transcriptome
-#' in GTF format, a reference annotation and a genome sequence. See examples
-#' [NOT COMPLETE]
+#' A container for storing and processing custom transcriptome.
+#'
+#' @details
+#' The factRObject is a representation of custom-assembled transcriptome data.
+#' Coordinate and metadata information from an input transcriptome (GTF) is
+#' parsed and grouped into 3 data sets which corresponds to the levels of gene,
+#' transcript and alternative splicing (AS). With the aid of a compatible
+#' reference genome and expression data, functional and
+#' comparative analyses can be performed to better understand the complexity
+#' of a transcriptome.
+#'
+#' @section Constructor:
+#' \describe{
+#'    \item{factRObject can be easily constructed as such:}{
+#'       \code{createfactRObject(gtf, reference)}
+#'    }
+#' }
 #'
 #'
-#' @slot ranges a list of GenomicRanges GTF objects
-#' @slot genome genome sequence
-#' @slot domains a dataFrame of predicted protein domains
-#' @slot nmd a list of NMD-related objects
-#' @slot misc  a list of miscellaneous information
-#' @slot version version of factR this object was built under
 #'
-#' @return A factRObject
+#' @section Accessors:
+#' Test
+#'
+#'
+#
+#'
+#' @docType class
 #' @name factRObject-class
 #' @rdname factRObject-class
 #' @exportClass factR
@@ -39,6 +52,9 @@ setClass("factR",
              version = "character"
          )
 )
+
+
+
 
 setClass("factRset",
          slots = c(
@@ -99,7 +115,7 @@ setGeneric("featureData", function(object, ..., set = NULL) standardGeneric("fea
 setGeneric("featureData$", function(object, ...) standardGeneric("featureData$"))
 setGeneric("featureData<-", function(object, value) standardGeneric("featureData<-"))
 setGeneric("featureData$<-", function(object, ..., value) standardGeneric("featureData$<-"))
-setGeneric("addFeatureData", function(object, ..., set = NULL) standardGeneric("addFeatureData"))
+setGeneric("addFeatureData", function(object, data, colname = NULL, set = NULL) standardGeneric("addFeatureData"))
 
 ################################################################################
 ## Previewing and modifying sampleData
@@ -310,7 +326,7 @@ setGeneric("getAAsequence", function(object, verbose = FALSE) standardGeneric("g
 setGeneric("testASNMDevents", function(object) standardGeneric("testASNMDevents"))
 
 
-setGeneric("prepTranscriptome", function(object, ...) standardGeneric("prepTranscriptome"))
+setGeneric("prepTranscriptome", function(object, verbose = FALSE) standardGeneric("prepTranscriptome"))
 
 
 
