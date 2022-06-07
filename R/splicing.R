@@ -74,7 +74,6 @@ setMethod("findAltSplicing", "factR", function(object) {
     } else {
         altexons$type <- "AS"
         altexons$AStype <- toupper(altannotate$AStype)
-        altexons
         altexons <- altexons[!is.na(altexons$AStype) & altannotate$same.group]
         altexons$pos <- altexons$hit <- altexons$termini <-altexons$grouping <- NULL
 
