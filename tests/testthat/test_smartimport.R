@@ -5,7 +5,7 @@ test_that("Test object inputs", {
 
 test_that("Test local inputs", {
     out <- .smartimport(gtf, ".gtf")
-    expect_equal(length(out), 500)
+    expect_equal(length(out), 8117)
     expect_equal(ncol(mcols(out)), 9)
 })
 

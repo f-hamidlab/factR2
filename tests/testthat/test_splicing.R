@@ -84,6 +84,6 @@ test_that("Test findAltSplicing generics", {
     gtf <- out@transcriptome
     gtf <- gtf[gtf$type == "AS"]
     expect_equal(as.character(class(gtf)), "GRanges")
-    expect_equal(length(gtf), 143)
+    expect_equal(length(gtf), 242)
 })
 
