@@ -30,7 +30,7 @@ setMethod("predictNMD", "factR", function(object, NMD_threshold = 50, verbose = 
 
 setMethod("testASNMDevents", "factR", function(object) {
 
-    genes <- txData(object)
+    genes <- featureData(object, set = "transcript")
     gtf <- slot(object, "transcriptome")
     if(all(genes$cds == "no") & all(genes$nmd == "no")){
         rlang::abort("No CDSs found. Please run runfactR() first")
@@ -75,7 +75,7 @@ setMethod("testASNMDevents", "factR", function(object) {
     # get reference CDS transcript for each gene
     ## get sizes of all CDSs
     x <- slot(object, "transcriptome")
-    genes <- txData(object)
+    genes <- featureData(object, set = "transcript")
 
     cds.sizes <- sum(BiocGenerics::width(S4Vectors::split(x[x$type == "CDS"],
                                                           ~transcript_id)))
@@ -100,7 +100,7 @@ setMethod("testASNMDevents", "factR", function(object) {
     #rlang::inform("Finding NMD causing exons")
     x <- slot(object, "transcriptome")
     ASevents <- x[x$type == "AS"]
-    genes <- txData(object)
+    genes <- featureData(object, set = "transcript")
     NMD.pos <- genes[genes$nmd == "yes",]$transcript_id
 
     # get AS segments between NMD transcript and reference transcript
