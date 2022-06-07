@@ -108,7 +108,7 @@ setMethod("featureData", "factR", function(object, ..., set = NULL) {
     }
 
     dat <- slot(object@sets[[set]], "rowData")
-    if(set == "gene"){
+    if(set %in% c("gene", "AS")){
         feat <- tryCatch(.getFeat(object, ..., out = "gene_id"),
                         error = function(e) rlang::abort("Feature not found"))
         return(dat[dat$gene_id %in% feat,])
