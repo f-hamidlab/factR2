@@ -64,6 +64,14 @@ setMethod("testASNMDevents", "factR", function(object) {
         ASevents[S4Vectors::queryHits(ASNMD.hits)]$ASNMD.in.cds <- as.character(ASNMDevents[S4Vectors::subjectHits(ASNMD.hits)]$within.CDS)
         gtf.others <- gtf[gtf$type != "AS"]
         slot(object, "transcriptome") <- c(gtf.others, ASevents)
+
+        # update featureData
+        ASNMDfeat <- as.data.frame(ASevents) %>%
+            dplyr::mutate(coord = paste0(seqnames, ":", start, "-", end)) %>%
+            dplyr::select(coord, AStype, ASNMDtype, ASNMD.in.cds) %>%
+            dplyr::distinct()
+        rownames(ASNMDfeat) <- paste0(ASNMDfeat$coord, ":", ASNMDfeat$AStype)
+        object <- addFeatureData(object, ASNMDfeat, set = "AS")
     }
 
     return(object)
