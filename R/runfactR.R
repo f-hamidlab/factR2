@@ -103,8 +103,10 @@ setMethod("prepTranscriptome", "factR", function(object, verbose = FALSE) {
     object@sets$AS@rowData <- as.data.frame(object@transcriptome) %>%
         dplyr::filter(type %in% "AS") %>%
         dplyr::mutate(coord = paste0(seqnames, ":", start, "-", end)) %>%
-        dplyr::select(gene_id, gene_name, transcript_id, coord, AStype, width) %>%
+        dplyr::select(gene_id, gene_name, coord, AStype, width) %>%
         dplyr::distinct()
+    rownames(object@sets$AS@rowData) <- paste0(object@sets$AS@rowData$coord,
+                                               ":",object@sets$AS@rowData$AStype)
 
     # annotate new transcripts
     newtxs <- suppressMessages(factR::subsetNewTranscripts(object@transcriptome,
