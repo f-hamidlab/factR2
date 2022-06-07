@@ -8,6 +8,8 @@ setMethod("plotTranscripts", "factR", function(object, ...,
     x <- methods::slot(object, "transcriptome")
     x <- x[x$transcript_id %in% txs]
 
+    # correct genes with no gene name
+    x$gene_name <- ifelse(is.na(x$gene_name), x$gene_id, x$gene_name)
     genes <- unique(x$gene_name)
 
     # control for too many genes to plot
@@ -52,6 +54,7 @@ setMethod("plotDomains", "factR", function(object, ..., ncol = 1){
 
     # get transcripts to test
     genetxs <- featureData(object, ..., set = "transcript")
+    genetxs$gene_name <- ifelse(is.na(genetxs$gene_name), genetxs$gene_id, genetxs$gene_name)
     txs <- genetxs$transcript_id
 
 
