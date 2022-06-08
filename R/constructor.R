@@ -257,9 +257,10 @@ createfactRObject <- function(gtf, reference,
     
     object@sets$transcript <- methods::new("factRset")
     object@sets$transcript@rowData <- as.data.frame(object@transcriptome) %>%
-        dplyr::filter(type %in% "transcript") %>%
-        dplyr::select(gene_id, gene_name, transcript_id, width) %>%
-        dplyr::distinct()
+        dplyr::filter(type %in% "exon") %>%
+        dplyr::group_by(gene_id, gene_name, transcript_id) %>%
+        dplyr::summarise(width = sum(width)) %>%
+        as.data.frame()
     rownames(object@sets$transcript@rowData) <- object@sets$transcript@rowData$transcript_id
     
     object@sets$AS <- methods::new("factRset")
