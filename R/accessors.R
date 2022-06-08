@@ -17,8 +17,8 @@ setMethod("show", "factR", function(object){
     cat(sprintf("%s coding transcripts \n", ncds))
     cat(sprintf("# active set: %s\n", object@active.set))
 
-    nsamples <- ncol(object@colData)
-    samples <- colnames(object@colData)
+    nsamples <- nrow(object@colData)
+    samples <- rownames(object@colData)
     if(nsamples > 4){
         samples <- paste(c(samples[1], samples[2], " ... ", samples[nsamples-1],
                           samples[nsamples]), collapse = "  ")
@@ -195,35 +195,35 @@ setMethod("sampleData$<-", "factR", function(object, name, value) {
 })
 
 # official function to add sample metadata
-setMethod("addSampleData", "factR", function(object, data, colname = NULL, set = NULL) {
-
-    if(any(class(data) %in% c("data.frame", "tbl", "tbl_df"))){
-        # check for dimensions
-        if(nrow(data) != nrow(object@colData)){
-            rlang::abort(sprintf("Replacement length (%s) not equal to data length (%s)",
-                                 nrow(data), nrow(object@colData)))
-        }
-
-        # check for rownames
-        if(all(rownames(data) %in% rownames(object@colData))){
-            featurelvls <- rownames(object@colData)
-            object@colData <- cbind(object@colData,
-                                                data[featurelvls,])
-        } else {
-            object@colData <- cbind(object@colData,
-                                                data)
-        }
-    } else {
-        if(is.null(colname)){
-            colname <- "sampleData"
-        }
-        if(colname %in% colnames(object@colData)){
-            colname <- paste0(colname, ".1")
-        }
-        object@colData[[colname]] <- data
-    }
-    object
-})
+# setMethod("addSampleData", "factR", function(object, data, colname = NULL, set = NULL) {
+#
+#     if(any(class(data) %in% c("data.frame", "tbl", "tbl_df"))){
+#         # check for dimensions
+#         if(nrow(data) != nrow(object@colData)){
+#             rlang::abort(sprintf("Replacement length (%s) not equal to data length (%s)",
+#                                  nrow(data), nrow(object@colData)))
+#         }
+#
+#         # check for rownames
+#         if(all(rownames(data) %in% rownames(object@colData))){
+#             featurelvls <- rownames(object@colData)
+#             object@colData <- cbind(object@colData,
+#                                                 data[featurelvls,])
+#         } else {
+#             object@colData <- cbind(object@colData,
+#                                                 data)
+#         }
+#     } else {
+#         if(is.null(colname)){
+#             colname <- "sampleData"
+#         }
+#         if(colname %in% colnames(object@colData)){
+#             colname <- paste0(colname, ".1")
+#         }
+#         object@colData[[colname]] <- data
+#     }
+#     object
+# })
 
 
 
