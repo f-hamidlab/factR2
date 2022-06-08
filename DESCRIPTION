@@ -40,6 +40,7 @@ Collate:
     'cds.R'
     'constructor.R'
     'domains.R'
+    'expression.R'
     'misc.R'
     'plot.R'
     'runfactR.R'
