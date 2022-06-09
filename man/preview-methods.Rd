@@ -2,12 +2,12 @@
 % Please edit documentation in R/generics.R
 \name{rangesData}
 \alias{rangesData}
-\alias{featureData}
+\alias{featData}
 \title{Preview factR object}
 \usage{
 rangesData(object, ..., set = NULL)
 
-featureData(object, ..., set = NULL)
+featData(object, ..., set = NULL)
 }
 \arguments{
 \item{object}{factRObject}

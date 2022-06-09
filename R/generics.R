@@ -110,7 +110,7 @@ setGeneric("rangesData", function(object, ..., set = NULL)
 #'
 #' @export
 #' @rdname preview-methods
-setGeneric("featureData", function(object, ..., set = NULL) standardGeneric("featureData"))
+setGeneric("featData", function(object, ..., set = NULL) standardGeneric("featData"))
 
 setGeneric("featureData$", function(object, ...) standardGeneric("featureData$"))
 setGeneric("featureData<-", function(object, value) standardGeneric("featureData<-"))

@@ -2,7 +2,7 @@
 
 export(buildCDS)
 export(createfactRObject)
-export(featureData)
+export(featData)
 export(findAltSplicing)
 export(getAAsequence)
 export(listSupportedGenomes)
