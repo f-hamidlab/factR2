@@ -1,15 +1,15 @@
 setMethod("getAAsequence", "factR", function(object, verbose = FALSE) {
-    gtf <- slot(object, "transcriptome")
+    gtf <- object@transcriptome
     if(! "CDS" %in% gtf$type){
         rlang::abort("No CDSs found. Please run buildCDS() first")
     }
 
-    genetxs <- featureData(object, set = "transcript")
+    genetxs <- object[["transcript"]] 
     txs <- genetxs[genetxs$cds == "yes",]$transcript_id
 
     gtf <- gtf[gtf$transcript_id %in% txs]
     cds <- S4Vectors::split(gtf[gtf$type == "CDS"], ~transcript_id)
-    out <- .getSequence(cds,slot(object, "reference")$genome, verbose)
+    out <- .getSequence(cds, object@reference$genome, verbose)
     outseq <- Biostrings::AAStringSet(out$x)
     names(outseq) <- out$id
     object@domains$sequence <- outseq
@@ -25,7 +25,7 @@ setMethod("predictDomain", "factR", function(object,
                                               ncores = 4) {
 
     # check if CDS have been built
-    gtf <- slot(object, "transcriptome")
+    gtf <- object@transcriptome
     if(! "CDS" %in% gtf$type){
         rlang::abort("No CDSs found. Please run buildCDS() first")
     }
@@ -36,12 +36,12 @@ setMethod("predictDomain", "factR", function(object,
 
 
     # see if txs to test have already been tested
-    tested <- slot(object, "domains")$tested
+    tested <- object@domains$tested
     txs.to.test <- txs[!txs %in% tested]
     object@domains$tested <- c(tested, txs.to.test)
 
     if(length(txs.to.test) > 0){
-        cdss <- slot(object, "domains")$sequence
+        cdss <- object@domains$sequence
         cdss.to.test <- cdss[which(names(cdss) %in% txs.to.test)]
 
         if(length(cdss.to.test) == 0){
