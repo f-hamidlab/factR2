@@ -3,10 +3,7 @@
 setMethod("predictNMD", "factR", function(object, NMD_threshold = 50, verbose = FALSE) {
     gtf <- slot(object, "transcriptome")
     gtf <- gtf[!gtf$type %in% c("gene", "AS")]
-
-    active.set <- object@active.set
-    object <- object[["transcript"]]
-    genetxs <- featureData(object)
+    genetxs <- object[["transcript"]] 
 
     if(! "CDS" %in% gtf$type){
         rlang::abort("No CDSs found. Please run buildCDS() first")
@@ -24,18 +21,18 @@ setMethod("predictNMD", "factR", function(object, NMD_threshold = 50, verbose = 
     genetxs <- dplyr::left_join(genetxs, nmd.out, by = c("transcript_id"="transcript"))
     genetxs$nmd <- ifelse(genetxs$is_NMD & !is.na(genetxs$is_NMD), "yes", genetxs$nmd)
     genetxs$is_NMD <- NULL
-    featureData(object) <- genetxs
-    return(object[[active.set]])
+    object@sets$transcript@rowData <- genetxs
+    return(object)
 })
 
 setMethod("testASNMDevents", "factR", function(object) {
 
-    genes <- featureData(object, set = "transcript")
-    gtf <- slot(object, "transcriptome")
+    genes <- object[["transcript"]] 
+    gtf <- ranges(object, set = "all") 
     if(all(genes$cds == "no") & all(genes$nmd == "no")){
         rlang::abort("No CDSs found. Please run runfactR() first")
     } else if(any(genes$cds == "yes") & all(genes$nmd == "no")){
-        rlang::abort("No CDSs found. Please run predictNMD() first")
+        rlang::abort("NMD not predicted. Please run predictNMD() first")
     }
 
     # check if splicing data is present
@@ -82,8 +79,8 @@ setMethod("testASNMDevents", "factR", function(object) {
     #rlang::inform("Selecting best reference mRNAs")
     # get reference CDS transcript for each gene
     ## get sizes of all CDSs
-    x <- slot(object, "transcriptome")
-    genes <- featureData(object, set = "transcript")
+    x <- object@transcriptome
+    genes <- object[['transcript']] 
 
     cds.sizes <- sum(BiocGenerics::width(S4Vectors::split(x[x$type == "CDS"],
                                                           ~transcript_id)))
@@ -106,9 +103,9 @@ setMethod("testASNMDevents", "factR", function(object) {
 .runidentifynmdexons <- function(object, ref) {
 
     #rlang::inform("Finding NMD causing exons")
-    x <- slot(object, "transcriptome")
+    x <- object@transcriptome
     ASevents <- x[x$type == "AS"]
-    genes <- featureData(object, set = "transcript")
+    genes <- object[["transcript"]] 
     NMD.pos <- genes[genes$nmd == "yes",]$transcript_id
 
     # get AS segments between NMD transcript and reference transcript
