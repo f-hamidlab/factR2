@@ -46,10 +46,10 @@ setMethod("testASNMDevents", "factR", function(object) {
     #phastGScore <- .GScorecheck(ConsScores)
 
     # get reference CDS transcript for each gene
-    ref <- .getbestref(object)
+    ref <- .getbestref(gtf, genes)
 
     # run core function
-    ASNMDevents <- .runidentifynmdexons(object, ref)
+    ASNMDevents <- .runidentifynmdexons(gtf, ASevents, genes, ref)
 
     # update AS events if returned object is not null
     if(!is.null(ASNMDevents)){
@@ -75,13 +75,10 @@ setMethod("testASNMDevents", "factR", function(object) {
 })
 
 
-.getbestref <- function(object) {
+.getbestref <- function(x, genes) {
     #rlang::inform("Selecting best reference mRNAs")
     # get reference CDS transcript for each gene
-    ## get sizes of all CDSs
-    x <- object@transcriptome
-    genes <- object[['transcript']] 
-
+    ## get sizes of cdss
     cds.sizes <- sum(BiocGenerics::width(S4Vectors::split(x[x$type == "CDS"],
                                                           ~transcript_id)))
     ## shortlist non NMD transcripts
@@ -100,12 +97,9 @@ setMethod("testASNMDevents", "factR", function(object) {
 
 
 
-.runidentifynmdexons <- function(object, ref) {
+.runidentifynmdexons <- function(x, ASevents, genes, ref) {
 
     #rlang::inform("Finding NMD causing exons")
-    x <- object@transcriptome
-    ASevents <- x[x$type == "AS"]
-    genes <- object[["transcript"]] 
     NMD.pos <- genes[genes$nmd == "yes",]$transcript_id
 
     # get AS segments between NMD transcript and reference transcript
@@ -210,7 +204,6 @@ setMethod("testASNMDevents", "factR", function(object) {
 
     # Annotate location of NMD events relative to reference CDS
     ## Useful to know if exons are 3'UTR introns etc
-    ref <- .getbestref(object)
     ref.cds.grl <- S4Vectors::split(ref[ref$type == "CDS"], ~gene_id)
     ASevents$within.CDS <- IRanges::overlapsAny(ASevents, range(ref.cds.grl))
 
