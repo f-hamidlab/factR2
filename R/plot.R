@@ -1,12 +1,9 @@
 setMethod("plotTranscripts", "factR", function(object, ...,
                                     rescale_introns = FALSE, ncol = 1) {
 
-    # check features
-    txs <- .getFeat(object, ...)
 
     # select features by data
-    x <- methods::slot(object, "transcriptome")
-    x <- x[x$transcript_id %in% txs]
+    x <- ranges(object,..., set = "transcript") 
 
     # correct genes with no gene name
     x$gene_name <- ifelse(is.na(x$gene_name), x$gene_id, x$gene_name)
@@ -46,7 +43,7 @@ setMethod("plotTranscripts", "factR", function(object, ...,
 
 setMethod("plotDomains", "factR", function(object, ..., ncol = 1){
     # check if CDS have been built
-    gtf <- slot(object, "transcriptome")
+    gtf <- object@transcriptome
     if(! "CDS" %in% gtf$type){
         rlang::abort("No CDSs found. Please run buildCDS() first")
     }
