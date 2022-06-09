@@ -60,10 +60,10 @@ setMethod("processCounts", "factR", function(object, verbose = FALSE) {
 
 
 
-setMethod("addCountData", "factR", function(object, countData, sampleData = NULL, design = NULL, verbose = FALSE) {
+setMethod("addCountData", "factR", function(object, countData, sampleData, design, verbose = FALSE) {
 
 
-    txs <- featureData(object[["transcript"]])$transcript_id
+    txs <- object[["transcript"]]$transcript_id
     # check input counts features
     if(is.null(rownames(countData))){
         rlang::abort("Input countData do not have feature names")
@@ -78,24 +78,12 @@ setMethod("addCountData", "factR", function(object, countData, sampleData = NULL
     colnames(countData) <- counts.samples
     rownames(countData) <- counts.names
 
-    # check input counts samples
-    if(nrow(sampleData(object)) > 0){
-        if(!all(rownames(sampleData(object)) %in% colnames(countData))){
-            rlang::abort("Some samples are missing in countData")
-        }
-        countData <- countData[,rownames(sampleData(object))]
-    }
-
     object@sets$transcript@counts <- countData[txs,]
     object@colData <- data.frame(row.names = colnames(countData))
+    object <- addSampleData(object, sampleData) 
+    object <- addDesign(object, design) 
 
-    # import sampleData and design if given
-    if(!is.null(sampleData)){
-        object <- addSampleData(object, sampleData)
-    }
-    if(!is.null(design)){
-        object <- addDesign(object, design)
-    }
+    object <- .processCounts(object) 
 
     return(object)
 })
@@ -103,6 +91,7 @@ setMethod("addCountData", "factR", function(object, countData, sampleData = NULL
 
 setMethod("addSampleData", "factR", function(object, sampleData) {
 
+    # convert strings to factors 
     data.names <- rownames(sampleData)
     sampleData <- as.data.frame(unclass(testSamples),stringsAsFactors=TRUE)
     rownames(sampleData) <- data.names
