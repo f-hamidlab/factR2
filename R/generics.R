@@ -90,8 +90,8 @@ setGeneric("listSets", function(object) standardGeneric("listSets"))
 
 #' @export
 #' @rdname preview-methods
-setGeneric("rangesData", function(object, ..., set = NULL)
-    standardGeneric("rangesData"))
+setGeneric("granges", function(object, ..., set = NULL)
+    standardGeneric("granges"))
 
 ################################################################################
 ## Previewing and modifying featureData

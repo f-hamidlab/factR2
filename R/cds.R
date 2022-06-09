@@ -26,7 +26,7 @@ setMethod("buildCDS", "factR", function(object, verbose = FALSE) {
 
     # update cds transcripts
     cdss <- unique(gtf[gtf$type == "CDS"]$transcript_id)
-    txs <- featureData(object, set = "transcript")
+    txs <- object[["transcript"]]
     object@sets$transcript@rowData$cds <- ifelse(txs$transcript_id %in% cdss,
                                                  "yes",
                                                  txs$cds)

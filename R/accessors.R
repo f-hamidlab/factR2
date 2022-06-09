@@ -8,10 +8,10 @@
 setMethod("show", "factR", function(object){
     cat(sprintf("class: factRObject [version %s]\n", object@version))
     cat(sprintf("# transcriptome: "))
-    ngenes <- length(unique(object@transcriptome$gene_id))
-    ntxs <- length(unique(object@transcriptome$transcript_id))
-    nnovel <- sum(featureData(object)$novel == "yes")
-    ncds <- sum(featureData(object)$cds == "yes")
+    ngenes <- length(object[["gene"]]$gene_id)
+    ntxs <- length(object[["transcript"]]$transcript_id)
+    nnovel <- sum(object[["transcript"]]$novel == "yes")
+    ncds <- sum(object[["transcript"]]$cds == "yes")
     cat(sprintf("%s genes; ", ngenes))
     cat(sprintf("%s transcripts [%s novel]; ", ntxs, nnovel))
     cat(sprintf("%s coding transcripts \n", ncds))
@@ -31,10 +31,10 @@ setMethod("summary", "factR", function(object) object )
 
 # head and tail previews featureData of current set
 setMethod("head", "factR", function(x, n = 6L){
-    utils::head(featureData(x), n = n)
+    utils::head(x[[]], n = n)
 })
 setMethod("tail", "factR", function(x, n = 6L){
-    utils::tail(featureData(x), n = n)
+    utils::tail(x[[]], n = n)
 })
 
 setMethod("dim", "factR", function(x){
@@ -64,16 +64,15 @@ setMethod("listSets", "factR", function(object){
 ##### Ranges Data #####
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-setMethod("rangesData", "factR", function(object, ..., set = NULL) {
+setMethod("granges", "factR", function(object, ..., set = NULL) {
     if(is.null(set)){
         set <- slot(object, "active.set")
-    } else if(!set %in% listSets(object)){
+    } else if(!set %in% c(listSets(object), "all")){
         rlang::warn("Incorrect set name or index, using active set")
         set <- slot(object, "active.set")
     }
     gtf <- methods::slot(object, "transcriptome")
-    txs <- tryCatch(.getFeat(object, ...),
-                    error = function(e) rlang::abort("Feature not found"))
+    txs <- .getFeat(object, ...)
 
     if(set == "all"){
         return(gtf[gtf$transcript_id %in% txs])
