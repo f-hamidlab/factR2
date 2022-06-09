@@ -5,13 +5,20 @@
 \title{List factR supported genomes}
 \usage{
 listSupportedGenomes()
+
+listSupportedGenomes()
 }
 \value{
+data.frame with a list of factR-supported genomes
+
 data.frame with a list of factR-supported genomes
 }
 \description{
 List factR supported genomes
+
+List factR supported genomes
 }
 \examples{
+ListGenomes()
 ListGenomes()
 }

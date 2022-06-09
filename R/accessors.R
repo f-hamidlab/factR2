@@ -87,7 +87,7 @@ setMethod("granges", "factR", function(object, ..., set = NULL) {
 ##### Feature Data #####
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-## switch sets on the fly
+## print features quickly
 setMethod("[[", "factR", function(x, i){
     if(missing(i)){
         x@sets[[x@active.set]]@rowData
@@ -99,7 +99,7 @@ setMethod("[[", "factR", function(x, i){
 })
 
 # feature preview with option to subset data
-setMethod("featData", "factR", function(object, ..., set = NULL) {
+setMethod("features", "factR", function(object, ..., set = NULL) {
     if(is.null(set)){
         set <- slot(object, "active.set")
     } else if(!set %in% listSets(object)){

@@ -2,12 +2,12 @@
 % Please edit documentation in R/generics.R
 \name{granges}
 \alias{granges}
-\alias{featData}
+\alias{features}
 \title{Preview factR object}
 \usage{
 granges(object, ..., set = NULL)
 
-featData(object, ..., set = NULL)
+features(object, ..., set = NULL)
 }
 \arguments{
 \item{object}{factRObject}

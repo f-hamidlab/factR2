@@ -2,7 +2,7 @@
 
 export(buildCDS)
 export(createfactRObject)
-export(featData)
+export(features)
 export(findAltSplicing)
 export(getAAsequence)
 export(granges)
