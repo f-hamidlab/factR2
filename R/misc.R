@@ -41,13 +41,8 @@ factR2version <- "0.99.0"
             dplyr::mutate(tx = transcript_id, gene = gene_id) %>%
             tidyr::gather("type", "feature", gene, gene_name, tx) %>%
             dplyr::filter(feature %in% c(...))
-        if (nrow(genetxs.features) == 0) {
-            rlang::abort("No features found in object")
-        } else if(!all(c(...) %in% genetxs.features$feature)){
-            absent.features <- c(...)[which(!c(...) %in% genetxs.features$feature)]
-            rlang::warn(sprintf("These features are not found in object: %s",
-                                paste(absent.features, collapse = ", ")))
-        }
         return(unique(genetxs.features[[out]]))
+        
+        
     }
 }

@@ -5,7 +5,7 @@
 \alias{factRObject-class}
 \title{factRObject}
 \description{
-A container for storing and processing custom transcriptome
+A container for storing and processing custom transcriptome.
 }
 \details{
 The factRObject is a representation of custom-assembled transcriptome data.
@@ -14,13 +14,15 @@ parsed and grouped into 3 data sets which corresponds to the levels of gene,
 transcript and alternative splicing (AS). With the aid of a compatible
 reference genome and expression data, functional and
 comparative analyses can be performed to better understand the complexity
-of a transcriptome
+of a transcriptome.
 }
 \section{Constructor}{
 
 \describe{
-   \item{factRObject can be easily constructed:}{
-      \code{createfactRObject(gtf, reference)}}}
+   \item{factRObject can be easily constructed as such:}{
+      \code{createfactRObject(gtf, reference)}
+   }
+}
 }
 
 \section{Accessors}{

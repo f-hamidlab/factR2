@@ -38,24 +38,14 @@ setMethod("tail", "factR", function(x, n = 6L){
 })
 
 setMethod("dim", "factR", function(x){
-    utils::tail(featureData(x), n = n)
+    dim()
 })
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 ##### Sets Data #####
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-## switch sets on the fly
-setMethod("[[", "factR", function(x, i, j){
-    if(i %in% names(x@sets)){
-        x@active.set <- i
-    } else if(i %in% 1:3){
-        x@active.set <- names(x@sets)[i]
-    } else {
-        rlang::abort("Incorrect set name or index")
-    }
-    x
-})
+
 
 ## dedicated function to switch sets
 setMethod("activeSet", "factR", function(object){
@@ -65,7 +55,6 @@ setMethod("activeSet<-", "factR", function(object, value){
     methods::slot(object, "active.set") <- value
     object
 })
-
 ## list sets
 setMethod("listSets", "factR", function(object){
     names(object@sets)
@@ -98,8 +87,19 @@ setMethod("rangesData", "factR", function(object, ..., set = NULL) {
 ##### Feature Data #####
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+## switch sets on the fly
+setMethod("[[", "factR", function(x, i){
+    if(missing(i)){
+        x@sets[[x@active.set]]@rowData
+    } else if(i %in% names(x@sets)){
+        x@sets[[i]]@rowData
+    } else {
+        rlang::abort("Incorrect set name or index")
+    }
+})
+
 # feature preview with option to subset data
-setMethod("featureData", "factR", function(object, ..., set = NULL) {
+setMethod("featData", "factR", function(object, ..., set = NULL) {
     if(is.null(set)){
         set <- slot(object, "active.set")
     } else if(!set %in% listSets(object)){
@@ -108,22 +108,13 @@ setMethod("featureData", "factR", function(object, ..., set = NULL) {
     }
 
     dat <- slot(object@sets[[set]], "rowData")
-    if(set %in% c("gene", "AS")){
-        feat <- tryCatch(.getFeat(object, ..., out = "gene_id"),
-                        error = function(e) rlang::abort("Feature not found"))
-        return(dat[dat$gene_id %in% feat,])
-
-    } else{
-        feat <- tryCatch(.getFeat(object, ...),
-                        error = function(e) rlang::abort("Feature not found"))
-        return(dat[dat$transcript_id %in% feat,])
-    }
-
+    out.type <- ifelse(set == "transcript", "transcript_id", "gene_id")
+    feat <- .getFeat(object, ..., out = out.type)
+    return(dat[dat[[out.type]] %in% feat,])
 })
 
 # access and modify columns in featureData
 setMethod("featureData$", "factR", function(object,name) {
-    print('check')
     object@sets[[object@active.set]]@rowData[[name]]
 })
 setMethod("featureData<-", "factR", function(object,value) {
