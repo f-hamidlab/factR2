@@ -72,12 +72,13 @@ setMethod("granges", "factR", function(object, ..., set = NULL) {
         set <- slot(object, "active.set")
     }
     gtf <- methods::slot(object, "transcriptome")
-    txs <- .getFeat(object, ...)
+    out.type <- ifelse(set %in% c("transcript"), "transcript_id", "gene_id")
+    feat <- .getFeat(object, ..., out = out.type)
 
     if(set == "all"){
-        return(gtf[gtf$transcript_id %in% txs])
+        return(gtf[S4Vectors::mcols(gtf)[[out.type]] %in% feat])
     } else {
-        return(gtf[gtf$transcript_id %in% txs & gtf$type %in% set])
+        return(gtf[S4Vectors::mcols(gtf)[[out.type]] %in% feat & gtf$type %in% set])
     }
 
 })
