@@ -18,17 +18,19 @@ setMethod("predictNMD", "factR", function(object, NMD_threshold = 50, verbose = 
                               progress_bar = FALSE))
     }
 
+    row.names <- rownames(genetxs)
     genetxs <- dplyr::left_join(genetxs, nmd.out, by = c("transcript_id"="transcript"))
     genetxs$nmd <- ifelse(genetxs$is_NMD & !is.na(genetxs$is_NMD), "yes", genetxs$nmd)
     genetxs$is_NMD <- NULL
-    object@sets$transcript@rowData <- genetxs
+    rownames(genetxs) <- genetxs$transcript_id
+    object@sets$transcript@rowData <- genetxs[row.names,]
     return(object)
 })
 
 setMethod("testASNMDevents", "factR", function(object) {
 
     genes <- object[["transcript"]] 
-    gtf <- ranges(object, set = "all") 
+    gtf <- object@transcriptome
     if(all(genes$cds == "no") & all(genes$nmd == "no")){
         rlang::abort("No CDSs found. Please run runfactR() first")
     } else if(any(genes$cds == "yes") & all(genes$nmd == "no")){
@@ -49,7 +51,7 @@ setMethod("testASNMDevents", "factR", function(object) {
     ref <- .getbestref(gtf, genes)
 
     # run core function
-    ASNMDevents <- .runidentifynmdexons(gtf, ASevents, genes, ref)
+    ASNMDevents <- .runidentifynmdexons(gtf, ASevents, genes, ref, object@reference$genome)
 
     # update AS events if returned object is not null
     if(!is.null(ASNMDevents)){
@@ -97,7 +99,7 @@ setMethod("testASNMDevents", "factR", function(object) {
 
 
 
-.runidentifynmdexons <- function(x, ASevents, genes, ref) {
+.runidentifynmdexons <- function(x, ASevents, genes, ref, genome) {
 
     #rlang::inform("Finding NMD causing exons")
     NMD.pos <- genes[genes$nmd == "yes",]$transcript_id
@@ -180,7 +182,7 @@ setMethod("testASNMDevents", "factR", function(object) {
         GenomicRanges::makeGRangesFromDataFrame(keep.extra.columns = TRUE)
 
     # test NMD again
-    mod.tx <- suppressMessages(factR::buildCDS(mod.tx, ref, object@reference$genome))
+    mod.tx <- suppressMessages(factR::buildCDS(mod.tx, ref, genome))
     mod.NMD <- suppressMessages(factR::predictNMD(mod.tx, progress_bar = FALSE))
 
     # return if none of the reconstructed transcripts are NMD sensitive
