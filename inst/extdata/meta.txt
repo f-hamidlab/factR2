@@ -1,0 +1,5 @@
+samples	group
+SampleA.Rep1	SampleA.Rep1	SampleA
+SampleA.Rep2	SampleA.Rep2	SampleA
+SampleB.Rep1	SampleB.Rep1	SampleB
+SampleB.Rep2	SampleB.Rep2	SampleB
