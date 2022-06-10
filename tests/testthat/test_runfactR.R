@@ -5,9 +5,8 @@ data("factRsample")
 
 obj <- buildCDS(factRsample)
 test_that("Test buildCDS functionality", {
-    expect_error(buildCDS(factRsample))
     expect_equal(length(obj@transcriptome), 2069)
-    featdata <- featureData(obj[["transcript"]])
+    featdata <- obj[["transcript"]]
     expect_equal(nrow(featdata[featdata$cds == "yes",]), 83)
 })
 
@@ -15,7 +14,7 @@ test_that("Test buildCDS functionality", {
 obj <- predictNMD(obj)
 test_that("Test predictNMD functionality", {
     expect_error(predictNMD(factRsample))
-    featdata <- featureData(obj[["transcript"]])
+    featdata <- obj[["transcript"]]
     expect_equal(nrow(featdata[featdata$nmd == "yes",]), 17)
 })
 
@@ -27,19 +26,19 @@ test_that("Test getAAsequence functionality", {
 })
 
 
-ref <- .getbestref(obj)
+ref <- .getbestref(obj@transcriptome, obj[["transcript"]])
 test_that("Test .getbestref function", {
-    expect_equal(length(ref), 192)
+    expect_equal(length(ref), 439)
 })
 
 obj <- testASNMDevents(obj)
 test_that("Test testASNMD functionality", {
     expect_error(testASNMDevents(factRsample))
-    featdata <- featureData(obj[["AS"]])
+    featdata <- obj[["AS"]]
     expect_equal(nrow(featdata[featdata$ASNMDtype == "Repressing",]), 16)
 })
 
 
 test_that("Test runfactR functionality", {
-    expect_equal(obj, runfactR(factRsample))
+    expect_equal(obj, suppressWarnings(runfactR(factRsample)))
 })
