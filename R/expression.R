@@ -1,15 +1,121 @@
-.processCounts <- function(object, verbose = FALSE) {
 
-    # check if count data is present
-    if(nrow(object@sets$transcript@counts) == 0){
-        rlang::abort("Count data not found in object")
+
+
+
+
+setMethod("addTxCounts", "factR", function(object, countData, sampleData, design, verbose = FALSE) {
+
+    # catch missing args
+    mandargs <- c("countData", "sampleData", "design")
+    passed <- names(as.list(match.call())[-1])
+    if (any(!mandargs %in% passed)) {
+        rlang::abort(paste(
+            "missing values for",
+            paste(setdiff(mandargs, passed), collapse = ", ")
+        ))
     }
+
+    txs <- object[["transcript"]]$transcript_id
+    # check input counts features
+    if(is.null(rownames(countData))){
+        rlang::abort("Input countData do not have feature names")
+    } else if(!all(txs %in% rownames(countData))){
+        rlang::abort("Some transcript features are missing in countData")
+    }
+
+    # convert counts to integer
+    counts.names <- rownames(countData)
+    counts.samples <- colnames(countData)
+    countData <- matrix(as.integer(countData), ncol = length(counts.samples))
+    colnames(countData) <- counts.samples
+    rownames(countData) <- counts.names
+
+    object@sets$transcript@counts <- countData[txs,]
+    object@colData <- data.frame(row.names = colnames(countData))
+    object <- .addSampleData(object, sampleData)
+    object <- .addDesign(object, design)
+    object <- .processCounts(object)
+
+    return(object)
+})
+
+
+.addSampleData <- function(object, sampleData) {
+
+    # convert strings to factors
+    data.names <- rownames(sampleData)
+    sampleData <- as.data.frame(unclass(testSamples),stringsAsFactors=TRUE)
+    rownames(sampleData) <- data.names
+
+
+    # add sampleData if no data is currently present
+    if(nrow(samples(object)) == 0){
+        samples(object) <- sampleData
+    }
+    # else, check for sample consistencies
+    else {
+        current_samples <- rownames(samples(object))
+
+        if(!identical(rownames(sampleData), as.character(c(1:nrow(sampleData))))){
+            if(!all(current_samples %in% rownames(sampleData))){
+                rlang::abort("Some samples are missing in sampleData")
+            }
+        } else {
+            if(nrow(sampleData) != length(current_samples)){
+                rlang::abort(sprintf("Number of samples in sampleData (%s) is not equal to %s",
+                                     nrow(sampleData), length(current_samples)))
+            } else {
+                poss_sample_vars <- apply(sampleData, 2, function(x) all(current_samples %in% x))
+                poss_var <- names(poss_sample_vars)[poss_sample_vars]
+
+                if(length(poss_var) > 0){
+                    rownames(sampleData) <- sampleData[[poss_var]]
+
+                } else {
+                    rlang::abort("Unable to resolve sample names. Please add missing rownames.")
+                }
+            }
+        }
+        # actual appending of data
+        object@colData <- cbind(object@colData, sampleData[current_samples,])
+    }
+    return(object)
+}
+
+
+
+setMethod("design<-", "factR", function(object, value) .addDesign(object, value))
+
+.addDesign <- function(object, design) {
+    design <- formula(design)
+    sample.meta <- samples(object)
+
+    # check if design variables are in samples
+    if(nrow(sample.meta) == 0){
+        rlang::abort("Samples metadata not constructed yet")
+    } else {
+        vars <- as.character(design)
+        vars <- strsplit(vars[2], "[[:punct:]]| ")[[1]]
+        vars <- vars[vars != ""]
+
+        if(!all(vars %in% colnames(sample.meta))){
+            rlang::abort("Some design variables not in samples metadata")
+        } else {
+            object@design <- design
+        }
+    }
+    return(object)
+}
+
+
+
+.processCounts <- function(object, verbose = FALSE) {
 
     txcounts <- object@sets$transcript@counts
     # get gene counts
-    txdata <- featureData(object, set = "transcript")
+    txdata <- object[["transcript"]]
     genecounts <- rowsum(txcounts[txdata$transcript_id, ], group = txdata$gene_id)
-    genecounts <- genecounts[featureData(object, set = "gene")$gene_id,]
+    genecounts <- genecounts[object[["gene"]]$gene_id,]
     object@sets$gene@counts <- genecounts
 
 
@@ -56,109 +162,6 @@
 
     return(object)
 }
-
-
-
-
-setMethod("addCountData", "factR", function(object, countData, sampleData, design, verbose = FALSE) {
-
-
-    txs <- object[["transcript"]]$transcript_id
-    # check input counts features
-    if(is.null(rownames(countData))){
-        rlang::abort("Input countData do not have feature names")
-    } else if(!all(txs %in% rownames(countData))){
-        rlang::abort("Some transcript features are missing in countData")
-    }
-
-    # convert counts to integer
-    counts.names <- rownames(countData)
-    counts.samples <- colnames(countData)
-    countData <- matrix(as.integer(countData), ncol = length(counts.samples))
-    colnames(countData) <- counts.samples
-    rownames(countData) <- counts.names
-
-    object@sets$transcript@counts <- countData[txs,]
-    object@colData <- data.frame(row.names = colnames(countData))
-    object <- .addSampleData(object, sampleData) 
-    object <- addDesign(object, design) 
-
-    object <- .processCounts(object) 
-
-    return(object)
-})
-
-
-.addSampleData <- function(object, sampleData) {
-
-    # convert strings to factors 
-    data.names <- rownames(sampleData)
-    sampleData <- as.data.frame(unclass(testSamples),stringsAsFactors=TRUE)
-    rownames(sampleData) <- data.names
-
-
-    # add sampleData if no data is currently present
-    if(nrow(samples(object)) == 0){
-        samples(object) <- sampleData
-    }
-    # else, check for sample consistencies
-    else {
-        current_samples <- rownames(samples(object))
-
-        if(!identical(rownames(sampleData), as.character(c(1:nrow(sampleData))))){
-            if(!all(current_samples %in% rownames(sampleData))){
-                rlang::abort("Some samples are missing in sampleData")
-            }
-        } else {
-            if(nrow(sampleData) != length(current_samples)){
-                rlang::abort(sprintf("Number of samples in sampleData (%s) is not equal to %s",
-                                     nrow(sampleData), length(current_samples)))
-            } else {
-                poss_sample_vars <- apply(sampleData, 2, function(x) all(current_samples %in% x))
-                poss_var <- names(poss_sample_vars)[poss_sample_vars]
-
-                if(length(poss_var) > 0){
-                    rownames(sampleData) <- sampleData[[poss_var]]
-
-                } else {
-                    rlang::abort("Unable to resolve sample names. Please add missing rownames.")
-                }
-            }
-        }
-        # actual appending of data
-        samples(object) <- cbind(object@colData, sampleData[current_samples,])
-    }
-    return(object)
-}
-
-
-setMethod("design", "factR", function(object) object@design)
-setMethod("design<-", "factR", function(object, value) .addDesign(object, value))
-
-.addDesign <- function(object, design) {
-    design <- formula(design)
-    sample.meta <- samples(object)
-
-    # check if design variables are in samples
-    if(nrow(sample.meta) == 0){
-        rlang::abort("Samples metadata not constructed yet")
-    } else {
-        vars <- as.character(design)
-        vars <- strsplit(vars[2], "[[:punct:]]| ")[[1]]
-        vars <- vars[vars != ""]
-
-        if(!all(vars %in% colnames(sample.meta))){
-            rlang::abort("Some design variables not in samples metadata")
-        } else {
-            object@design <- design
-        }
-    }
-    return(object)
-}
-
-
-
-
 
 
 
