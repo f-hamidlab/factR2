@@ -36,6 +36,8 @@ granges.factR <- function(object, ..., set = NULL){
 
     if(set == "all"){
         return(gtf[S4Vectors::mcols(gtf)[[out.type]] %in% feat])
+    } else if(set == "transcript") {
+        return(gtf[S4Vectors::mcols(gtf)[[out.type]] %in% feat & gtf$type %in% c("transcript", "exon")])
     } else {
         return(gtf[S4Vectors::mcols(gtf)[[out.type]] %in% feat & gtf$type %in% set])
     }
