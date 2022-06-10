@@ -322,9 +322,10 @@ setGeneric("testASNMDevents", function(object) standardGeneric("testASNMDevents"
 
 
 setGeneric("addCountData", function(object, countData, sampleData = NULL, design = NULL, verbose = FALSE) standardGeneric("addCountData"))
-setGeneric("addSampleData", function(object, sampleData) standardGeneric("addSampleData"))
-setGeneric("addDesign", function(object, design) standardGeneric("addDesign"))
-setGeneric("processCounts", function(object, ...) standardGeneric("processCounts"))
+#setGeneric("addSampleData", function(object, sampleData) standardGeneric("addSampleData"))
+setGeneric("design", function(object) standardGeneric("design"))
+setGeneric("design<-", function(object, value) standardGeneric("design<-"))
+#setGeneric("processCounts", function(object, ...) standardGeneric("processCounts"))
 
 
 

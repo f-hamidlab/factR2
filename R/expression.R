@@ -1,4 +1,4 @@
-setMethod("processCounts", "factR", function(object, verbose = FALSE) {
+.processCounts <- function(object, verbose = FALSE) {
 
     # check if count data is present
     if(nrow(object@sets$transcript@counts) == 0){
@@ -55,7 +55,7 @@ setMethod("processCounts", "factR", function(object, verbose = FALSE) {
 
 
     return(object)
-})
+}
 
 
 
@@ -132,7 +132,8 @@ setMethod("addCountData", "factR", function(object, countData, sampleData, desig
 }
 
 
-setMethod("design", "factR", function(object, countData, sampleData, design, verbose = FALSE) {})
+setMethod("design", "factR", function(object) object@design)
+setMethod("design<-", "factR", function(object, value) .addDesign(object, value))
 
 .addDesign <- function(object, design) {
     design <- formula(design)
