@@ -38,8 +38,10 @@ countsSample <- do.call(cbind, lapply(seq_len(length(samples)), function(x){
 }))
 colnames(countsSample) <- samples
 rownames(countsSample) <- txs.name
-usethis::use_data(countsSample, overwrite = TRUE)
+write.table(countsSample, file="./inst/extdata/counts.txt", quote = F, sep = "\t", row.names = T)
+
 
 testSamples <- data.frame(samples = samples,
            group = rep(c("SampleA", "SampleB"), each = 2),
            row.names = samples)
+write.table(testSamples, file="./inst/extdata/meta.txt", quote = F, sep = "\t", row.names = T)
