@@ -2,7 +2,7 @@
 #'
 setMethod("buildCDS", "factR", function(object, verbose = FALSE) {
 
-    gtf <- ranges(object, set = "all") 
+    gtf <- granges(object, set = "all") 
     gtf <- gtf[!gtf$type %in% "CDS"]
 
     if(verbose){
