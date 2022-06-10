@@ -1,14 +1,18 @@
+setGeneric("getAAsequence", function(object, verbose = FALSE) standardGeneric("getAAsequence"))
 setMethod("getAAsequence", "factR", function(object, verbose = FALSE) {
     gtf <- object@transcriptome
     if(! "CDS" %in% gtf$type){
         rlang::abort("No CDSs found. Please run buildCDS() first")
     }
 
-    genetxs <- object[["transcript"]] 
+    genetxs <- object[["transcript"]]
     txs <- genetxs[genetxs$cds == "yes",]$transcript_id
 
     gtf <- gtf[gtf$transcript_id %in% txs]
     cds <- S4Vectors::split(gtf[gtf$type == "CDS"], ~transcript_id)
+
+
+
     out <- .getSequence(cds, object@reference$genome, verbose)
     outseq <- Biostrings::AAStringSet(out$x)
     names(outseq) <- out$id
@@ -18,7 +22,9 @@ setMethod("getAAsequence", "factR", function(object, verbose = FALSE) {
 })
 
 
-
+setGeneric("predictDomain", function(object, ...,
+                                     database = "superfamily",
+                                     ncores = 4) standardGeneric("predictDomain"))
 setMethod("predictDomain", "factR", function(object,
                                               ...,
                                               database = "superfamily",

@@ -1,9 +1,9 @@
-setMethod("findAltSplicing", "factR", function(object) {
+.findAS <-  function(object) {
     gtf <- slot(object, "transcriptome")
     gtf <- c(gtf, .runAS(gtf[gtf$type == "exon"]))
     slot(object, "transcriptome") <- gtf
     return(object)
-})
+}
 
 
 .runAS <- function(x) {
@@ -66,6 +66,7 @@ setMethod("findAltSplicing", "factR", function(object) {
         dplyr::mutate(AStype = ifelse(first.X.strand == "-", chartr("adfl", "dalf", AStype), AStype)) %>%
         dplyr::mutate(same.group = ifelse(first.gene_id == second.group_name,TRUE,FALSE))
 
+
     # get segments that fall within intron and annotate that segment
     altexons <- GenomicRanges::pintersect(altexons)
     if (length(altexons) == 0) {
@@ -76,6 +77,8 @@ setMethod("findAltSplicing", "factR", function(object) {
         altexons$AStype <- toupper(altannotate$AStype)
         altexons <- altexons[!is.na(altexons$AStype) & altannotate$same.group]
         altexons$pos <- altexons$hit <- altexons$termini <-altexons$grouping <- NULL
+        altexons$transcript_id <- NULL
+        altexons <- unique(altexons)
 
         return(BiocGenerics::sort(altexons))
     }

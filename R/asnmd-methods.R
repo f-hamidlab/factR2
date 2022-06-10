@@ -1,9 +1,15 @@
-#' @include generics.R
-#'
+#' @include factRObject-class.R
+
+
+
+setGeneric("predictNMD", function(object, NMD_threshold = 50, verbose = FALSE) standardGeneric("predictNMD"))
+
+
+
 setMethod("predictNMD", "factR", function(object, NMD_threshold = 50, verbose = FALSE) {
     gtf <- slot(object, "transcriptome")
     gtf <- gtf[!gtf$type %in% c("gene", "AS")]
-    genetxs <- object[["transcript"]] 
+    genetxs <- object[["transcript"]]
 
     if(! "CDS" %in% gtf$type){
         rlang::abort("No CDSs found. Please run buildCDS() first")
@@ -27,9 +33,27 @@ setMethod("predictNMD", "factR", function(object, NMD_threshold = 50, verbose = 
     return(object)
 })
 
-setMethod("testASNMDevents", "factR", function(object) {
 
-    genes <- object[["transcript"]] 
+
+#' Identify AS-NMD events
+#'
+#' @description This function will xxx
+#'
+#' @param object factRObject
+#'
+#' @return Updated factRObject
+#' @export
+#' @seealso \code{\link{runfactR}}
+#'
+#' @rdname testASNMDevents
+#' @examples
+#' data(factRsample)
+#' factRsample <- buildCDS(factRsample)
+#' factRsample <- testASNMDevents(factRsample)
+setGeneric("testASNMDevents", function(object, verbose = FALSE) standardGeneric("testASNMDevents"))
+setMethod("testASNMDevents", "factR", function(object, verbose = FALSE) {
+
+    genes <- object[["transcript"]]
     gtf <- object@transcriptome
     if(all(genes$cds == "no") & all(genes$nmd == "no")){
         rlang::abort("No CDSs found. Please run runfactR() first")
@@ -42,16 +66,20 @@ setMethod("testASNMDevents", "factR", function(object) {
     if(length(ASevents) == 1){
         rlang::abort("No AS events found. Please run findAltSplicing() first")
     }
+    return(ASevents)
 
 
     # check input objects
     #phastGScore <- .GScorecheck(ConsScores)
 
     # get reference CDS transcript for each gene
+    if(verbose){ rlang::inform("Getting best reference for AS-NMD testing")}
     ref <- .getbestref(gtf, genes)
 
     # run core function
+    if(verbose){ rlang::inform("Testing AS-NMD exons")}
     ASNMDevents <- .runidentifynmdexons(gtf, ASevents, genes, ref, object@reference$genome)
+
 
     # update AS events if returned object is not null
     if(!is.null(ASNMDevents)){
@@ -65,12 +93,9 @@ setMethod("testASNMDevents", "factR", function(object) {
         slot(object, "transcriptome") <- c(gtf.others, ASevents)
 
         # update featureData
-        ASNMDfeat <- as.data.frame(ASevents) %>%
-            dplyr::mutate(coord = paste0(seqnames, ":", start, "-", end)) %>%
-            dplyr::select(coord, AStype, ASNMDtype, ASNMD.in.cds) %>%
-            dplyr::distinct()
-        rownames(ASNMDfeat) <- paste0(ASNMDfeat$coord, ":", ASNMDfeat$AStype)
-        object <- addFeatureData(object, ASNMDfeat, set = "AS")
+        if(verbose){ rlang::inform("Updating AS feature data")}
+        object <- mutate(object, ASNMDtype = ASevents$ASNMDtype,
+                         ASNMD.in.cds = ASevents$ASNMD.in.cds, data = "AS")
     }
 
     return(object)
