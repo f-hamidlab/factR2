@@ -18,5 +18,5 @@ fa$chr15 <- fa$chr15[1:12500000]
 
 ## make sample data
 factRsample <- createfactRObject(in.gtf, use_own_annotation = ref,
-                                 use_own_genome = fa)
+                                 use_own_genome = fa, verbose = TRUE)
 usethis::use_data(factRsample, overwrite = TRUE)
