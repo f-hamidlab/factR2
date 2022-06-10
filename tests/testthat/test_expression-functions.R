@@ -1,15 +1,37 @@
 data('factRsample')
-data('countsSample')
 
-obj <- addCountData(factRsample, countsSample)
+counts.path <- system.file("extdata/counts.txt", package = "factR2")
+meta.path <- system.file("extdata/meta.txt", package = "factR2")
+
+cts <- read.delim(counts.path)
+cts <- as.matrix(cts)
+meta <- read.delim(meta.path)
+
+obj <- addTxCounts(factRsample, cts, meta, ~samples)
 test_that("Test addCountsData function", {
-    expect_error(addCountData(factRsample))
-    expect_error(addCountData(factRsample, countsSample[1:5,]))
-    countSample.nonames <- countsSample
+    expect_error(addTxCounts(factRsample))
+    expect_error(addTxCounts(factRsample, cts[1:5,], meta, ~samples))
+    countSample.nonames <- cts
     rownames(countSample.nonames) <- NULL
-    expect_error(addCountData(factRsample, countSample.nonames))
-    expect_equal(obj@sets$transcript@counts, countsSample)
+    expect_error(addTxCounts(factRsample, countSample.nonames, meta, ~samples))
+    expect_equal(obj@sets$transcript@counts, cts)
 })
+
+
+# add design
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 obj2 <- addSampleData(factRsample, testSamples)
 test_that("Test addSampleData", {
@@ -25,14 +47,14 @@ test_that("Test addSampleData", {
 
 })
 
-obj3 <- addCountData(factRsample, countsSample, sampleData = testSamples)
+obj3 <- addTxCounts(factRsample, countsSample, sampleData = testSamples)
 test_that("Test addCountsData with samples added", {
-    expect_error(addCountData(obj2, countsSample[,1:3]))
+    expect_error(addTxCounts(obj2, countsSample[,1:3]))
     obj4 <- addSampleData(obj, testSamples)
     expect_equal(obj3, obj4)
 })
 
-obj5 <- addCountData(factRsample, countsSample, testSamples, ~samples)
+obj5 <- addTxCounts(factRsample, countsSample, testSamples, ~samples)
 test_that("Test addDesign function", {
     expect_error(addDesign(factRsample, ~samples))
     expect_equal(addDesign(obj3, ~samples), obj5)
