@@ -65,93 +65,142 @@ setClass("factRset",
          )
 )
 
+
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # Class generics
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-################################################################################
-## General object preview
-################################################################################
 
 
 
 
-################################################################################
-## Sets-related functions
-################################################################################
 
+
+#XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+## Display ====
+#XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+### General ####
+setMethod("show", "factR", function(object) show.factR(object))
+setMethod("summary", "factR", function(object) object )
+
+# head and tail previews featureData of current set
+setMethod("head", "factR", function(x, n = 6L){
+    utils::head(x[[]], n = n)
+})
+setMethod("tail", "factR", function(x, n = 6L){ utils::tail(x[[]], n = n) })
+
+setMethod("dim", "factR", function(x){ dim(x@sets[[x@active.set]]@data) })
+setMethod("nrow", "factR", function(x){ base::nrow(x@sets[[x@active.set]]@data) })
+setMethod("ncol", "factR", function(x){ base::ncol(x@sets[[x@active.set]]@data) })
+
+
+
+
+
+### Sets ####
 setGeneric("activeSet", function(object) standardGeneric("activeSet"))
-setGeneric("activeSet<-", function(object, value) standardGeneric("activeSet<-"))
+setMethod("activeSet", "factR", function(object){
+    methods::slot(object, "active.set")
+})
 setGeneric("listSets", function(object) standardGeneric("listSets"))
+setMethod("listSets", "factR", function(object){ names(object@sets) })
 
-################################################################################
-## Previewing rangesData
-################################################################################
 
-#' @export
-#' @rdname preview-methods
-setGeneric("granges", function(object, ..., set = NULL)
-    standardGeneric("granges"))
 
-################################################################################
-## Previewing and modifying featureData
-################################################################################
 
-#' Preview factR object
-#'
-#' @description A set of functions to view the contents of a factR object.
-#' \itemize{
-#'  \item{view(): }{view contents of custom transcriptome in spreadsheet-style format}
-#'  \item{txRanges(): }{prints out transcript ranges}
-#'  \item{featureData(): }{prints out transcript metadata}
-#' }
-#'
-#' @param object factRObject
-#'
-#' @export
-#' @rdname preview-methods
+
+### GRanges ####
+setGeneric("granges", function(object, ..., set = NULL) standardGeneric("granges"))
+setMethod("granges", "factR", function(object, ..., set = NULL) {
+    granges.factR(object, ..., set = set)
+})
+
+
+### Features ####
+setMethod("[[", "factR", function(x, i){
+    if(missing(i)){
+        x@sets[[x@active.set]]@rowData
+    } else if(i %in% names(x@sets)){
+        x@sets[[i]]@rowData
+    } else {
+        rlang::abort("Incorrect set name or index")
+    }
+})
+
+# feature preview with option to subset data
 setGeneric("features", function(object, ..., set = NULL) standardGeneric("features"))
+setMethod("features", "factR", function(object, ..., set = NULL) {
+    if(is.null(set)){
+        set <- slot(object, "active.set")
+    } else if(!set %in% listSets(object)){
+        rlang::warn("Incorrect set name or index, using active set")
+        set <- slot(object, "active.set")
+    }
 
-setGeneric("addFeatureData", function(object, data, colname = NULL, set = NULL) standardGeneric("addFeatureData"))
+    dat <- slot(object@sets[[set]], "rowData")
+    out.type <- ifelse(set == "transcript", "transcript_id", "gene_id")
+    feat <- .getFeat(object, ..., out = out.type)
+    return(dat[dat[[out.type]] %in% feat,])
+})
 
-################################################################################
-## Previewing and modifying sampleData
-################################################################################
 
+### Samples ####
 setGeneric("samples", function(object) standardGeneric("samples"))
+setMethod("samples", "factR", function(object) { object@colData })
 
-setGeneric("addSampleData", function(object, ..., set = NULL) standardGeneric("addSampleData"))
+### Counts ####
+
+### Design ####
+setGeneric("design", function(object) standardGeneric("design"))
+setMethod("design", "factR", function(object) object@design)
 
 
+#XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+## Setters ====
+#XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+### Set active set ####
+setGeneric("activeSet<-", function(object, value) standardGeneric("activeSet<-"))
+setMethod("activeSet<-", "factR", function(object, value){
+    methods::slot(object, "active.set") <- value
+    object
+})
+
+### Set design ####
+setGeneric("design<-", function(object, value) standardGeneric("design<-"))
 
 
-#' Visualize custom transcriptome and proteins
-#'
-#' @description
-#' Plots out transcripts or protein domains from custom transcriptome
-#'
-#' @param object  factRObject
-#' @param ... Optional: a list of features to plot. Input
-#' can be a mixture of names from gene_id, gene_name or transcript_id metadata.
-#' If missing, function will plot transcripts from the first 9 genes
-#' of the custom transcriptome
-#' @param rescale_introns when plotting transcripts, whether to rescale introns
-#' @param ncol number of columns to combine multiple feature plots to
-#'
-#' @return ggplot2 object. If multiple genes are detected, plots will be
-#' combined using patchwork
-#' @export
-#' @rdname Plot
-#'
-#' @author Fursham Hamid
-#'
-#' @examples
-#' # plot transcripts
-#' data(factRsample)
-#' plotTranscripts(factRsample, "Selenop")
+#XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+## Subsetters ====
+#XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+
+#XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+## Plotters ====
+#XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+### Transcripts ####
 setGeneric("plotTranscripts", function(object, ...,
-                            rescale_introns = FALSE,
-                            ncol = 1) standardGeneric("plotTranscripts"))
+                                       rescale_introns = FALSE,
+                                       ncol = 1) standardGeneric("plotTranscripts"))
+
+### Domains ####
+setGeneric("plotDomains", function(object, ..., ncol = 1) standardGeneric("plotDomains"))
+
+
+#XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+## Validty ====
+#XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+
+
+
+
+
+
+
+
 
 
 
@@ -260,24 +309,8 @@ setGeneric("predictDomain", function(object, ...,
 
 
 
-#' @param object  factRObject
-#' @param ... Optional: a list of features to plot. Input
-#' can be a mixture of names from gene_id, gene_name or transcript_id metadata.
-#' If missing, function will plot transcripts from the first 9 genes
-#' of the custom transcriptome
-#' @param ncol number of columns to combine multiple feature plots to
-#'
-#' @export
-#' @rdname Plot
-#'
-#' @author Fursham Hamid
-#'
-#' @examples
-#'
-#' # plot protein domains
-#' factRsample <- runfactR(factRsample)
-#' plotDomains(factRsample, "Prkaa1")
-setGeneric("plotDomains", function(object, ..., ncol = 1) standardGeneric("plotDomains"))
+
+
 
 
 #' Get protein coding sequences
@@ -321,12 +354,41 @@ setGeneric("getAAsequence", function(object, verbose = FALSE) standardGeneric("g
 setGeneric("testASNMDevents", function(object) standardGeneric("testASNMDevents"))
 
 
-setGeneric("addCountData", function(object, countData, sampleData = NULL, design = NULL, verbose = FALSE) standardGeneric("addCountData"))
-#setGeneric("addSampleData", function(object, sampleData) standardGeneric("addSampleData"))
-setGeneric("design", function(object) standardGeneric("design"))
-setGeneric("design<-", function(object, value) standardGeneric("design<-"))
-#setGeneric("processCounts", function(object, ...) standardGeneric("processCounts"))
+setGeneric("addTxCounts", function(object, countData, sampleData = NULL, design = NULL, verbose = FALSE) standardGeneric("addTxCounts"))
 
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# END
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
