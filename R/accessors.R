@@ -113,18 +113,18 @@ setMethod("features", "factR", function(object, ..., set = NULL) {
     return(dat[dat[[out.type]] %in% feat,])
 })
 
-# access and modify columns in featureData
-setMethod("featureData$", "factR", function(object,name) {
-    object@sets[[object@active.set]]@rowData[[name]]
-})
-setMethod("featureData<-", "factR", function(object,value) {
-    object@sets[[object@active.set]]@rowData <- value
-    object
-})
-setMethod("featureData$<-", "factR", function(object, name, value) {
-    object@sets[[object@active.set]]@rowData[[name]] <- value
-    object
-})
+# # access and modify columns in featureData
+# setMethod("featureData$", "factR", function(object,name) {
+#     object@sets[[object@active.set]]@rowData[[name]]
+# })
+# setMethod("featureData<-", "factR", function(object,value) {
+#     object@sets[[object@active.set]]@rowData <- value
+#     object
+# })
+# setMethod("featureData$<-", "factR", function(object, name, value) {
+#     object@sets[[object@active.set]]@rowData[[name]] <- value
+#     object
+# })
 
 # official function to add feature metadata
 setMethod("addFeatureData", "factR", function(object, data, colname = NULL, set = NULL) {
@@ -168,22 +168,10 @@ setMethod("addFeatureData", "factR", function(object, data, colname = NULL, set 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 # sample preview with option to subset data
-setMethod("sampleData", "factR", function(object) {
+setMethod("samples", "factR", function(object) {
     object@colData
 })
 
-# access and modify columns in sampleData
-setMethod("sampleData$", "factR", function(object,name) {
-    object@colData[[name]]
-})
-setMethod("sampleData<-", "factR", function(object,value) {
-    object@colData <- value
-    object
-})
-setMethod("sampleData$<-", "factR", function(object, name, value) {
-    object@colData[[name]] <- value
-    object
-})
 
 # official function to add sample metadata
 # setMethod("addSampleData", "factR", function(object, data, colname = NULL, set = NULL) {

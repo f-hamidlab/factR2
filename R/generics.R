@@ -112,19 +112,14 @@ setGeneric("granges", function(object, ..., set = NULL)
 #' @rdname preview-methods
 setGeneric("features", function(object, ..., set = NULL) standardGeneric("features"))
 
-setGeneric("featureData$", function(object, ...) standardGeneric("featureData$"))
-setGeneric("featureData<-", function(object, value) standardGeneric("featureData<-"))
-setGeneric("featureData$<-", function(object, ..., value) standardGeneric("featureData$<-"))
 setGeneric("addFeatureData", function(object, data, colname = NULL, set = NULL) standardGeneric("addFeatureData"))
 
 ################################################################################
 ## Previewing and modifying sampleData
 ################################################################################
 
-setGeneric("sampleData", function(object) standardGeneric("sampleData"))
-setGeneric("sampleData$", function(object, ...) standardGeneric("sampleData$"))
-setGeneric("sampleData<-", function(object, value) standardGeneric("sampleData<-"))
-setGeneric("sampleData$<-", function(object, ..., value) standardGeneric("sampleData$<-"))
+setGeneric("samples", function(object) standardGeneric("samples"))
+
 setGeneric("addSampleData", function(object, ..., set = NULL) standardGeneric("addSampleData"))
 
 

@@ -80,7 +80,7 @@ setMethod("addCountData", "factR", function(object, countData, sampleData, desig
 
     object@sets$transcript@counts <- countData[txs,]
     object@colData <- data.frame(row.names = colnames(countData))
-    object <- addSampleData(object, sampleData) 
+    object <- .addSampleData(object, sampleData) 
     object <- addDesign(object, design) 
 
     object <- .processCounts(object) 
@@ -89,7 +89,7 @@ setMethod("addCountData", "factR", function(object, countData, sampleData, desig
 })
 
 
-setMethod("addSampleData", "factR", function(object, sampleData) {
+.addSampleData <- function(object, sampleData) {
 
     # convert strings to factors 
     data.names <- rownames(sampleData)
@@ -98,12 +98,12 @@ setMethod("addSampleData", "factR", function(object, sampleData) {
 
 
     # add sampleData if no data is currently present
-    if(nrow(sampleData(object)) == 0){
-        sampleData(object) <- sampleData
+    if(nrow(samples(object)) == 0){
+        samples(object) <- sampleData
     }
     # else, check for sample consistencies
     else {
-        current_samples <- rownames(sampleData(object))
+        current_samples <- rownames(samples(object))
 
         if(!identical(rownames(sampleData), as.character(c(1:nrow(sampleData))))){
             if(!all(current_samples %in% rownames(sampleData))){
@@ -126,16 +126,17 @@ setMethod("addSampleData", "factR", function(object, sampleData) {
             }
         }
         # actual appending of data
-        sampleData(object) <- cbind(object@colData, sampleData[current_samples,])
+        samples(object) <- cbind(object@colData, sampleData[current_samples,])
     }
     return(object)
-})
+}
 
 
+setMethod("design", "factR", function(object, countData, sampleData, design, verbose = FALSE) {})
 
-setMethod("addDesign", "factR", function(object, design) {
+.addDesign <- function(object, design) {
     design <- formula(design)
-    sample.meta <- sampleData(object)
+    sample.meta <- samples(object)
 
     # check if design variables are in samples
     if(nrow(sample.meta) == 0){
@@ -147,16 +148,12 @@ setMethod("addDesign", "factR", function(object, design) {
 
         if(!all(vars %in% colnames(sample.meta))){
             rlang::abort("Some design variables not in samples metadata")
-
         } else {
             object@design <- design
-
         }
     }
-
-
     return(object)
-})
+}
 
 
 
