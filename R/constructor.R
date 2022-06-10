@@ -303,7 +303,8 @@ createfactRObject <- function(gtf, reference,
     if(verbose){
         rlang::inform("Annotating novel transcripts")
     }
-    newtxs <- suppressMessages(factR::subsetNewTranscripts(object@transcriptome,
+    gtf <- granges(object, set = "transcript") 
+    newtxs <- suppressMessages(factR::subsetNewTranscripts(gtf,
                                                            object@reference$ranges,
                                                            refine.by = "intron"))
     object@sets$transcript@rowData$novel <- ifelse(object[[]]$transcript_id %in% newtxs$transcript_id,
