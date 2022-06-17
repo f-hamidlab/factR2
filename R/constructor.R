@@ -292,10 +292,9 @@ createfactRObject <- function(gtf, reference,
     object@sets$AS@rowData <- as.data.frame(object@transcriptome) %>%
         dplyr::filter(type %in% "AS") %>%
         dplyr::mutate(coord = paste0(seqnames, ":", start, "-", end)) %>%
-        dplyr::mutate(id = paste0(coord, ":", AStype, ":", strand, ":", gene_id)) %>%
-        dplyr::select(id, gene_id, gene_name, coord, AStype, strand, width) %>%
+        dplyr::select(ASid, gene_id, gene_name, coord, AStype, strand, width) %>%
         dplyr::distinct()
-    rownames(object@sets$AS@rowData) <- object@sets$AS@rowData$id
+    rownames(object@sets$AS@rowData) <- object@sets$AS@rowData$ASid
     object@sets$AS@counts <- as.matrix(data.frame(row.names =  rownames(object[["AS"]])))
     object@sets$AS@data <- as.matrix(data.frame(row.names =  rownames(object[["AS"]])))
 
@@ -303,7 +302,7 @@ createfactRObject <- function(gtf, reference,
     if(verbose){
         rlang::inform("Annotating novel transcripts")
     }
-    gtf <- granges(object, set = "transcript") 
+    gtf <- granges(object, set = "transcript")
     newtxs <- suppressMessages(factR::subsetNewTranscripts(gtf,
                                                            object@reference$ranges,
                                                            refine.by = "intron"))
