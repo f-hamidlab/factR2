@@ -35,7 +35,7 @@ obj <- testASNMDevents(obj)
 test_that("Test testASNMD functionality", {
     expect_error(testASNMDevents(factRsample))
     featdata <- obj[["AS"]]
-    expect_equal(nrow(featdata[featdata$ASNMDtype == "Repressing",]), 16)
+    expect_equal(nrow(featdata[featdata$ASNMDtype == "Repressing",]), 15)
 })
 
 
