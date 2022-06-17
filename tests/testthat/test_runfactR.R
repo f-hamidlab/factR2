@@ -5,9 +5,9 @@ data("factRsample")
 
 obj <- buildCDS(factRsample)
 test_that("Test buildCDS functionality", {
-    expect_equal(length(obj@transcriptome), 1943)
+    expect_equal(length(obj@transcriptome), 2069)
     featdata <- obj[["transcript"]]
-    expect_equal(nrow(featdata[featdata$cds == "yes",]), 82)
+    expect_equal(nrow(featdata[featdata$cds == "yes",]), 83)
 })
 
 
@@ -21,7 +21,7 @@ test_that("Test predictNMD functionality", {
 obj <- getAAsequence(obj)
 test_that("Test getAAsequence functionality", {
     expect_error(getAAsequence(factRsample))
-    expect_equal(length(obj@domains$sequence), 82)
+    expect_equal(length(obj@domains$sequence), 83)
     expect_equal(as.character(class(obj@domains$sequence)), "AAStringSet")
 })
 
