@@ -66,7 +66,6 @@ setMethod("testASNMDevents", "factR", function(object, verbose = FALSE) {
     if(length(ASevents) == 1){
         rlang::abort("No AS events found. Please run findAltSplicing() first")
     }
-    return(ASevents)
 
 
     # check input objects
@@ -78,24 +77,26 @@ setMethod("testASNMDevents", "factR", function(object, verbose = FALSE) {
 
     # run core function
     if(verbose){ rlang::inform("Testing AS-NMD exons")}
-    ASNMDevents <- .runidentifynmdexons(gtf, ASevents, genes, ref, object@reference$genome)
-
+    ASNMDevents <- .runidentifynmdexons(ASevents, genes, ref, object@reference$genome)
 
     # update AS events if returned object is not null
     if(!is.null(ASNMDevents)){
-        ASNMD.hits <- IRanges::findOverlaps(ASevents, ASNMDevents,
-                                            type = "equal")
-        ASevents$ASNMDtype <- "NA"
-        ASevents[S4Vectors::queryHits(ASNMD.hits)]$ASNMDtype <- ASNMDevents[S4Vectors::subjectHits(ASNMD.hits)]$NMDtype
-        ASevents$ASNMD.in.cds <- "NA"
-        ASevents[S4Vectors::queryHits(ASNMD.hits)]$ASNMD.in.cds <- as.character(ASNMDevents[S4Vectors::subjectHits(ASNMD.hits)]$within.CDS)
+        ASevents$ASNMDtype <- ifelse(ASevents$ASid %in% rownames(ASNMDevents),
+                                     ASNMDevents[ASevents$ASid,]$NMDtype, "NA")
+        ASevents$ASNMD.in.cds <- ifelse(ASevents$ASid %in% rownames(ASNMDevents),
+                                     ASNMDevents[ASevents$ASid,]$within.CDS, "NA")
         gtf.others <- gtf[gtf$type != "AS"]
-        slot(object, "transcriptome") <- c(gtf.others, ASevents)
+        object@transcriptome <- c(gtf.others, ASevents)
 
         # update featureData
         if(verbose){ rlang::inform("Updating AS feature data")}
-        object <- mutate(object, ASNMDtype = ASevents$ASNMDtype,
-                         ASNMD.in.cds = ASevents$ASNMD.in.cds, data = "AS")
+        ASevents.id <- rownames(features(obj2, set = "AS"))
+        object <- mutate(object,
+                         ASNMDtype = ifelse(ASevents.id %in% ASNMDevents$ASid,
+                                            ASNMDevents[ASevents.id,]$NMDtype, "NA"),
+                         ASNMD.in.cds = ifelse(ASevents.id %in% ASNMDevents$ASid,
+                                               ASNMDevents[ASevents.id,]$within.CDS, "NA"),
+                         data = "AS")
     }
 
     return(object)
@@ -124,17 +125,17 @@ setMethod("testASNMDevents", "factR", function(object, verbose = FALSE) {
 
 
 
-.runidentifynmdexons <- function(x, ASevents, genes, ref, genome) {
+.runidentifynmdexons <- function(ASevents, genes, ref, genome) {
 
     #rlang::inform("Finding NMD causing exons")
-    NMD.pos <- genes[genes$nmd == "yes",]$transcript_id
-
-    # get AS segments between NMD transcript and reference transcript
-    ## shortlist NMD transcripts from GTF
-    x.NMD <- x[x$transcript_id %in% NMD.pos]
-
-    # shortlist NMD transcripts from genes containing reference mRNAs
-    x.NMD <- x.NMD[x.NMD$gene_id %in% ref$gene_id]
+    # NMD.pos <- genes[genes$nmd == "yes",]$transcript_id
+    #
+    # # get AS segments between NMD transcript and reference transcript
+    # ## shortlist NMD transcripts from GTF
+    # x.NMD <- x[x$transcript_id %in% NMD.pos]
+    #
+    # # shortlist NMD transcripts from genes containing reference mRNAs
+    # x.NMD <- x.NMD[x.NMD$gene_id %in% ref$gene_id]
 
     ## get AS segments and annotate its splicing nature
     ASevents$splice <- ifelse(ASevents$transcript_id %in% ref$transcript_id,
@@ -154,8 +155,8 @@ setMethod("testASNMDevents", "factR", function(object, verbose = FALSE) {
         dplyr::mutate(coord = paste0(seqnames, "_", start, "_",
                                      end, "_", strand, "_", AStype)) %>%
         dplyr::arrange(splice) %>%
-        dplyr::select(gene_id, transcript_id, coord, splice) %>%
-        dplyr::distinct(coord, .keep_all = TRUE)
+        dplyr::select(ASid, gene_id, transcript_id, coord, splice) %>%
+        dplyr::distinct(ASid, .keep_all = TRUE)
 
     # recreate hypothetical tx by inserting/removing AS segments
     ## create grl of ref trancripts
@@ -216,18 +217,19 @@ setMethod("testASNMDevents", "factR", function(object, verbose = FALSE) {
         return(NULL)
     }
 
+
+
     # Report NMD exons
     ASevents <- ASevents %>%
         dplyr::left_join(mod.NMD %>% dplyr::select(transcript, is_NMD),
                          by = c("coord"="transcript")) %>%
         dplyr::mutate(NMDtype = ifelse(splice == "skipped", "Repressing", "Stimulating")) %>%
-        dplyr::select(coord, gene_id, NMDtype, is_NMD) %>%
+        dplyr::select(coord, ASid, gene_id, NMDtype, is_NMD) %>%
         tidyr::separate(coord, c("seqnames", "start", "end", "strand", "AStype"),
                         sep = "_") %>%
         dplyr::filter(is_NMD) %>%
-        dplyr::select(seqnames:strand, gene_id, AStype, NMDtype) %>%
+        dplyr::select(seqnames:strand, gene_id, AStype, ASid, NMDtype) %>%
         GenomicRanges::makeGRangesFromDataFrame(keep.extra.columns = TRUE)
-    ASevents$is_NMD <- NULL
 
     # Annotate location of NMD events relative to reference CDS
     ## Useful to know if exons are 3'UTR introns etc
@@ -252,8 +254,10 @@ setMethod("testASNMDevents", "factR", function(object, verbose = FALSE) {
     #
     #
     # }
+    out.df <- S4Vectors::mcols(ASevents)[c("ASid", "NMDtype", "within.CDS")]
+    rownames(out.df) <- out.df$ASid
 
-    return(ASevents)
+    return(out.df)
 }
 
 
