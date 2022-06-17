@@ -2,7 +2,8 @@
 
 
 
-
+setGeneric("addTxCounts", function(object, countData, sampleData,
+                                   design, verbose = FALSE) standardGeneric("addTxCounts"))
 setMethod("addTxCounts", "factR", function(object, countData, sampleData, design, verbose = FALSE) {
 
     # catch missing args
@@ -44,7 +45,7 @@ setMethod("addTxCounts", "factR", function(object, countData, sampleData, design
 
     # convert strings to factors
     data.names <- rownames(sampleData)
-    sampleData <- as.data.frame(unclass(testSamples),stringsAsFactors=TRUE)
+    sampleData <- as.data.frame(unclass(sampleData),stringsAsFactors=TRUE)
     rownames(sampleData) <- data.names
 
 
@@ -128,26 +129,24 @@ setMethod("design<-", "factR", function(object, value) .addDesign(object, value)
     gtf <- object@transcriptome
     AS.txs.included <- gtf %>% as.data.frame() %>%
         dplyr::filter(type == "AS") %>%
-        dplyr::mutate(id = paste0(seqnames, ":", start, "-", end, ":", AStype)) %>%
-        dplyr::distinct(id, transcript_id)
-    AS.txs.skipped <- gtf %>% as.data.frame() %>%
-        dplyr::filter(type == "AS") %>%
-        dplyr::mutate(id = paste0(seqnames, ":", start, "-", end, ":", AStype)) %>%
-        dplyr::distinct(id, gene_id) %>%
-        dplyr::left_join(txdata, by = "gene_id") %>%
-        dplyr::select(transcript_id, id)
-    AS.txs.skipped <- dplyr::setdiff(AS.txs.skipped, AS.txs.included)
+        dplyr::distinct(ASid, transcript_id)
+
+    ASevents <- granges(object, set = "AS")
+    transcripts <- granges(object, set = "transcript")
+    transcripts <- transcripts[transcripts$type == "transcript"]
+
+    AS.txs.overlap <- as.data.frame(IRanges::mergeByOverlaps(transcripts, ASevents))
+    AS.txs.overlap <- dplyr::distinct(as.data.frame(AS.txs.overlap[c("transcript_id", "ASid.1")]))
 
     AS.txs.included.normcounts <- txcounts.norm[AS.txs.included$transcript_id,]
-    AS.txs.included.normcounts <- rowsum(AS.txs.included.normcounts, AS.txs.included$id)
+    AS.txs.included.normcounts <- rowsum(AS.txs.included.normcounts, AS.txs.included$ASid)
 
-    AS.txs.skipped.normcounts <- txcounts.norm[AS.txs.skipped$transcript_id,]
-    AS.txs.skipped.normcounts <- rowsum(AS.txs.skipped.normcounts, AS.txs.skipped$id)
+    AS.txs.all.normcounts <- txcounts.norm[AS.txs.overlap$transcript_id,]
+    AS.txs.all.normcounts <- rowsum(AS.txs.all.normcounts, AS.txs.overlap$ASid)
 
-    AS.txs.sum.normcounts <- AS.txs.included.normcounts + AS.txs.skipped.normcounts
-    AS.psi <- AS.txs.included.normcounts/AS.txs.sum.normcounts
+    AS.psi <- AS.txs.included.normcounts/AS.txs.all.normcounts
     AS.psi <- signif(AS.psi, digits = 3)
-    object@sets$AS@data <- AS.psi
+    object@sets$AS@data <- AS.psi[rownames(object@sets$AS@rowData),]
 
     # normalize gene and tx data
     gene.dds <- DESeq2::DESeqDataSetFromMatrix(genecounts, object@colData, object@design)
