@@ -3,39 +3,44 @@ setMethod("plotTranscripts", "factR", function(object, ...,
 
 
     # select features by data
-    x <- granges(object,..., set = "transcript")
+    feat <- .getFeat(object, ...)
+    x <- object@transcriptome
+    x <- x[x$transcript_id %in% feat & !x$type %in% c("AS", "gene")]
 
     # correct genes with no gene name
     x$gene_name <- ifelse(is.na(x$gene_name), x$gene_id, x$gene_name)
     genes <- unique(x$gene_name)
 
     # control for too many genes to plot
-    if(length(genes) > 9){
+    if(length(genes) > 1){
         rlang::warn("Too many genes to plot, plotting first 9")
-        genes <- genes[1:9]
-        ncol <-  3
+        genes <- genes[1]
+        x <- x[x$gene_name %in% genes]
     }
-    plot <- BiocGenerics::do.call(
-        patchwork::wrap_plots,
-        lapply(genes, function(y){
-            # Fetch gene exons and cdss
-            exons <- S4Vectors::split(x[x$type == "exon" & x$gene_name == y], ~transcript_id)
-            cdss <- S4Vectors::split(x[x$type == "CDS" & x$gene_name == y], ~transcript_id)
-            #as <- S4Vectors::split(x[x$type == "AS" & x$gene_name == y], ~transcript_id)
-            if (length(cdss) == 0) {
-                cdss <- NULL
-            }
 
-            # main plot function
-            suppressWarnings(wiggleplotr::plotTranscripts(
-                exons = exons,
-                cdss = cdss[names(cdss) %in% names(exons)],
-                rescale_introns = rescale_introns
-            )) + ggplot2::ggtitle(y) +
-                ggplot2::theme(strip.background.y = ggplot2::element_blank())
-        }))
 
-    plot + patchwork::plot_layout(ncol = ncol)
+    .plotTx(x)
+    # plot <- BiocGenerics::do.call(
+    #     patchwork::wrap_plots,
+    #     lapply(genes, function(y){
+    #         # Fetch gene exons and cdss
+    #         exons <- S4Vectors::split(x[x$type == "exon" & x$gene_name == y], ~transcript_id)
+    #         cdss <- S4Vectors::split(x[x$type == "CDS" & x$gene_name == y], ~transcript_id)
+    #         #as <- S4Vectors::split(x[x$type == "AS" & x$gene_name == y], ~transcript_id)
+    #         if (length(cdss) == 0) {
+    #             cdss <- NULL
+    #         }
+    #
+    #         # main plot function
+    #         suppressWarnings(wiggleplotr::plotTranscripts(
+    #             exons = exons,
+    #             cdss = cdss[names(cdss) %in% names(exons)],
+    #             rescale_introns = rescale_introns
+    #         )) + ggplot2::ggtitle(y) +
+    #             ggplot2::theme(strip.background.y = ggplot2::element_blank())
+    #     }))
+    #
+    # plot + patchwork::plot_layout(ncol = ncol)
 
 })
 
@@ -150,6 +155,90 @@ setMethod("plotDomains", "factR", function(object, ..., ncol = 1){
 
 
 
+
+.plotTx <- function(gtf){
+
+    gtf <- as.data.frame(gtf)
+    order <- gtf %>%
+        dplyr::distinct(transcript_id, gene_name) %>%
+        dplyr::group_by(gene_name) %>%
+        dplyr::mutate(order = dplyr::row_number())
+    gtf <- gtf %>% dplyr::left_join(order,
+                                    by = c("transcript_id", "gene_name"))
+
+    data.names <- gtf %>%
+        dplyr::distinct(order, transcript_id, strand, start, end) %>%
+        dplyr::arrange(order)
+
+    # plot canvas
+    txs <- dplyr::filter(gtf, type == "transcript")
+    range <- c(min(txs$start), (max(txs$end)))
+    buffer <- 0.1*(range[2]-range[1])
+    range[1] <- range[1]-buffer
+    range[2] <- range[2]+buffer
+
+
+    plot <- ggplot2::ggplot(gtf, ggplot2::aes(y=order)) +
+        ggplot2::xlim(range) +
+        labs(y = "", x = sprintf("Genome position (%s)", unique(gtf$seqnames))) +
+        theme_bw() +
+        scale_y_continuous(
+            breaks = data.names$order,
+            labels = data.names$transcript_id)
+
+    # plot transcripts
+    plot <- plot +
+        geom_segment(data = txs, mapping = aes(x = start, xend = end, yend = order),
+                     colour = "#0000b2", size = 0.2)
+
+    # plot exons
+    exons <- dplyr::filter(gtf, type == "exon")
+    plot <- plot +
+        geom_rect(data = exons,
+                  fill = "#0000b2",
+                  mapping = aes(xmin = start, xmax = end,
+                                              ymin = order-0.06, ymax = order+0.06))
+
+
+    # plot CDS
+    if("CDS" %in% gtf$type){
+        print("CDS")
+        cds <- dplyr::filter(gtf, type == "CDS")
+        plot <- plot +
+            geom_rect(data = cds,
+                      fill = "#0000b2",
+                      mapping = aes(xmin = start, xmax = end,
+                                    ymin = order-0.15, ymax = order+0.15))
+    }
+
+
+    # plot arrows
+    increments <- (range[2]-range[1])/15
+    arrows <- data.names %>%
+        dplyr::mutate(seqnames = unique(gtf$seqnames)) %>%
+        dplyr::mutate(range = list(seq(range[1], range[2], by =increments))) %>%
+        tidyr::unnest(cols = c(range)) %>%
+        dplyr::mutate(rangeend = ifelse(strand == "-", range+1, range-1)) %>%
+        dplyr::filter(range > (start+100) & range < (end-100))
+    # plot <- plot +
+    #     geom_segment(data = arrows, mapping = aes(x=range, xend=rangeend,
+    #                                               yend=order), color = "#0000b2",
+    #                  arrow = arrow(length = unit(0.01, "npc")),
+    #                  size = 0.5, lineend = "round", linejoin = "round")
+
+
+    #return(plot)
+
+
+    g <- plotly::ggplotly(plot) %>%
+        plotly::add_annotations(data = arrows, text = "", x=~range,
+                                y = arrows$order, ay = 0.0000001, showarrow = TRUE,
+                                arrowcolor = "#0000b2", arrowsize = 0.8)
+
+    return(g)
+
+
+}
 
 
 
