@@ -77,9 +77,46 @@
         altexons$AStype <- toupper(altannotate$AStype)
         altexons <- altexons[!is.na(altexons$AStype) & altannotate$same.group]
         altexons$pos <- altexons$hit <- altexons$termini <-altexons$grouping <- NULL
-        altexons$transcript_id <- NULL
-        altexons <- unique(altexons)
+
+        # add ID
+        altexons.id <- altexons %>%
+            as.data.frame() %>%
+            dplyr::distinct(seqnames, start, end, strand, gene_id, gene_name, AStype) %>%
+            dplyr::mutate(ASid = sprintf("AS%05d", dplyr::row_number()))
+
+        altexons <- altexons %>%
+            as.data.frame() %>%
+            dplyr::left_join(altexons.id, by = c("seqnames", "start", "end",
+                                                 "strand", "gene_id", "gene_name",
+                                                 "AStype")) %>%
+            GenomicRanges::makeGRangesFromDataFrame(keep.extra.columns = T)
+
 
         return(BiocGenerics::sort(altexons))
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
