@@ -3,7 +3,7 @@ setMethod("plotTranscripts", "factR", function(object, ...,
 
 
     # select features by data
-    x <- ranges(object,..., set = "transcript") 
+    x <- granges(object,..., set = "transcript")
 
     # correct genes with no gene name
     x$gene_name <- ifelse(is.na(x$gene_name), x$gene_id, x$gene_name)
@@ -50,7 +50,7 @@ setMethod("plotDomains", "factR", function(object, ..., ncol = 1){
 
 
     # get transcripts to test
-    genetxs <- featureData(object, ..., set = "transcript")
+    genetxs <- features(object, ..., set = "transcript")
     genetxs$gene_name <- ifelse(is.na(genetxs$gene_name), genetxs$gene_id, genetxs$gene_name)
     txs <- genetxs$transcript_id
 
@@ -65,20 +65,20 @@ setMethod("plotDomains", "factR", function(object, ..., ncol = 1){
     }
 
     datatoplot <- object@domains$data
-    datatoplot <- datatoplot[datatoplot$entryName %in% txs,]
+    datatoplot <- datatoplot[datatoplot$transcript_id %in% txs,]
     datatoplot <- datatoplot %>%
         dplyr::left_join(genetxs[c("transcript_id","gene_name")] ,
-                         by = c("entryName"="transcript_id"))
+                         by = c("transcript_id"="transcript_id"))
     datatoplot.order <- datatoplot %>%
-        dplyr::distinct(entryName, gene_name) %>%
+        dplyr::distinct(transcript_id, gene_name) %>%
         dplyr::group_by(gene_name) %>%
         dplyr::mutate(order = dplyr::row_number())
     datatoplot <- datatoplot %>% dplyr::left_join(datatoplot.order,
-                                                  by = c("entryName", "gene_name"))
+                                                  by = c("transcript_id", "gene_name"))
 
     ## return warning for non-coding transcripts
-    if(any(!txs %in% datatoplot$entryName)){
-        not.plotted <- txs[!txs %in% datatoplot$entryName]
+    if(any(!txs %in% datatoplot$transcript_id)){
+        not.plotted <- txs[!txs %in% datatoplot$transcript_id]
         rlang::warn(sprintf("These transcripts are non-coding: %s",
                             paste(not.plotted, collapse = ", ")))
     }
@@ -112,12 +112,12 @@ setMethod("plotDomains", "factR", function(object, ..., ncol = 1){
     # data <- data %>%
     #     dplyr::mutate(order = factor(order, levels = unique(order)))
     data.names <- data %>%
-        dplyr::distinct(order, entryName) %>%
+        dplyr::distinct(order, transcript_id) %>%
         dplyr::arrange(order)
     domains.data <- data %>%
         dplyr::filter(type == "DOMAIN")
     data %>%
-        dplyr::mutate(entryName = factor(entryName, levels = unique(entryName))) %>%
+        dplyr::mutate(transcript_id = factor(transcript_id, levels = unique(transcript_id))) %>%
         ggplot2::ggplot(ggplot2::aes(y = order)) +
         ggplot2::geom_segment(ggplot2::aes(x=0, xend = end, yend=order), colour = "grey") +
         ggplot2::geom_rect(data = domains.data, ggplot2::aes(ymin = order-0.25,
@@ -131,7 +131,7 @@ setMethod("plotDomains", "factR", function(object, ..., ncol = 1){
         #                    size = 3) +
         ggplot2::scale_y_continuous(
             breaks = data.names$order,
-            labels = data.names$entryName) +
+            labels = data.names$transcript_id) +
         ggplot2::scale_x_continuous(expand = ggplot2::expansion(c(0.01,0.05))) +
         ggplot2::labs(x="Amino acid number", y = "", fill = "Domains") +
         ggplot2::theme_classic() +
