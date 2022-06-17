@@ -25,7 +25,7 @@ factR2version <- "0.99.0"
 
 .getFeat <- function(object, ..., out = "transcript_id"){
     if(missing(...)){
-        return(unique(S4Vectors::mcols(object@transcriptome)[[out]]))
+        return(unique(na.omit(S4Vectors::mcols(object@transcriptome)[[out]])))
     } else {
         genetxs.features <- object@transcriptome %>%
             as.data.frame() %>%
@@ -33,7 +33,7 @@ factR2version <- "0.99.0"
             dplyr::mutate(tx = transcript_id, gene = gene_id) %>%
             tidyr::gather("type", "feature", gene, gene_name, tx) %>%
             dplyr::filter(feature %in% c(...))
-        return(unique(genetxs.features[[out]]))
+        return(unique(na.omit(genetxs.features[[out]])))
 
 
     }
