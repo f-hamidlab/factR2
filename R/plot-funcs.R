@@ -202,7 +202,6 @@ setMethod("plotDomains", "factR", function(object, ..., ncol = 1){
 
     # plot CDS
     if("CDS" %in% gtf$type){
-        print("CDS")
         cds <- dplyr::filter(gtf, type == "CDS")
         plot <- plot +
             geom_rect(data = cds,
