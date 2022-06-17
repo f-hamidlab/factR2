@@ -37,7 +37,7 @@ setMethod("predictDomain", "factR", function(object,
     }
 
     # get transcripts to test
-    genetxs <- featureData(object, ..., set = "transcript")
+    genetxs <- features(object, ..., set = "transcript")
     txs <- genetxs$transcript_id
 
 
