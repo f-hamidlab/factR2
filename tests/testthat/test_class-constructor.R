@@ -21,12 +21,12 @@ test_that("Test correct object structure", {
 
 data('factRsample')
 test_that("Test factRobject", {
-    expect_equal(ncol(S4Vectors::mcols(factRsample@transcriptome)), 12)
+    expect_equal(ncol(S4Vectors::mcols(factRsample@transcriptome)), 13)
     expect_equal(length(factRsample@sets), 3)
 
     expect_equal(nrow(factRsample@sets$transcript@rowData), 154)
     expect_equal(nrow(factRsample@sets$gene@rowData), 47)
-    expect_equal(nrow(factRsample@sets$AS@rowData), 123)
+    expect_equal(nrow(factRsample@sets$AS@rowData), 133)
 
     featdata <- factRsample[["transcript"]]
     expect_equal(nrow(featdata[featdata$novel == "yes",]), 46)
