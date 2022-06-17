@@ -3,5 +3,6 @@
 export(runfactR)
 export(testASNMDevents)
 exportClasses(factR)
+import(ggplot2)
 importFrom(dplyr,"%>%")
 importFrom(methods,slot)

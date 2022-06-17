@@ -38,6 +38,7 @@
 #'
 #' @importFrom dplyr %>%
 #' @importFrom methods slot
+#' @import ggplot2
 #'
 setClass("factR",
          slots = c(
