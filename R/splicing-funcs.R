@@ -1,6 +1,6 @@
 .findAS <-  function(object) {
     gtf <- slot(object, "transcriptome")
-    gtf <- c(gtf, .runAS(gtf[gtf$type == "exon"]))
+    gtf <- c(gtf[gtf$type != "AS"], .runAS(gtf[gtf$type == "exon"]))
     slot(object, "transcriptome") <- gtf
     return(object)
 }
