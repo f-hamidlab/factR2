@@ -181,6 +181,16 @@ setGeneric("design", function(object) standardGeneric("design"))
 setMethod("design", "factR", function(object) object@design)
 
 
+
+### Domains ####
+setGeneric("domains", function(object, ...) standardGeneric("domains"))
+setMethod("domains", "factR", function(object, ...){
+    feat <- .getFeat(object, ...)
+    domains <- object@domains$data
+    domains[domains$transcript_id %in% feat & domains$type == "DOMAIN",]
+})
+
+
 #XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 ## Setters ====
 #XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
@@ -194,6 +204,8 @@ setMethod("activeSet<-", "factR", function(object, value){
 
 ### Set design ####
 setGeneric("design<-", function(object, value) standardGeneric("design<-"))
+
+
 
 ### Add features/sample data ####
 setGeneric("mutate", function(object, ..., data = "samples") standardGeneric("mutate"))
@@ -251,8 +263,6 @@ setGeneric("plotDomains", function(object, ..., ncol = 1) standardGeneric("plotD
 
 
 
-
-setGeneric("addTxCounts", function(object, countData, sampleData = NULL, design = NULL, verbose = FALSE) standardGeneric("addTxCounts"))
 
 
 
