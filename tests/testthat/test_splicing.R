@@ -80,7 +80,8 @@ test_that("Test .runAS functionality", {
 })
 
 test_that("Test findAltSplicing generics", {
-    out <- findAltSplicing(factRsample)
+    out <- .findAS(factRsample)
+    expect_identical(out, factRsample)
     gtf <- out@transcriptome
     gtf <- gtf[gtf$type == "AS"]
     expect_equal(as.character(class(gtf)), "GRanges")
