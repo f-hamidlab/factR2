@@ -149,7 +149,32 @@ setMethod("features", "factR", function(object, ..., set = NULL) {
 setGeneric("samples", function(object) standardGeneric("samples"))
 setMethod("samples", "factR", function(object) { object@colData })
 
+
 ### Counts ####
+setGeneric("counts", function(object, ..., set = NULL, slot = "data") standardGeneric("counts"))
+setMethod("counts", "factR", function(object, ..., set = NULL) {
+    if(is.null(set)){
+        set <- slot(object, "active.set")
+    } else if(!set %in% listSets(object)){
+        rlang::warn("Incorrect set name or index, using active set")
+        set <- slot(object, "active.set")
+    }
+
+    if(set == "AS"){
+        dat <- slot(object@sets[[set]], "data")
+        feat <- .getFeat(object, ..., out = "gene_id")
+        ASdata <- object[["AS"]]
+        selected_AS <- ASdata[ASdata$gene_id %in% feat,]$ASid
+        return(dat[selected_AS,])
+
+    } else {
+        dat <- slot(object@sets[[set]], slot)
+        out.type <- ifelse(set == "transcript", "transcript_id", "gene_id")
+        feat <- .getFeat(object, ..., out = out.type)
+        return(dat[feat,])
+    }
+})
+
 
 ### Design ####
 setGeneric("design", function(object) standardGeneric("design"))
