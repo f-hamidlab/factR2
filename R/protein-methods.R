@@ -131,7 +131,7 @@ setMethod("predictDomain", "factR", function(object,
 
 
 .runDomainSearch <- function(aaSeq, db = "superfamily", numcores = 1) {
-    type <- entryName <- description <- begin <- id <- NULL
+    type <- transcript_id <- description <- begin <- id <- NULL
 
     # prepare URL
     url <- paste("https://www.ebi.ac.uk/Tools/hmmer/search/hmmscan")
@@ -157,8 +157,7 @@ setMethod("predictDomain", "factR", function(object,
                                   eval = NA,
                                   begin = 1,
                                   end = length(aaSeq[[y]]),
-                                  entryName = y,
-                                  database = db))
+                                  transcript_id = y))
         } else {
             return(dplyr::bind_rows(
                 report,
@@ -167,8 +166,7 @@ setMethod("predictDomain", "factR", function(object,
                                eval = NA,
                                begin = 1,
                                end = length(aaSeq[[y]]),
-                               entryName = y,
-                               database = db)
+                               transcript_id = y)
             ))
         }
     }, BPPARAM = BiocParallel::MulticoreParam(tasks = numcores)) %>%
@@ -209,7 +207,7 @@ setMethod("predictDomain", "factR", function(object,
                           eval = x$cevalue,
                           begin = as.numeric(x$alisqfrom),
                           end = as.numeric(x$alisqto),
-                          entryName = id
+                          transcript_id = id
                           ))
     })
 }
