@@ -194,24 +194,19 @@ createfactRObject <- function(gtf, reference,
     if(verbose){
         rlang::inform("Matching gene names")
     }
-    custom.df <- as.data.frame(object@transcriptome)
-    potential_id_vars <- apply(custom.df, 2, function(x) any(grepl("ENS",x)))
-    potential_id <- names(potential_id_vars)[potential_id_vars]
-    potential_id <- potential_id[-which("transcript_id" %in% potential_id)]
-    if(length(potential_id > 1)){
+    if("ref_gene_id" %in% colnames(as.data.frame(object@transcriptome))){
         if(verbose){
             object@transcriptome <- factR::matchGeneInfo(object@transcriptome,
                                                          object@reference$ranges,
                                                          primary_gene_id = "gene_id",
-                                                         secondary_gene_id = potential_id)
+                                                         secondary_gene_id = "ref_gene_id")
         } else {
             object@transcriptome <- suppressMessages(
                 factR::matchGeneInfo(object@transcriptome,
                                      object@reference$ranges,
                                      primary_gene_id = "gene_id",
-                                     secondary_gene_id = potential_id))
+                                     secondary_gene_id = "ref_gene_id"))
         }
-
     } else {
         if(verbose){
             object@transcriptome <- factR::matchGeneInfo(object@transcriptome,
@@ -224,6 +219,43 @@ createfactRObject <- function(gtf, reference,
                                      primary_gene_id = "gene_id"))
         }
     }
+
+
+
+
+
+    # custom.df <- as.data.frame(object@transcriptome)
+    # potential_id_vars <- apply(custom.df, 2, function(x) any(grepl("ENS",x)))
+    # potential_id <- names(potential_id_vars)[potential_id_vars]
+    # potential_id <- potential_id[-which( potential_id %in% "transcript_id")]
+
+
+    # if(length(potential_id > 1)){
+    #     if(verbose){
+    #         object@transcriptome <- factR::matchGeneInfo(object@transcriptome,
+    #                                                      object@reference$ranges,
+    #                                                      primary_gene_id = "gene_id",
+    #                                                      secondary_gene_id = potential_id)
+    #     } else {
+    #         object@transcriptome <- suppressMessages(
+    #             factR::matchGeneInfo(object@transcriptome,
+    #                                  object@reference$ranges,
+    #                                  primary_gene_id = "gene_id",
+    #                                  secondary_gene_id = potential_id))
+    #     }
+    #
+    # } else {
+    #     if(verbose){
+    #         object@transcriptome <- factR::matchGeneInfo(object@transcriptome,
+    #                                                      object@reference$ranges,
+    #                                                      primary_gene_id = "gene_id")
+    #     } else {
+    #         object@transcriptome <- suppressMessages(
+    #             factR::matchGeneInfo(object@transcriptome,
+    #                                  object@reference$ranges,
+    #                                  primary_gene_id = "gene_id"))
+    #     }
+    # }
 
     # Add 'gene' type in GTF
     if(!"gene" %in% object@transcriptome$type){
@@ -285,7 +317,7 @@ createfactRObject <- function(gtf, reference,
     object@sets$transcript@data <- as.matrix(data.frame(row.names =  rownames(object[["transcript"]])))
 
     if(verbose){
-        rlang::inform("## Adding Alternative splicing information")
+        rlang::inform("## Adding alternative splicing information")
     }
     object@sets$AS <- methods::new("factRset")
     object <- .findAS(object)
