@@ -90,7 +90,7 @@ setMethod("testASNMDevents", "factR", function(object, verbose = FALSE) {
 
         # update featureData
         if(verbose){ rlang::inform("Updating AS feature data")}
-        ASevents.id <- rownames(features(obj2, set = "AS"))
+        ASevents.id <- rownames(features(object, set = "AS"))
         object <- mutate(object,
                          ASNMDtype = ifelse(ASevents.id %in% ASNMDevents$ASid,
                                             ASNMDevents[ASevents.id,]$NMDtype, "NA"),
