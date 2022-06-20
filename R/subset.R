@@ -1,19 +1,21 @@
+select.factR <- function(object, ...){
+    samples <- object@colData
+    samples$old.names <- rownames(samples)
+    samples <- as.data.frame(t(samples))
 
+    # perform col selection
+    samples <- as.data.frame(t(dplyr::select(samples, ...)))
 
-setMethod("[", signature("factR"), function (x, i, j){
-    # check features
-    gtf <- methods::slot(x, "custom")
-    genetxs <- methods::slot(x, name = "txdata")
-    if(missing(i)){
-        gtf <- gtf
-    } else if(typeof(i) %in% c("integer", "double")){
-        gtf <- gtf[i]
-    } else if(typeof(i) %in% c("logical")){
-        gtf <- gtf[i]
-    } else {
-        txs <- tryCatch(.getTxs(x, i),
-                        error = function(e) rlang::abort("Feature not found"))
-        gtf <- gtf[gtf$transcript_id %in% txs]
+    # correct counts data
+    for(i in listSets(object)){
+
+        if(!i %in% "AS"){
+            object@sets[[i]]@counts <- object@sets[[i]]@counts[,samples$old.names]
+            colnames(object@sets[[i]]@counts) <- rownames(samples)
+        }
+        object@sets[[i]]@data <- object@sets[[i]]@data[,samples$old.names]
+        colnames(object@sets[[i]]@data) <- rownames(samples)
     }
-    gtf[,j]
-})
+
+    return(object)
+}
