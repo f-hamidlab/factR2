@@ -21,7 +21,7 @@ setMethod("runfactR", "factR", function(object, verbose = FALSE) {
     object <- buildCDS(object, verbose)
     object <- predictNMD(object, verbose = verbose)
     object <- getAAsequence(object, verbose)
-    object <- testASNMDevents(object)
+    object <- testASNMDevents(object, verbose)
     object
 })
 
