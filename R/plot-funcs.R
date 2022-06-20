@@ -1,5 +1,7 @@
 setMethod("plotTranscripts", "factR", function(object, ...,
-                                    rescale_introns = FALSE, ncol = 1) {
+                                               collapse = FALSE,
+                                               rescale_introns = FALSE,
+                                               ncol = 1) {
 
 
     # select features by data
@@ -19,7 +21,7 @@ setMethod("plotTranscripts", "factR", function(object, ...,
     }
 
 
-    .plotTx(x)
+    .plotTx(x, collapse, rescale_introns)
     # plot <- BiocGenerics::do.call(
     #     patchwork::wrap_plots,
     #     lapply(genes, function(y){
@@ -156,7 +158,72 @@ setMethod("plotDomains", "factR", function(object, ..., ncol = 1){
 
 
 
-.plotTx <- function(gtf){
+.plotTx <- function(gtf, collapse = FALSE, rescale = FALSE){
+
+
+    if(collapse){
+        # make collapsed exon arch
+        new.gtf <- IRanges::reduce(gtf[gtf$type == "exon"])
+        new.gtf$transcript_id <- unique(gtf$gene_name)
+        new.gtf$gene_name <- unique(gtf$gene_name)
+        new.gtf$type <- "exon"
+
+        # add transcript biotype
+        tx.gtf <- range(new.gtf)
+        tx.gtf$type <- "transcript"
+        tx.gtf$transcript_id <- unique(gtf$gene_name)
+        tx.gtf$gene_name <- unique(gtf$gene_name)
+        new.gtf <- c(new.gtf, tx.gtf)
+
+        # add CDS if present
+        if("CDS" %in% gtf$type){
+            cds.gtf <- IRanges::reduce(gtf[gtf$type == "CDS"])
+            cds.gtf$transcript_id <- unique(gtf$gene_name)
+            cds.gtf$gene_name <- unique(gtf$gene_name)
+            cds.gtf$type <- "CDS"
+            new.gtf <- c(new.gtf, cds.gtf)
+
+        }
+
+
+        gtf <- new.gtf
+    }
+
+
+    if(rescale){
+        new.gtf <- IRanges::reduce(gtf[gtf$type == "exon"])
+        new.gtf <- new.gtf %>%
+            as.data.frame() %>%
+            dplyr::arrange(start, end) %>%
+            dplyr::mutate(space = width+50) %>%
+            dplyr::mutate(new.start = dplyr::lag(cumsum(space))) %>%
+            tidyr::replace_na(list(new.start = 0)) %>%
+            dplyr::mutate(new.end = new.start +width) %>%
+            GenomicRanges::makeGRangesFromDataFrame(keep.extra.columns = T)
+
+        exons <- gtf[gtf$type != "transcript"]
+        new.gtf <- IRanges::mergeByOverlaps(exons, new.gtf) %>%
+           as.data.frame() %>%
+            dplyr::filter(exons.start >= new.gtf.start,
+                          exons.end <= new.gtf.end) %>%
+            dplyr::mutate(new.start = new.start + (exons.start-new.gtf.start),
+                          new.end = new.end - (new.gtf.end-exons.end)) %>%
+            dplyr::select(seqnames = exons.seqnames, start = new.start, end = new.end,
+                          strand = exons.strand,
+                          transcript_id = exons.transcript_id, gene_name = exons.gene_name,
+                          type = exons.type) %>%
+            GenomicRanges::makeGRangesFromDataFrame(keep.extra.columns = T)
+
+        # add transcript info
+        tx.gtf <- range(S4Vectors::split(new.gtf, ~transcript_id), ignore.strand = F)
+        tx.gtf <- as.data.frame(tx.gtf) %>%
+            dplyr::select(seqnames, start, end, strand, transcript_id = group_name) %>%
+            dplyr::mutate(type = "transcript") %>%
+            dplyr::left_join(dplyr::distinct(as.data.frame(gtf)[c("transcript_id", "gene_name")]),
+                             by = "transcript_id") %>%
+            GenomicRanges::makeGRangesFromDataFrame(keep.extra.columns = T)
+        gtf <- c(tx.gtf, new.gtf)
+    }
 
     gtf <- as.data.frame(gtf)
     order <- gtf %>%
@@ -173,16 +240,19 @@ setMethod("plotDomains", "factR", function(object, ..., ncol = 1){
     # plot canvas
     txs <- dplyr::filter(gtf, type == "transcript")
     range <- c(min(txs$start), (max(txs$end)))
-    buffer <- 0.1*(range[2]-range[1])
+    buffer <- 0.0005*(range[2]-range[1])
     range[1] <- range[1]-buffer
     range[2] <- range[2]+buffer
 
 
+
+    xaxis.prefix <- ifelse(rescale, "Relative position (%s)", "Genome postion (%s)")
     plot <- ggplot2::ggplot(gtf, ggplot2::aes(y=order)) +
         ggplot2::xlim(range) +
-        labs(y = "", x = sprintf("Genome position (%s)", unique(gtf$seqnames))) +
+        labs(y = "", x = sprintf(xaxis.prefix, unique(gtf$seqnames))) +
         theme_bw() +
         scale_y_continuous(
+            limits = c(0.6, max(data.names$order)+0.4),
             breaks = data.names$order,
             labels = data.names$transcript_id)
 
@@ -192,22 +262,26 @@ setMethod("plotDomains", "factR", function(object, ..., ncol = 1){
                      colour = "#0000b2", size = 0.2)
 
     # plot exons
+    ntranscripts <- max(data.names$order)
+    exon.height <- 0.025 + (ntranscripts^2 * 0.0005)
     exons <- dplyr::filter(gtf, type == "exon")
     plot <- plot +
         geom_rect(data = exons,
                   fill = "#0000b2",
                   mapping = aes(xmin = start, xmax = end,
-                                              ymin = order-0.06, ymax = order+0.06))
+                                ymin = order-exon.height,
+                                ymax = order+exon.height))
 
 
     # plot CDS
+    cds.height <- exon.height *2.5
     if("CDS" %in% gtf$type){
         cds <- dplyr::filter(gtf, type == "CDS")
         plot <- plot +
             geom_rect(data = cds,
                       fill = "#0000b2",
                       mapping = aes(xmin = start, xmax = end,
-                                    ymin = order-0.15, ymax = order+0.15))
+                                    ymin = order-cds.height, ymax = order+cds.height))
     }
 
 
@@ -219,6 +293,8 @@ setMethod("plotDomains", "factR", function(object, ..., ncol = 1){
         tidyr::unnest(cols = c(range)) %>%
         dplyr::mutate(rangeend = ifelse(strand == "-", range+1, range-1)) %>%
         dplyr::filter(range > (start+100) & range < (end-100))
+
+
     # plot <- plot +
     #     geom_segment(data = arrows, mapping = aes(x=range, xend=rangeend,
     #                                               yend=order), color = "#0000b2",
@@ -227,12 +303,17 @@ setMethod("plotDomains", "factR", function(object, ..., ncol = 1){
 
 
     #return(plot)
+    if(nrow(arrows)>1){
+        g <- plotly::ggplotly(plot) %>%
+            plotly::add_annotations(data = arrows, text = "", x=~range,
+                                    y = arrows$order, ay = 0.0000001, showarrow = TRUE,
+                                    arrowcolor = "#0000b2", arrowsize = 0.8)
+    } else {
+        g <- plotly::ggplotly(plot)
+    }
 
 
-    g <- plotly::ggplotly(plot) %>%
-        plotly::add_annotations(data = arrows, text = "", x=~range,
-                                y = arrows$order, ay = 0.0000001, showarrow = TRUE,
-                                arrowcolor = "#0000b2", arrowsize = 0.8)
+
 
     return(g)
 
