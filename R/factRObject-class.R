@@ -218,6 +218,10 @@ setMethod("mutate", "factR", function(object, ..., data = "samples"){
 #XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 ## Subsetters ====
 #XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+setGeneric("select", function(object, ...) standardGeneric("select"))
+setMethod("select", "factR", function(object, ..., data = "samples"){
+    select.factR(object, ...)
+})
 
 
 #XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
@@ -237,7 +241,10 @@ setGeneric("plotDomains", function(object, ..., ncol = 1) standardGeneric("plotD
 ## Validty ====
 #XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
-
+setGeneric("checkfactR", function(object) standardGeneric("checkfactR"))
+setMethod("checkfactR", "factR", function(object){
+    checkfactR.factR(object)
+})
 
 
 
