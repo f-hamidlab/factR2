@@ -230,6 +230,9 @@ setGeneric("select", function(object, ...) standardGeneric("select"))
 setMethod("select", "factR", function(object, ..., data = "samples"){
     select.factR(object, ...)
 })
+setMethod("[", "factR", function(x, i, j){
+    select.factR(x, j)
+})
 
 
 #XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
