@@ -25,6 +25,7 @@ setMethod("addTxCounts", "factR", function(object, countData, sampleData, design
     }
 
     # convert counts to integer
+    countData <- as.matrix(countData)
     counts.names <- rownames(countData)
     counts.samples <- colnames(countData)
     countData <- matrix(as.integer(countData), ncol = length(counts.samples))
