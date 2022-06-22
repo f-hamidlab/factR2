@@ -104,6 +104,10 @@ setGeneric("activeSet", function(object) standardGeneric("activeSet"))
 setMethod("activeSet", "factR", function(object){
     methods::slot(object, "active.set")
 })
+setGeneric("activeSet<-", function(object, value) standardGeneric("activeSet<-"))
+setMethod("activeSet<-", "factR", function(object, value){
+    object@active.set <- value
+})
 setGeneric("listSets", function(object) standardGeneric("listSets"))
 setMethod("listSets", "factR", function(object){ names(object@sets) })
 
