@@ -291,7 +291,7 @@ setMethod("plotDomains", "factR", function(object, ..., ncol = 1){
         dplyr::mutate(seqnames = unique(gtf$seqnames)) %>%
         dplyr::mutate(range = list(seq(range[1], range[2], by =increments))) %>%
         tidyr::unnest(cols = c(range)) %>%
-        dplyr::mutate(rangeend = ifelse(strand == "-", range+1, range-1)) %>%
+        dplyr::mutate(dir = ifelse(strand == "-", "5", "-5")) %>%
         dplyr::filter(range > (start+100) & range < (end-100))
 
 
