@@ -306,6 +306,7 @@ setMethod("plotDomains", "factR", function(object, ..., ncol = 1){
     if(nrow(arrows)>1){
         g <- plotly::ggplotly(plot) %>%
             plotly::add_annotations(data = arrows, text = "", x=~range,
+                                    axref = "pixel", ax=~dir,
                                     y = arrows$order, ay = 0.0000001, showarrow = TRUE,
                                     arrowcolor = "#0000b2", arrowsize = 0.8)
     } else {
