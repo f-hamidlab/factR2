@@ -27,15 +27,14 @@ factR2version <- "0.99.0"
     if(missing(...)){
         return(unique(na.omit(S4Vectors::mcols(object@transcriptome)[[out]])))
     } else {
-        genetxs.features <- object@transcriptome %>%
-            as.data.frame() %>%
-            dplyr::filter(!type %in% "gene") %>%
+        object[["transcript"]] %>%
             dplyr::mutate(tx = transcript_id, gene = gene_id) %>%
+            dplyr::select(gene, gene_name, tx, !!out) %>%
             tidyr::gather("type", "feature", gene, gene_name, tx) %>%
-            dplyr::filter(feature %in% c(...))
-        return(unique(na.omit(genetxs.features[[out]])))
-
-
+            dplyr::filter(feature %in% c(...)) %>%
+            dplyr::pull(!!out) %>%
+            na.omit() %>%
+            unique()
     }
 }
 
