@@ -325,7 +325,8 @@ createfactRObject <- function(gtf, reference,
         dplyr::filter(type %in% "AS") %>%
         dplyr::mutate(coord = paste0(seqnames, ":", start, "-", end)) %>%
         dplyr::select(ASid, gene_id, gene_name, coord, AStype, strand, width) %>%
-        dplyr::distinct()
+        dplyr::distinct() %>%
+        dplyr::mutate(AStype = factor(AStype, levels = c("CE", "AD","AA","AF","AL","RI")))
     rownames(object@sets$AS@rowData) <- object@sets$AS@rowData$ASid
     object@sets$AS@counts <- as.matrix(data.frame(row.names =  rownames(object[["AS"]])))
     object@sets$AS@data <- as.matrix(data.frame(row.names =  rownames(object[["AS"]])))
