@@ -148,6 +148,9 @@ setMethod("features", "factR", function(object, ..., set = NULL) {
     feat <- .getFeat(object, ..., out = out.type)
     return(dat[dat[[out.type]] %in% feat,])
 })
+setGeneric("rowNames", function(object) standardGeneric("rowNames"))
+setMethod("rowNames", "factR", function(object) {
+    rownames(object@sets[[object@active.set]]@rowData) })
 
 
 ### Samples ####
