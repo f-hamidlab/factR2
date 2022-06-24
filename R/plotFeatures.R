@@ -1,26 +1,41 @@
 .testplot <- function(object, x, y = "count",
-                      set = NULL, 
+                      x.set = NULL, y.set = NULL,
                       geom = "auto",
                       x.lab = NULL, y.lab = NULL,
                       x.lim = NULL, y.lim = NULL,
                       group.by = NULL, group.pos = "dodge",
                       min.exp = 1){
-  
+
   # check if a set var is given for x
-    if(grepl("$", x)){
+    if(grepl("\\$", x)){
         split <- str_split(x, "\\$")[[1]]
-        set <- split[1]
+        x.set <- split[1]
         x <- split[2]
     }
-  
+    if(grepl("\\$", y)){
+        split <- str_split(y, "\\$")[[1]]
+        y.set <- split[1]
+        y <- split[2]
+    }
+
   # get data
-  if(set == "sample"){
-    
+  if(x== "sample"){
+      if(is.null(y.set)){
+          y.set = object@active.set
+      }
+
+      # get expression
+      counts <- object@sets[[y.set]]@counts %>%
+          as.data.frame() %>%
+          tibble::rownames_to_column("id")
+
+      return(counts)
+
   }
-  
-  
-  dat <- features(object, set = set)
-  
+
+
+  dat <- features(object, set = x.set)
+
   # if no grouping is given, set x as groupings
   if(is.null(group.by)){
       group.by = x
@@ -46,7 +61,7 @@
   } else {
     geom.plot <- sprintf("geom_%s(aes_string(y=y))", geom)
   }
-  
+
   if(y == "percent"){
       plot <- plot +
           geom_bar(position = "fill") +
@@ -58,11 +73,11 @@
   } else if(y %in% colnames(dat)){
     plot <- plot +
       eval(parse(text = geom.plot))
- 
-    
+
+
     # # plot cont variables from dat
     # if(!class(dat[[y]]) %in% c("character","factor")){
-    #  
+    #
     #     # geom_bar(aes_string(y = y), stat = "summary", fun = "mean") +
     #     # stat_summary(aes_string(y=y),
     #     #              geom = "errorbar",
@@ -71,8 +86,8 @@
     #     #              fun.min = function(x) mean(x) - (sd(x)/sqrt(length(x))),
     #     #              fun.max = function(x) mean(x) + (sd(x)/sqrt(length(x))))
     # }
-    
-    
+
+
   }
 
   # change axis labels
