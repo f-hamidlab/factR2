@@ -1,31 +1,78 @@
-.testplot <- function(object, x, set = NULL, x.lab = NULL, x.lim = NULL,
-                      y.type = "count", y.lab = NULL,
-                      group.by = NULL, group.pos = "dodge"){
-    if(grepl("%", x)){
-        split <- str_split(x, "%")[[1]]
+.testplot <- function(object, x, y = "count",
+                      set = NULL, 
+                      geom = "auto",
+                      x.lab = NULL, y.lab = NULL,
+                      x.lim = NULL, y.lim = NULL,
+                      group.by = NULL, group.pos = "dodge",
+                      min.exp = 1){
+  
+  # check if a set var is given for x
+    if(grepl("$", x)){
+        split <- str_split(x, "\\$")[[1]]
         set <- split[1]
         x <- split[2]
     }
+  
+  # get data
+  if(set == "sample"){
+    
+  }
+  
+  
   dat <- features(object, set = set)
+  
+  # if no grouping is given, set x as groupings
   if(is.null(group.by)){
       group.by = x
   }
 
 
   # base plot
-  plot <- ggplot(dat, aes_string(x=x, fill = group.by)) +
+  plot <- ggplot(dat, aes_string(x=x, fill = group.by, color = group.by)) +
     theme_minimal() +
-    scale_fill_brewer(palette = "Set2")
+    scale_fill_brewer(palette = "Set2") +
+    scale_color_brewer(palette = "Set2")
 
   # plot y-axis
-  if(y.type == "percent"){
+  ## get geometry
+  if(geom == "auto"){
+    if(y %in% colnames(dat)){
+      if(class(dat[[y]]) %in% c("character","factor")) {
+        geom.plot <- "geom_count(aes_string(y=y))"
+      } else{
+        geom.plot <- "geom_violin(aes_string(y=y))"
+      }
+    }
+  } else {
+    geom.plot <- sprintf("geom_%s(aes_string(y=y))", geom)
+  }
+  
+  if(y == "percent"){
       plot <- plot +
           geom_bar(position = "fill") +
           scale_y_continuous(labels = scales::percent) +
           ylab("percent")
-  } else{
+  } else if(y == "count"){
       plot <- plot +
           geom_bar(position = group.pos)
+  } else if(y %in% colnames(dat)){
+    plot <- plot +
+      eval(parse(text = geom.plot))
+ 
+    
+    # # plot cont variables from dat
+    # if(!class(dat[[y]]) %in% c("character","factor")){
+    #  
+    #     # geom_bar(aes_string(y = y), stat = "summary", fun = "mean") +
+    #     # stat_summary(aes_string(y=y),
+    #     #              geom = "errorbar",
+    #     #              width = 1,
+    #     #              fun = mean,
+    #     #              fun.min = function(x) mean(x) - (sd(x)/sqrt(length(x))),
+    #     #              fun.max = function(x) mean(x) + (sd(x)/sqrt(length(x))))
+    # }
+    
+    
   }
 
   # change axis labels
