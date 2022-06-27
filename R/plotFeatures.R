@@ -112,6 +112,9 @@
   if(!is.null(x.lim) & !class(dat[[x]]) %in% c("character","factor")){
       plot <- plot + xlim(x.lim)
   }
+  if(!is.null(y.trans)){
+    plot <- plot + coord_trans(y = y.trans)
+  }
 
       plot
 }
