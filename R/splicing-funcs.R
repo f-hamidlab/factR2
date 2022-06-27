@@ -82,7 +82,7 @@
         altexons.id <- altexons %>%
             as.data.frame() %>%
             dplyr::distinct(seqnames, start, end, strand, gene_id, gene_name, AStype) %>%
-            dplyr::mutate(ASid = sprintf("AS%05d", dplyr::row_number()))
+            dplyr::mutate(AS_id = sprintf("AS%05d", dplyr::row_number()))
 
         altexons <- altexons %>%
             as.data.frame() %>%
