@@ -4,7 +4,7 @@
                       x.lab = NULL, y.lab = NULL,
                       x.lim = NULL, y.lim = NULL,
                       group.by = NULL, group.pos = "dodge",
-                      min.exp = 1){
+                      min.exp = 5, y.trans = NULL, x.rot = NULL){
 
   # check if a set var is given for x
     if(grepl("\\$", x)){
@@ -23,18 +23,28 @@
       if(is.null(y.set)){
           y.set = object@active.set
       }
+    
+    var <- paste0(y.set, "_id")
 
       # get expression
-      counts <- object@sets[[y.set]]@counts %>%
+      counts <- object@sets[[y.set]]@data %>%
           as.data.frame() %>%
-          tibble::rownames_to_column("id")
+          tibble::rownames_to_column(var) %>%
+          tidyr::pivot_longer(-var, names_to = "sample", values_to = "exp")
 
-      return(counts)
-
+      
+      # get features
+      dat <- features(object, set = y.set)
+      
+      # join expression to features and filter
+      # for min expression
+      dat <- counts %>% 
+        dplyr::left_join(dat, by = var) %>%
+        filter(exp >= min.exp)
+  } else {
+      dat <- features(object, set = x.set)
   }
 
-
-  dat <- features(object, set = x.set)
 
   # if no grouping is given, set x as groupings
   if(is.null(group.by)){
