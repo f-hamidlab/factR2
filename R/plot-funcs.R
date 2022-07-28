@@ -4,10 +4,23 @@ setMethod("plotTranscripts", "factR", function(object, ...,
                                                ncol = 1) {
 
 
-    # select features by data
-    feat <- .getFeat(object, ...)
+
     x <- object@transcriptome
-    x <- x[x$transcript_id %in% feat & !x$type %in% c("AS", "gene")]
+    # handle chromosome inputs
+    if(stringr::str_detect(...,":|-")){
+        exon <- GenomicRanges::GRanges(...)
+        hits <- IRanges::findOverlaps(exon, x)
+        genes <- unique(x[subjectHits(hits)]$gene_name)
+        x <- x[x$gene_name %in% genes & !x$type %in% c("AS", "gene")]
+        xrange <-  stringr::str_split(..., ":|-")[[1]][c(2,3)]
+    } else {
+        # select features by data
+        feat <- .getFeat(object, ...)
+        x <- x[x$transcript_id %in% feat & !x$type %in% c("AS", "gene")]
+        xrange <- NULL
+
+    }
+
 
     # correct genes with no gene name
     x$gene_name <- ifelse(is.na(x$gene_name), x$gene_id, x$gene_name)
@@ -20,8 +33,7 @@ setMethod("plotTranscripts", "factR", function(object, ...,
         x <- x[x$gene_name %in% genes]
     }
 
-
-    .plotTx(x, collapse, rescale_introns)
+    .plotTx(x, collapse, rescale_introns, xrange)
     # plot <- BiocGenerics::do.call(
     #     patchwork::wrap_plots,
     #     lapply(genes, function(y){
@@ -158,7 +170,7 @@ setMethod("plotDomains", "factR", function(object, ..., ncol = 1){
 
 
 
-.plotTx <- function(gtf, collapse = FALSE, rescale = FALSE){
+.plotTx <- function(gtf, collapse = FALSE, rescale = FALSE, xrange = NULL){
 
 
     if(collapse){
@@ -311,6 +323,13 @@ setMethod("plotDomains", "factR", function(object, ..., ncol = 1){
                                     arrowcolor = "#0000b2", arrowsize = 0.8)
     } else {
         g <- plotly::ggplotly(plot)
+    }
+
+    if(!is.null(xrange)){
+        #g <- g %>% plotly::layout(xaxis = list(range = list(xrange[1], xrange[2])))
+        #g <- g %>% plotly::layout(xaxis = list(rangeslider = list(start = 79695000, end = 79696000)))
+        g <- g %>%
+            plotly::rangeslider(start = xrange[1], xrange[2])
     }
 
 
