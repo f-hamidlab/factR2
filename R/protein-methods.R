@@ -9,7 +9,10 @@ setMethod("getAAsequence", "factR", function(object, verbose = FALSE) {
     txs <- genetxs[genetxs$cds == "yes",]$transcript_id
 
     gtf <- gtf[gtf$transcript_id %in% txs]
-    gtf <- gtf[as.character(GenomeInfoDb::seqnames(gtf)) %in% GenomeInfoDb::seqnames(object@reference$genome)]
+    chrnames <- ifelse("DNAStringSet" %in% is(object@reference$genome),
+                       names(object@reference$genome),
+                       GenomeInfoDb::seqnames(object@reference$genome))
+    gtf <- gtf[as.character(GenomeInfoDb::seqnames(gtf)) %in% chrnames]
     cds <- S4Vectors::split(gtf[gtf$type == "CDS"], ~transcript_id)
 
 
