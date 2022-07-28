@@ -148,6 +148,33 @@ setMethod("features", "factR", function(object, ..., set = NULL) {
     feat <- .getFeat(object, ..., out = out.type)
     return(dat[dat[[out.type]] %in% feat,])
 })
+
+# wrappers to quickly get genes, transcripts and AS
+setGeneric("genes", function(object, ...) standardGeneric("genes"))
+setMethod("genes", "factR", function(object, ...) {
+
+    return(features(object,..., set="gene"))
+})
+
+setGeneric("transcripts", function(object, ...) standardGeneric("transcripts"))
+setMethod("transcripts", "factR", function(object, ...) {
+
+    return(features(object,..., set="transcript"))
+})
+setGeneric("txs", function(object, ...) standardGeneric("txs"))
+setMethod("txs", "factR", function(object, ...) {
+
+    return(features(object,..., set="transcript"))
+})
+setGeneric("ase", function(object, ...) standardGeneric("ase"))
+setMethod("ase", "factR", function(object, ...) {
+
+    return(features(object,..., set="AS"))
+})
+
+
+
+
 setGeneric("rowNames", function(object) standardGeneric("rowNames"))
 setMethod("rowNames", "factR", function(object) {
     rownames(object@sets[[object@active.set]]@rowData) })
