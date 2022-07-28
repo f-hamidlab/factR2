@@ -142,7 +142,15 @@ setMethod("testASNMDevents", "factR", function(object, verbose = FALSE) {
     ASevents <- ASevents[ASevents$transcript_id %in% NMD.pos]
 
     ## get AS segments and annotate its splicing nature
-    ASevents$splice <- ifelse(ASevents$transcript_id %in% ref$transcript_id,
+    nmd_coord_gene <- ASevents %>%
+        as.data.frame() %>%
+        dplyr::mutate(label = paste0(seqnames, "-", start, "-", end, "gene_id")) %>%
+        dplyr::pull(label)
+    ref_coord_gene <- ref %>%
+        as.data.frame() %>%
+        dplyr::mutate(label = paste0(seqnames, "-", start, "-", end, "gene_id")) %>%
+        dplyr::pull(label)
+    ASevents$splice <- ifelse(nmd_coord_gene %in% ref_coord_gene,
                               "skipped", "spliced")
     ASevents <- ASevents[ASevents$gene_id %in% ref$gene_id]
 
