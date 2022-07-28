@@ -187,7 +187,7 @@ setMethod("samples", "factR", function(object) { object@colData })
 setGeneric("colNames", function(object) standardGeneric("colNames"))
 setMethod("colNames", "factR", function(object) { rownames(object@colData) })
 setGeneric("colNames<-", function(object, value) standardGeneric("colNames<-"))
-setMethod("colNames<-", "factR", function(object, value) { 
+setMethod("colNames<-", "factR", function(object, value) {
     object@colData$old.names <- rownames(object@colData)
     rownames(object@colData) <- value
     return(.updatefactR(object))
