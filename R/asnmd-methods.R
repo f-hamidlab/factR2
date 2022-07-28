@@ -81,10 +81,10 @@ setMethod("testASNMDevents", "factR", function(object, verbose = FALSE) {
 
     # update AS events if returned object is not null
     if(!is.null(ASNMDevents)){
-        ASevents$ASNMDtype <- ifelse(ASevents$ASid %in% rownames(ASNMDevents),
-                                     ASNMDevents[ASevents$ASid,]$NMDtype, "NA")
-        ASevents$ASNMD.in.cds <- ifelse(ASevents$ASid %in% rownames(ASNMDevents),
-                                     ASNMDevents[ASevents$ASid,]$within.CDS, "NA")
+        ASevents$ASNMDtype <- ifelse(ASevents$AS_id %in% rownames(ASNMDevents),
+                                     ASNMDevents[ASevents$AS_id,]$NMDtype, "NA")
+        ASevents$ASNMD.in.cds <- ifelse(ASevents$AS_id %in% rownames(ASNMDevents),
+                                     ASNMDevents[ASevents$AS_id,]$within.CDS, "NA")
         gtf.others <- gtf[gtf$type != "AS"]
         object@transcriptome <- c(gtf.others, ASevents)
 
@@ -92,9 +92,9 @@ setMethod("testASNMDevents", "factR", function(object, verbose = FALSE) {
         if(verbose){ rlang::inform("Updating AS feature data")}
         ASevents.id <- rownames(features(object, set = "AS"))
         object <- mutate(object,
-                         ASNMDtype = ifelse(ASevents.id %in% ASNMDevents$ASid,
+                         ASNMDtype = ifelse(ASevents.id %in% ASNMDevents$AS_id,
                                             ASNMDevents[ASevents.id,]$NMDtype, "NA"),
-                         ASNMD.in.cds = ifelse(ASevents.id %in% ASNMDevents$ASid,
+                         ASNMD.in.cds = ifelse(ASevents.id %in% ASNMDevents$AS_id,
                                                ASNMDevents[ASevents.id,]$within.CDS, "NA"),
                          data = "AS")
     }
@@ -155,8 +155,8 @@ setMethod("testASNMDevents", "factR", function(object, verbose = FALSE) {
         dplyr::mutate(coord = paste0(seqnames, "_", start, "_",
                                      end, "_", strand, "_", AStype)) %>%
         dplyr::arrange(splice) %>%
-        dplyr::select(ASid, gene_id, transcript_id, coord, splice) %>%
-        dplyr::distinct(ASid, .keep_all = TRUE)
+        dplyr::select(AS_id, gene_id, transcript_id, coord, splice) %>%
+        dplyr::distinct(AS_id, .keep_all = TRUE)
 
     # recreate hypothetical tx by inserting/removing AS segments
     ## create grl of ref trancripts
@@ -224,11 +224,11 @@ setMethod("testASNMDevents", "factR", function(object, verbose = FALSE) {
         dplyr::left_join(mod.NMD %>% dplyr::select(transcript, is_NMD),
                          by = c("coord"="transcript")) %>%
         dplyr::mutate(NMDtype = ifelse(splice == "skipped", "Repressing", "Stimulating")) %>%
-        dplyr::select(coord, ASid, gene_id, NMDtype, is_NMD) %>%
+        dplyr::select(coord, AS_id, gene_id, NMDtype, is_NMD) %>%
         tidyr::separate(coord, c("seqnames", "start", "end", "strand", "AStype"),
                         sep = "_") %>%
         dplyr::filter(is_NMD) %>%
-        dplyr::select(seqnames:strand, gene_id, AStype, ASid, NMDtype) %>%
+        dplyr::select(seqnames:strand, gene_id, AStype, AS_id, NMDtype) %>%
         GenomicRanges::makeGRangesFromDataFrame(keep.extra.columns = TRUE)
 
     # Annotate location of NMD events relative to reference CDS
@@ -254,8 +254,8 @@ setMethod("testASNMDevents", "factR", function(object, verbose = FALSE) {
     #
     #
     # }
-    out.df <- S4Vectors::mcols(ASevents)[c("ASid", "NMDtype", "within.CDS")]
-    rownames(out.df) <- out.df$ASid
+    out.df <- S4Vectors::mcols(ASevents)[c("AS_id", "NMDtype", "within.CDS")]
+    rownames(out.df) <- out.df$AS_id
 
     return(out.df)
 }
