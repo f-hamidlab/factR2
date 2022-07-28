@@ -274,7 +274,7 @@ setMethod("plotDomains", "factR", function(object, ..., ncol = 1){
 
 
     # plot CDS
-    cds.height <- exon.height *2.5
+    cds.height <- exon.height *2
     if("CDS" %in% gtf$type){
         cds <- dplyr::filter(gtf, type == "CDS")
         plot <- plot +
