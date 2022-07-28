@@ -1,6 +1,7 @@
 createfactRObject <- function(gtf, reference,
                               use_own_annotation = NULL,
                               use_own_genome = NULL,
+                              match_genes = TRUE,
                               countData = NULL,
                               sampleData = NULL,
                               design = NULL,
@@ -57,7 +58,7 @@ createfactRObject <- function(gtf, reference,
 
 
     # run object prepration function
-    obj <- .prepfactR(obj, verbose)
+    obj <- .prepfactR(obj, match_genes, verbose)
 
     # add and prep counts data if given
     if(!is.null(countData)){
@@ -181,47 +182,47 @@ createfactRObject <- function(gtf, reference,
 
 
 
-.prepfactR <-  function(object, verbose = FALSE) {
-    # match chromosomes and gene ID
-    if(verbose){
-        rlang::inform("Matching chromosome names")
-    }
-    object@transcriptome <- factR::matchChromosomes(object@transcriptome,
-                                                    object@reference$genome)
-    object@reference$ranges <- suppressWarnings(factR::matchChromosomes(object@reference$ranges,
-                                                                        object@reference$ranges))
-    ## try find variables that contain gene ids
-    if(verbose){
-        rlang::inform("Matching gene names")
-    }
-    if("ref_gene_id" %in% colnames(as.data.frame(object@transcriptome))){
+.prepfactR <-  function(object, matchgenes, verbose = FALSE) {
+    # match chromosomes and gene ID if requested
+    if(matchgenss){
         if(verbose){
-            object@transcriptome <- factR::matchGeneInfo(object@transcriptome,
-                                                         object@reference$ranges,
-                                                         primary_gene_id = "gene_id",
-                                                         secondary_gene_id = "ref_gene_id")
-        } else {
-            object@transcriptome <- suppressMessages(
-                factR::matchGeneInfo(object@transcriptome,
-                                     object@reference$ranges,
-                                     primary_gene_id = "gene_id",
-                                     secondary_gene_id = "ref_gene_id"))
+            rlang::inform("Matching chromosome names")
         }
-    } else {
+        object@transcriptome <- factR::matchChromosomes(object@transcriptome,
+                                                        object@reference$genome)
+        object@reference$ranges <- suppressWarnings(factR::matchChromosomes(object@reference$ranges,
+                                                                            object@reference$ranges))
+        ## try find variables that contain gene ids
         if(verbose){
-            object@transcriptome <- factR::matchGeneInfo(object@transcriptome,
-                                                         object@reference$ranges,
-                                                         primary_gene_id = "gene_id")
-        } else {
-            object@transcriptome <- suppressMessages(
-                factR::matchGeneInfo(object@transcriptome,
-                                     object@reference$ranges,
-                                     primary_gene_id = "gene_id"))
+            rlang::inform("Matching gene names")
         }
+        if("ref_gene_id" %in% colnames(as.data.frame(object@transcriptome))){
+            if(verbose){
+                object@transcriptome <- factR::matchGeneInfo(object@transcriptome,
+                                                             object@reference$ranges,
+                                                             primary_gene_id = "gene_id",
+                                                             secondary_gene_id = "ref_gene_id")
+            } else {
+                object@transcriptome <- suppressMessages(
+                    factR::matchGeneInfo(object@transcriptome,
+                                         object@reference$ranges,
+                                         primary_gene_id = "gene_id",
+                                         secondary_gene_id = "ref_gene_id"))
+            }
+        } else {
+            if(verbose){
+                object@transcriptome <- factR::matchGeneInfo(object@transcriptome,
+                                                             object@reference$ranges,
+                                                             primary_gene_id = "gene_id")
+            } else {
+                object@transcriptome <- suppressMessages(
+                    factR::matchGeneInfo(object@transcriptome,
+                                         object@reference$ranges,
+                                         primary_gene_id = "gene_id"))
+            }
+        }
+
     }
-
-
-
 
 
     # custom.df <- as.data.frame(object@transcriptome)
