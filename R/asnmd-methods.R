@@ -137,6 +137,10 @@ setMethod("testASNMDevents", "factR", function(object, verbose = FALSE) {
     # # shortlist NMD transcripts from genes containing reference mRNAs
     # x.NMD <- x.NMD[x.NMD$gene_id %in% ref$gene_id]
 
+    ## remove transcripts that are not NMD causing
+    NMD.pos <- genes[genes$nmd == "yes",]$transcript_id
+    ASevents <- ASevents[ASevents$transcript_id %in% NMD.pos]
+
     ## get AS segments and annotate its splicing nature
     ASevents$splice <- ifelse(ASevents$transcript_id %in% ref$transcript_id,
                               "skipped", "spliced")
