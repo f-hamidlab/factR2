@@ -183,15 +183,17 @@ createfactRObject <- function(gtf, reference,
 
 
 .prepfactR <-  function(object, matchgenes, verbose = FALSE) {
-    # match chromosomes and gene ID if requested
-    if(matchgenss){
-        if(verbose){
-            rlang::inform("Matching chromosome names")
-        }
-        object@transcriptome <- factR::matchChromosomes(object@transcriptome,
-                                                        object@reference$genome)
-        object@reference$ranges <- suppressWarnings(factR::matchChromosomes(object@reference$ranges,
-                                                                            object@reference$ranges))
+    #  match chromosomes
+    if(verbose){
+        rlang::inform("Matching chromosome names")
+    }
+    object@transcriptome <- factR::matchChromosomes(object@transcriptome,
+                                                    object@reference$genome)
+    object@reference$ranges <- suppressWarnings(factR::matchChromosomes(object@reference$ranges,
+                                                                        object@reference$ranges))
+
+    # match gene ID if requested
+    if(matchgenes){
         ## try find variables that contain gene ids
         if(verbose){
             rlang::inform("Matching gene names")
