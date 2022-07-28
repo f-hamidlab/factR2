@@ -9,8 +9,9 @@ setMethod("plotTranscripts", "factR", function(object, ...,
     # handle chromosome inputs
     if(stringr::str_detect(...,":|-")){
         exon <- GenomicRanges::GRanges(...)
-        hits <- IRanges::findOverlaps(exon, x)
-        genes <- unique(x[subjectHits(hits)]$gene_name)
+        xtxs <- x[x$type == "exon"]
+        hits <- IRanges::findOverlaps(exon, xtxs)
+        genes <- unique(xtxs[subjectHits(hits)]$gene_name)
         x <- x[x$gene_name %in% genes & !x$type %in% c("AS", "gene")]
         xrange <-  stringr::str_split(..., ":|-")[[1]][c(2,3)]
     } else {
