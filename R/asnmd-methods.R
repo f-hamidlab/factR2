@@ -25,10 +25,10 @@ setMethod("predictNMD", "factR", function(object, NMD_threshold = 50, verbose = 
     }
 
     row.names <- rownames(genetxs)
-    cols_to_join <- colnames(nmd.out)
+    cols <- setdiff(colnames(genetxs), colnames(nmd.out))
 
     genetxs <- genetxs %>%
-        dplyr::select(-cols_to_join) %>%
+        dplyr::select(cols) %>%
         dplyr::left_join(nmd.out, by = c("transcript_id"="transcript"))
     genetxs$nmd <- ifelse(genetxs$is_NMD & !is.na(genetxs$is_NMD), "yes", genetxs$nmd)
     genetxs$is_NMD <- NULL
