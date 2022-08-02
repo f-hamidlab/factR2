@@ -101,8 +101,8 @@ createfactRObject <- function(gtf, reference,
         annotation <- selected_genome$annotation
         ## test if BSgenome object is installed
         if(selected_genome$genome.pri %in% BSgenome::installed.genomes()){
-            require(selected_genome$genome.pri, character.only = T,
-                    quietly = !verbose)
+            suppressPackageStartupMessages(require(selected_genome$genome.pri, character.only = T,
+                    quietly = !verbose))
             genome <- get(selected_genome$genome.pri)
         } else {
             genome <- selected_genome$genome.sec
