@@ -5,6 +5,7 @@
     return(object)
 }
 
+# TODO: Remove TS and TE events
 
 .runAS <- function(x) {
     # define global variables
@@ -26,6 +27,15 @@
         dplyr::arrange(start, end) %>%
         dplyr::mutate(termini = dplyr::row_number()) %>%
         dplyr::mutate(termini = ifelse(termini == 1 | termini == dplyr::n(), T, F)) %>%
+        GenomicRanges::makeGRangesFromDataFrame(keep.extra.columns = T)
+
+    # trim-off TS and TE
+    x <- x %>%
+        as.data.frame() %>%
+        dplyr::group_by(seqnames, end, gene_id) %>%
+        dplyr::mutate(start = ifelse(pos == "First", start[dplyr::n()], start)) %>%
+        dplyr::group_by(seqnames, end, gene_id) %>%
+        dplyr::mutate(start = ifelse(pos == "First", start[1], start)) %>%
         GenomicRanges::makeGRangesFromDataFrame(keep.extra.columns = T)
 
 
