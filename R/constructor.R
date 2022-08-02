@@ -295,7 +295,7 @@ createfactRObject <- function(gtf, reference,
     if(verbose){
         rlang::inform("## Adding gene information")
     }
-    object@active.set <- "transcript"
+    object@active.set <- "AS"
     object@sets$gene <- methods::new("factRset")
     object@sets$gene@rowData <- as.data.frame(object@transcriptome) %>%
         dplyr::filter(type %in% "gene") %>%
