@@ -342,7 +342,7 @@ createfactRObject <- function(gtf, reference,
     newtxs <- suppressMessages(factR::subsetNewTranscripts(gtf,
                                                            object@reference$ranges,
                                                            refine.by = "intron"))
-    object@sets$transcript@rowData$novel <- ifelse(object[[]]$transcript_id %in% newtxs$transcript_id,
+    object@sets$transcript@rowData$novel <- ifelse(object[["transcript"]]$transcript_id %in% newtxs$transcript_id,
                                                    "yes", "no")
     object@sets$transcript@rowData$cds <- "no"
     object@sets$transcript@rowData$nmd <- "no"
