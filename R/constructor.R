@@ -6,7 +6,7 @@ createfactRObject <- function(gtf, reference,
                               sampleData = NULL,
                               design = NULL,
                               psi = NULL,
-                              verbose = FALSE){
+                              verbose = TRUE){
 
     # check input arguments
     if(verbose){

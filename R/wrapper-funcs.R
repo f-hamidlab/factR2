@@ -15,8 +15,8 @@
 #' @examples
 #' data(factRsample)
 #' factRsample <- runfactR(factRsample)
-setGeneric("runfactR", function(object, verbose = FALSE) standardGeneric("runfactR"))
-setMethod("runfactR", "factR", function(object, verbose = FALSE) {
+setGeneric("runfactR", function(object, verbose = TRUE) standardGeneric("runfactR"))
+setMethod("runfactR", "factR", function(object, verbose = TRUE) {
 
     object <- buildCDS(object, verbose)
     object <- predictNMD(object, verbose = verbose)
