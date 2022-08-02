@@ -7,6 +7,7 @@ setMethod("plotTranscripts", "factR", function(object, ...,
 
     x <- object@transcriptome
     # handle chromosome inputs
+    ## TODO: add support for AS id
     if(stringr::str_detect(...,":|-")){
         exon <- GenomicRanges::GRanges(...)
         xtxs <- x[x$type == "exon"]
@@ -314,6 +315,7 @@ setMethod("plotDomains", "factR", function(object, ..., ncol = 1){
     #                  arrow = arrow(length = unit(0.01, "npc")),
     #                  size = 0.5, lineend = "round", linejoin = "round")
 
+    # TODO: annotate segments (if possible)
 
     #return(plot)
     if(nrow(arrows)>1){

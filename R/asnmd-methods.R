@@ -146,6 +146,7 @@ setMethod("testASNMDevents", "factR", function(object, verbose = FALSE) {
     ASevents <- ASevents[ASevents$transcript_id %in% NMD.pos]
 
     ## get AS segments and annotate its splicing nature
+    ## TODO: get fix for AD, AA, and RI
     nmd_coord_gene <- ASevents %>%
         as.data.frame() %>%
         dplyr::mutate(label = paste0(seqnames, "-", start, "-", end, "gene_id")) %>%

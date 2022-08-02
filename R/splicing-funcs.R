@@ -5,7 +5,6 @@
     return(object)
 }
 
-# TODO: Remove TS and TE events
 
 .runAS <- function(x) {
     # define global variables
