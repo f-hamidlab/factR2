@@ -147,15 +147,22 @@ setMethod("testASNMDevents", "factR", function(object, verbose = FALSE) {
 
     ## get AS segments and annotate its splicing nature
     ## TODO: get fix for AD, AA, and RI
-    nmd_coord_gene <- ASevents %>%
+    ref_overlaps <- IRanges::findOverlapPairs(ASevents, ref[ref$type == "exon"]) %>%
         as.data.frame() %>%
-        dplyr::mutate(label = paste0(seqnames, "-", start, "-", end, "gene_id")) %>%
-        dplyr::pull(label)
-    ref_coord_gene <- ref %>%
-        as.data.frame() %>%
-        dplyr::mutate(label = paste0(seqnames, "-", start, "-", end, "gene_id")) %>%
-        dplyr::pull(label)
-    ASevents$splice <- ifelse(nmd_coord_gene %in% ref_coord_gene,
+        dplyr::filter(first.gene_id == second.gene_id) %>%
+        dplyr::filter(first.X.start >= second.X.start) %>%
+        dplyr::filter(first.X.end <= second.X.end) %>%
+        dplyr::pull(first.X.AS_id)
+    
+    # nmd_coord_gene <- ASevents %>%
+    #     as.data.frame() %>%
+    #     dplyr::mutate(label = paste0(seqnames, "-", start, "-", end, "gene_id")) %>%
+    #     dplyr::pull(label)
+    # ref_coord_gene <- ref %>%
+    #     as.data.frame() %>%
+    #     dplyr::mutate(label = paste0(seqnames, "-", start, "-", end, "gene_id")) %>%
+    #     dplyr::pull(label)
+    ASevents$splice <- ifelse(ASevents$AS_id %in% ref_overlaps,
                               "skipped", "spliced")
     ASevents <- ASevents[ASevents$gene_id %in% ref$gene_id]
 
