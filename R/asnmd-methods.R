@@ -146,14 +146,13 @@ setMethod("testASNMDevents", "factR", function(object, verbose = FALSE) {
     ASevents <- ASevents[ASevents$transcript_id %in% NMD.pos]
 
     ## get AS segments and annotate its splicing nature
-    ## TODO: get fix for AD, AA, and RI
     ref_overlaps <- IRanges::findOverlapPairs(ASevents, ref[ref$type == "exon"]) %>%
         as.data.frame() %>%
         dplyr::filter(first.gene_id == second.gene_id) %>%
         dplyr::filter(first.X.start >= second.X.start) %>%
         dplyr::filter(first.X.end <= second.X.end) %>%
         dplyr::pull(first.X.AS_id)
-    
+
     # nmd_coord_gene <- ASevents %>%
     #     as.data.frame() %>%
     #     dplyr::mutate(label = paste0(seqnames, "-", start, "-", end, "gene_id")) %>%
