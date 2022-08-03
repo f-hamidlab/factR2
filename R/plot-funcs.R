@@ -15,7 +15,12 @@ setMethod("plotTranscripts", "factR", function(object, ...,
         genes <- unique(xtxs[S4Vectors::subjectHits(hits)]$gene_name)
         x <- x[x$gene_name %in% genes & !x$type %in% c("AS", "gene")]
         xrange <-  stringr::str_split(..., ":|-")[[1]][c(2,3)]
-    } else {
+    } else if(stringr::str_detect(..., "^AS[0-9]{5}")) {
+        exon <- ase(object)[...,]
+        x <- x[x$gene_id %in% exon$gene_id & !x$type %in% c("AS", "gene")]
+        xrange <-  stringr::str_split(exon$coord, ":|-")[[1]][c(2,3)]
+        
+    }else {
         # select features by data
         feat <- .getFeat(object, ...)
         x <- x[x$transcript_id %in% feat & !x$type %in% c("AS", "gene")]
