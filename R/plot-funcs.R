@@ -7,7 +7,6 @@ setMethod("plotTranscripts", "factR", function(object, ...,
 
     x <- object@transcriptome
     # handle chromosome inputs
-    ## TODO: add support for AS id
     if(stringr::str_detect(...,":|-")){
         exon <- GenomicRanges::GRanges(...)
         xtxs <- x[x$type == "exon"]
