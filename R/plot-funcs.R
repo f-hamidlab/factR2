@@ -12,7 +12,7 @@ setMethod("plotTranscripts", "factR", function(object, ...,
         exon <- GenomicRanges::GRanges(...)
         xtxs <- x[x$type == "exon"]
         hits <- IRanges::findOverlaps(exon, xtxs)
-        genes <- unique(xtxs[subjectHits(hits)]$gene_name)
+        genes <- unique(xtxs[S4Vectors::subjectHits(hits)]$gene_name)
         x <- x[x$gene_name %in% genes & !x$type %in% c("AS", "gene")]
         xrange <-  stringr::str_split(..., ":|-")[[1]][c(2,3)]
     } else {
