@@ -22,6 +22,7 @@ setMethod("runfactR", "factR", function(object, verbose = TRUE) {
     object <- predictNMD(object, verbose = verbose)
     object <- getAAsequence(object, verbose)
     object <- testASNMDevents(object, verbose)
+    object <- getAScons(object, cons_db, cons_type, cons_padding)
     object
 })
 
