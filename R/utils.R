@@ -38,3 +38,4 @@ factR2version <- "0.99.0"
     }
 }
 
+# TODO: reattaching genome?
