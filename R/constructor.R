@@ -1,6 +1,7 @@
 createfactRObject <- function(gtf, reference,
                               use_own_annotation = NULL,
                               use_own_genome = NULL,
+                              genome_build = "auto",
                               match_genes = TRUE,
                               countData = NULL,
                               sampleData = NULL,
@@ -56,6 +57,13 @@ createfactRObject <- function(gtf, reference,
     obj@reference$genome <- .smartimport(reference.list[[2]], ".fa", "Genome sequence",
                                          verbose)
 
+    # set genome build
+    if(genome_build == "auto"){
+        obj@reference$build <- reference.list[[3]]
+    } else {
+        obj@reference$build <- genome_build
+    }
+
 
     # run object prepration function
     obj <- .prepfactR(obj, match_genes, verbose)
@@ -82,6 +90,7 @@ createfactRObject <- function(gtf, reference,
         } else {
             annotation <- own_annotation
             genome <- own_genome
+            build <- "custom"
         }
     }
     else {
@@ -107,8 +116,9 @@ createfactRObject <- function(gtf, reference,
         } else {
             genome <- selected_genome$genome.sec
         }
+        build <- selected_genome$build
     }
-    return(list(annotation, genome))
+    return(list(annotation, genome, build))
 
 }
 
