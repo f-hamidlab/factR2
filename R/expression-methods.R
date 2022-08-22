@@ -130,20 +130,20 @@ setMethod("design<-", "factR", function(object, value) .addDesign(object, value)
     gtf <- object@transcriptome
     AS.txs.included <- gtf %>% as.data.frame() %>%
         dplyr::filter(type == "AS") %>%
-        dplyr::distinct(ASid, transcript_id)
+        dplyr::distinct(AS_id, transcript_id)
 
     ASevents <- granges(object, set = "AS")
     transcripts <- granges(object, set = "transcript")
     transcripts <- transcripts[transcripts$type == "transcript"]
 
     AS.txs.overlap <- as.data.frame(IRanges::mergeByOverlaps(transcripts, ASevents))
-    AS.txs.overlap <- dplyr::distinct(as.data.frame(AS.txs.overlap[c("transcript_id", "ASid.1")]))
+    AS.txs.overlap <- dplyr::distinct(as.data.frame(AS.txs.overlap[c("transcript_id", "AS_id.1")]))
 
     AS.txs.included.normcounts <- txcounts.norm[AS.txs.included$transcript_id,]
-    AS.txs.included.normcounts <- rowsum(AS.txs.included.normcounts, AS.txs.included$ASid)
+    AS.txs.included.normcounts <- rowsum(AS.txs.included.normcounts, AS.txs.included$AS_id)
 
     AS.txs.all.normcounts <- txcounts.norm[AS.txs.overlap$transcript_id,]
-    AS.txs.all.normcounts <- rowsum(AS.txs.all.normcounts, AS.txs.overlap$ASid)
+    AS.txs.all.normcounts <- rowsum(AS.txs.all.normcounts, AS.txs.overlap$AS_id)
 
     AS.psi <- AS.txs.included.normcounts/AS.txs.all.normcounts
     AS.psi <- signif(AS.psi, digits = 3)
