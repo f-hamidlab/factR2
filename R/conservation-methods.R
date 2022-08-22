@@ -1,8 +1,24 @@
-.getASGScores <- function(object, db, type = "flanks", padding = 200){
+setGeneric("getAScons", function(object, ...) standardGeneric("getAScons"))
+setMethod("getAScons", "factR", function(
+          object,
+          db = "phastCons",
+          type = "flanks",
+          padding = 200) {
+
+    return(.getASGScores(object, db, type, padding))
+})
+
+
+
+.getASGScores <- function(object, db = "phastCons", type = "flanks", padding = 200){
 
     # TODO: check for input `type`
 
-    consDB <- .GScorecheck(db)
+    consDB <- .GScorecheck(db, object@reference$build)
+    if(is.null(consDB)){
+        rlang::warn("Skipping conservation scoring (requirements not met)")
+        return(object)
+    }
 
     rlang::inform("Quantifying exon conservation scores")
     AS.exons <- object@transcriptome[object@transcriptome$type %in% "AS"]
@@ -38,45 +54,71 @@
             return(AS.exons)
         }
     )
+    ConsScoresDF$scores <- tidyr::replace_na(ConsScoresDF$scores, 0)
 
-    # update granges
-    object@transcriptome$score <- ifelse(!is.na(object@transcriptome$AS_id),
-                                         ConsScoresDF[object@transcriptome$AS_id,]$scores,
-                                         NA)
+    # update ASE
+    object@sets$AS@rowData$Gscore <- 0
+    object@sets$AS@rowData[rownames(ConsScoresDF),]$Gscore <- ConsScoresDF$scores
 
+    return(object)
 }
 
 
-.GScorecheck <- function(ConsScore){
+.GScorecheck <- function(ConsScore, build){
     if("character" %in% is(ConsScore)){
 
-        ## try loading GScore package
-        phast <- tryCatch(
-            {
-                library(ConsScore, character.only = T )
-                rlang::inform(sprintf("Loaded %s package",
-                                      ConsScore))
-                get(ConsScore)
-            },
-            error = function(cond){
-                GScoresList <- rownames(GenomicScores::availableGScores())
-                if(ConsScore %in% GScoresList){
+        ## try getting GScore using listed genomes
+        if(tolower(ConsScore) %in% c("phylop", "phastcons")){
+            ConsScore <- tolower(ConsScore)
+            if(build == "custom"){
+                # raise warning and skip gscoring
+                rlang::warn("Unable to determine GScore database from custom reference")
+                return(NULL)
+            } else{
+                # TODO: check this upon adding other genomes
+                data("genomes")
+                db <- genomes[genomes$build == build,ConsScore][[1]]
+                if(!is.na(db)){
                     rlang::inform(sprintf("Retrieving %s scores",
-                                          ConsScore))
-                    GenomicScores::getGScores(ConsScore)
+                                          db))
+                    phast <- GenomicScores::getGScores(db)
+                    return(phast)
                 } else {
-                    rlang::abort(sprintf("%s score database not found",
-                                          ConsScore))
+                    # raise warning and skip gscoring
+                    rlang::warn(stringr::str_glue("GScore database for {build} is unavailable"))
                     return(NULL)
                 }
-            })
-        return(phast)
+            }
+
+        } else{
+            ## try loading GScore package
+            phast <- tryCatch(
+                {
+                    library(ConsScore, character.only = T )
+                    rlang::inform(sprintf("Loaded %s package",
+                                          ConsScore))
+                    get(ConsScore)
+                },
+                error = function(cond){
+                    GScoresList <- rownames(GenomicScores::availableGScores())
+                    if(ConsScore %in% GScoresList){
+                        rlang::inform(sprintf("Retrieving %s scores",
+                                              ConsScore))
+                        GenomicScores::getGScores(ConsScore)
+                    } else {
+                        rlang::abort(sprintf("%s score database not found",
+                                             ConsScore))
+                        return(NULL)
+                    }
+                })
+            return(phast)
+        }
     }
     else if("GScores" %in% is(ConsScore)){
         rlang::inform("Using loaded GScores object")
         return(ConsScore)
     } else {
-        rlang::abort("`db` input not recognised")
+        rlang::warn("`db` input not recognised")
+        return(NULL)
     }
-
 }
