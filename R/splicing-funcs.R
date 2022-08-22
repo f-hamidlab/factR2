@@ -33,8 +33,8 @@
         as.data.frame() %>%
         dplyr::group_by(seqnames, end, gene_id) %>%
         dplyr::mutate(start = ifelse(pos == "First", start[dplyr::n()], start)) %>%
-        dplyr::group_by(seqnames, end, gene_id) %>%
-        dplyr::mutate(start = ifelse(pos == "First", start[1], start)) %>%
+        dplyr::group_by(seqnames, start, gene_id) %>%
+        dplyr::mutate(end = ifelse(pos == "Last", end[1], end)) %>%
         GenomicRanges::makeGRangesFromDataFrame(keep.extra.columns = T)
 
 
