@@ -38,4 +38,6 @@ factR2version <- "0.99.0"
     }
 }
 
+.asinTransform <-  function(x) { 2 * asin(sqrt(x))/pi }
+
 # TODO: reattaching genome?
