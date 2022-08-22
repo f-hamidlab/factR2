@@ -15,11 +15,17 @@
 #' @examples
 #' data(factRsample)
 #' factRsample <- runfactR(factRsample)
-setGeneric("runfactR", function(object, verbose = TRUE) standardGeneric("runfactR"))
-setMethod("runfactR", "factR", function(object, verbose = TRUE) {
+setGeneric("runfactR", function(object, ...) standardGeneric("runfactR"))
+setMethod("runfactR", "factR", function(
+        object,
+        NMD_threshold = 50,
+        cons_db = "phastCons",
+        cons_type = "flanks",
+        cons_padding = 200,
+        verbose = TRUE) {
 
     object <- buildCDS(object, verbose)
-    object <- predictNMD(object, verbose = verbose)
+    object <- predictNMD(object, NMD_threshold, verbose)
     object <- getAAsequence(object, verbose)
     object <- testASNMDevents(object, verbose)
     object <- getAScons(object, cons_db, cons_type, cons_padding)
