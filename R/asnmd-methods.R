@@ -81,14 +81,14 @@ setMethod("testASNMDevents", "factR", function(object, verbose = FALSE) {
 
     # run core function
     if(verbose){ rlang::inform("Testing AS-NMD exons")}
-    ASNMDevents <- .runidentifynmdexons(ASevents, genes, ref, object@reference$genome)
+    ASNMDevents <- .runidentifynmdexons(ASevents, genes, ref, object@reference$genome, gtf)
 
     # update AS events if returned object is not null
     if(!is.null(ASNMDevents)){
         ASevents$ASNMDtype <- ifelse(ASevents$AS_id %in% rownames(ASNMDevents),
                                      ASNMDevents[ASevents$AS_id,]$NMDtype, "NA")
         ASevents$ASNMD.in.cds <- ifelse(ASevents$AS_id %in% rownames(ASNMDevents),
-                                     ASNMDevents[ASevents$AS_id,]$within.CDS, "NA")
+                                        ASNMDevents[ASevents$AS_id,]$within.CDS, "NA")
         gtf.others <- gtf[gtf$type != "AS"]
         object@transcriptome <- c(gtf.others, ASevents)
 
@@ -129,7 +129,7 @@ setMethod("testASNMDevents", "factR", function(object, verbose = FALSE) {
 
 
 
-.runidentifynmdexons <- function(ASevents, genes, ref, genome) {
+.runidentifynmdexons <- function(ASevents, genes, ref, genome, gtf) {
 
     #rlang::inform("Finding NMD causing exons")
     # NMD.pos <- genes[genes$nmd == "yes",]$transcript_id
@@ -144,6 +144,7 @@ setMethod("testASNMDevents", "factR", function(object, verbose = FALSE) {
     ## remove transcripts that are not NMD causing
     NMD.pos <- genes[genes$nmd == "yes",]$transcript_id
     ASevents <- ASevents[ASevents$transcript_id %in% NMD.pos]
+    ASevents <- ASevents[ASevents$gene_id %in% ref$gene_id]
 
     ## get AS segments and annotate its splicing nature
     ref_overlaps <- IRanges::findOverlapPairs(ASevents, ref[ref$type == "exon"]) %>%
@@ -152,33 +153,50 @@ setMethod("testASNMDevents", "factR", function(object, verbose = FALSE) {
         dplyr::filter(first.X.start >= second.X.start) %>%
         dplyr::filter(first.X.end <= second.X.end) %>%
         dplyr::pull(first.X.AS_id)
+    ASspliced <- ASevents[!ASevents$AS_id %in% ref_overlaps] %>%
+        as.data.frame() %>%
+        dplyr::mutate(coord = paste0(seqnames, "_", start, "_",
+                                     end, "_", strand, "_", AStype)) %>%
+        dplyr::select(AS_id, gene_id, transcript_id, coord) %>%
+        dplyr::mutate(splice = "spliced")
 
-    # nmd_coord_gene <- ASevents %>%
-    #     as.data.frame() %>%
-    #     dplyr::mutate(label = paste0(seqnames, "-", start, "-", end, "gene_id")) %>%
-    #     dplyr::pull(label)
-    # ref_coord_gene <- ref %>%
-    #     as.data.frame() %>%
-    #     dplyr::mutate(label = paste0(seqnames, "-", start, "-", end, "gene_id")) %>%
-    #     dplyr::pull(label)
-    ASevents$splice <- ifelse(ASevents$AS_id %in% ref_overlaps,
-                              "skipped", "spliced")
-    ASevents <- ASevents[ASevents$gene_id %in% ref$gene_id]
+    ## get AS segments missing from ref
+    AStogene <- ASevents %>%
+        as.data.frame() %>%
+        dplyr::distinct(transcript_id, gene_id)
+
+    AS.grl <- S4Vectors::split(gtf[gtf$type == "exon"], ~transcript_id)
+    AS.grl <- AS.grl[AStogene$transcript_id]
+
+    ref.grl <- S4Vectors::split(ref[ref$type == "exon"], ~gene_id)
+    ref.grl <- ref.grl[AStogene$gene_id]
+    names(ref.grl) <- AStogene$transcript_id
+
+
+    ASskipped <- GenomicRanges::setdiff(ref.grl, AS.grl) %>%
+        as.data.frame() %>%
+        dplyr::left_join(ASevents %>%
+                             as.data.frame() %>%
+                             dplyr::select(seqnames, start, end, strand, gene_id, AStype, AS_id) %>%
+                             dplyr::distinct(),
+                         by = c("seqnames", "start", "end", "strand")) %>%
+        dplyr::filter(!is.na(AS_id)) %>%
+        dplyr::mutate(coord = paste0(seqnames, "_", start, "_",
+                                     end, "_", strand, "_", AStype)) %>%
+        dplyr::select(AS_id, gene_id, transcript_id = group_name, coord) %>%
+        dplyr::mutate(splice = "skipped")
+
+    ASevents.fulltx <- dplyr::bind_rows(ASskipped, ASspliced)
 
     # return if no AS exons were found
-    if(length(ASevents) == 0) {
+    if(nrow(ASevents.fulltx) == 0) {
         rlang::warn("No alternatively spliced exons found")
         return(NULL)
     }
 
     # simplify df by removing redundant exons
     ## in cases where ref and NMD tx contain said exon, the skipped form will be retained
-    ASevents <- ASevents %>%
-        as.data.frame() %>%
-        dplyr::mutate(coord = paste0(seqnames, "_", start, "_",
-                                     end, "_", strand, "_", AStype)) %>%
-        dplyr::arrange(splice) %>%
-        dplyr::select(AS_id, gene_id, transcript_id, coord, splice) %>%
+    ASevents <- ASevents.fulltx %>%
         dplyr::distinct(AS_id, .keep_all = TRUE)
 
     # recreate hypothetical tx by inserting/removing AS segments
