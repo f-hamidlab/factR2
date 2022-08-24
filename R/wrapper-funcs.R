@@ -20,15 +20,13 @@ setMethod("runfactR", "factR", function(
         object,
         NMD_threshold = 50,
         cons_db = "phastCons",
-        cons_type = "flanks",
-        cons_padding = 200,
         verbose = TRUE) {
 
     object <- buildCDS(object, verbose)
     object <- predictNMD(object, NMD_threshold, verbose)
     object <- getAAsequence(object, verbose)
     object <- testASNMDevents(object, verbose)
-    object <- getAScons(object, cons_db, cons_type, cons_padding)
+    object <- getAScons(object, cons_db, "exon", 0)
     object
 })
 
