@@ -146,10 +146,11 @@ setMethod("features", "factR", function(object, ..., set = NULL) {
     dat <- slot(object@sets[[set]], "rowData")
     out.type <- ifelse(set == "transcript", "transcript_id", "gene_id")
     feat <- .getFeat(object, ..., out = out.type)
-    return(dat[dat[[out.type]] %in% feat,])
+    dat <- dat[dat[[out.type]] %in% feat,]
+    rownames(dat) <- NULL
+    return(dat)
 })
 
-# TODO: remove rownames for printing
 # wrappers to quickly get genes, transcripts and AS
 setGeneric("genes", function(object, ...) standardGeneric("genes"))
 setMethod("genes", "factR", function(object, ...) {
