@@ -261,15 +261,20 @@ setMethod("testASNMDevents", "factR", function(object, verbose = FALSE) {
 
 
     # Report NMD exons
-    ASevents <- ASevents %>%
+    ASevents <- ASevents.fulltx %>%
         dplyr::left_join(mod.NMD %>% dplyr::select(transcript, is_NMD),
                          by = c("coord"="transcript")) %>%
         dplyr::mutate(NMDtype = ifelse(splice == "skipped", "Repressing", "Stimulating")) %>%
-        dplyr::select(coord, AS_id, gene_id, NMDtype, is_NMD) %>%
+        dplyr::select(coord, AS_id, gene_id, transcript_id, NMDtype, is_NMD) %>%
         tidyr::separate(coord, c("seqnames", "start", "end", "strand", "AStype"),
-                        sep = "_") %>%
+                        sep = "_", convert = TRUE) %>%
         dplyr::filter(is_NMD) %>%
+        dplyr::group_by(transcript_id) %>%
+        dplyr::arrange(ifelse(strand == "-", dplyr::desc(start), start)) %>%
+        dplyr::distinct(transcript_id, .keep_all = T) %>%
+        dplyr::ungroup() %>%
         dplyr::select(seqnames:strand, gene_id, AStype, AS_id, NMDtype) %>%
+        dplyr::distinct(AS_id, .keep_all = T) %>%
         GenomicRanges::makeGRangesFromDataFrame(keep.extra.columns = TRUE)
 
     # Annotate location of NMD events relative to reference CDS
