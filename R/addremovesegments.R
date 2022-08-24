@@ -23,6 +23,7 @@
                             length(x)-sum(samechr.strand)))
     }
 
+
     # check if exons in y are within transcripts in x
     internal <- as.data.frame(IRanges::pintersect(range(x), y))$hit
     if(allow.external.exons) {
@@ -34,16 +35,38 @@
         samechr.strand <- samechr.strand & internal
     }
 
+    combined <- GenomicRanges::reduce(IRanges::punion(x,y))
+    AFLs <- which(y$AStype %in% c("AF","AL") & samechr.strand)
+    combined[AFLs] <- .trimAFLs(combined[AFLs], y[AFLs])
     if(drop.unmodified){
-        return(GenomicRanges::reduce(IRanges::punion(x,y))[samechr.strand])
+        return(combined[samechr.strand])
     } else {
-        modified <- GenomicRanges::reduce(IRanges::punion(x,y))[samechr.strand] %>%
+        modified <- combined[samechr.strand] %>%
             factR::mutateeach(modified = TRUE)
         unmodified <- x[!samechr.strand] %>% factR::mutateeach(modified = FALSE)
 
         return(c(modified, unmodified)[names(x)])
     }
 
+}
+
+
+.trimAFLs <- function(txs, exons){
+  txs.df <- as.data.frame(txs)
+  exons.df <- as.data.frame(exons) %>%
+    dplyr::mutate(group=seq_along(txs))
+
+  out.gr <- txs.df %>%
+    dplyr::left_join(exons.df, by = "group") %>%
+    dplyr::mutate(test = start.x<start.y & end.x<end.y) %>%
+    dplyr::mutate(test = ifelse(AStype == "AF", !test, test)) %>%
+    dplyr::mutate(test = ifelse(strand.y == "-", !test, test)) %>%
+    dplyr::filter(test) %>%
+    dplyr::select(group, dplyr::ends_with(".x")) %>%
+    dplyr::rename_with(~str_remove(., ".x")) %>%
+    GenomicRanges::makeGRangesListFromDataFrame(split.field = "group")
+  txs[as.numeric(names(out.gr))] <- out.gr
+  return(txs)
 }
 
 
