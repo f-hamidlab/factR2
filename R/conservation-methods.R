@@ -58,8 +58,9 @@ setMethod("getAScons", "factR", function(
     ConsScoresDF$scores <- tidyr::replace_na(ConsScoresDF$scores, 0)
 
     # update ASE
-    object@sets$AS@rowData$Gscore <- 0
-    object@sets$AS@rowData[rownames(ConsScoresDF),]$Gscore <- ConsScoresDF$scores
+    colname <- stringr::str_glue("Cons.{type}.pad{padding}")
+    object@sets$AS@rowData[colname] <- 0
+    object@sets$AS@rowData[rownames(ConsScoresDF),colname] <- ConsScoresDF$scores
 
     return(object)
 }
