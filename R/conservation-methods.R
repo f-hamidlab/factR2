@@ -1,3 +1,4 @@
+## TODO: do up documentation
 setGeneric("getAScons", function(object, ...) standardGeneric("getAScons"))
 setMethod("getAScons", "factR", function(
           object,

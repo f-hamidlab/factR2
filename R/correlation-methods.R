@@ -1,3 +1,5 @@
+## TODO: do up documentation
+
 setGeneric("testGeneCorr", function(object, ...) standardGeneric("testGeneCorr"))
 setMethod("testGeneCorr", "factR", function(
         object,

@@ -149,6 +149,7 @@ setMethod("features", "factR", function(object, ..., set = NULL) {
     return(dat[dat[[out.type]] %in% feat,])
 })
 
+# TODO: remove rownames for printing
 # wrappers to quickly get genes, transcripts and AS
 setGeneric("genes", function(object, ...) standardGeneric("genes"))
 setMethod("genes", "factR", function(object, ...) {
