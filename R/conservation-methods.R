@@ -1,19 +1,23 @@
 ## TODO: do up documentation
+### type can be exon, flanks, upstream, downstream
+
 setGeneric("getAScons", function(object, ...) standardGeneric("getAScons"))
 setMethod("getAScons", "factR", function(
           object,
           db = "phastCons",
-          type = "flanks",
-          padding = 200) {
+          type = "exon",
+          padding = 50) {
 
     return(.getASGScores(object, db, type, padding))
 })
 
 
+.getASGScores <- function(object, db = "phastCons", type = "exon", padding = 50){
 
-.getASGScores <- function(object, db = "phastCons", type = "flanks", padding = 200){
-
-    # TODO: check for input `type`
+    acceptedtypes <- c("exon","upstream", "downstream","flanks")
+    if(!type %in% acceptedtypes){
+        rlang::abort(stringr::str_glue("Input type `{type}` not recognised"))
+    }
 
     consDB <- .GScorecheck(db, object@reference$build)
     if(is.null(consDB)){
@@ -44,10 +48,26 @@ setMethod("getAScons", "factR", function(
                                              na.rm = TRUE)
                 data.frame(scores = scores,
                                   row.names = AS.exons$AS_id)
-            } else{
+            } else if(type == "upstream"){
+                AS.exons.start <- GenomicRanges::flank(AS.exons, start = TRUE, width = padding, both = F)
+                AS.exons.start <- GenomicScores::gscores(consDB, AS.exons.start)
+
+                data.frame(scores = AS.exons.start$default,
+                           row.names = AS.exons$AS_id)
+
+            } else if(type == "downstream"){
+                AS.exons.end <- GenomicRanges::flank(AS.exons, start = FALSE, width = padding, both = F)
+                AS.exons.end <- GenomicScores::gscores(consDB, AS.exons.end)
+
+                data.frame(scores = AS.exons.end$default,
+                           row.names = AS.exons$AS_id)
+
+            } else if(type == "exon"){
                 scores <- GenomicScores::gscores(consDB, AS.exons+padding)
                 data.frame(scores = scores$default,
                                   row.names = AS.exons$AS_id)
+            } else {
+                rlang::abort()
             }
         },
         error = function(cond){
