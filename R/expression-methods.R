@@ -45,9 +45,11 @@ setMethod("addTxCounts", "factR", function(object, countData, sampleData, design
 .addSampleData <- function(object, sampleData) {
 
     # convert strings to factors
-    data.names <- rownames(sampleData)
-    sampleData <- as.data.frame(unclass(sampleData),stringsAsFactors=TRUE)
-    rownames(sampleData) <- data.names
+    coltypes <- sapply(sampleData, class)
+    toconvert <- names(coltypes[coltypes == "character"])
+    sampleData[toconvert] <- lapply(sampleData[toconvert],
+                                    function(x) factor(x, levels = unique(x)))
+
 
 
     # add sampleData if no data is currently present
