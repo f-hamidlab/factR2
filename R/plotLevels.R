@@ -8,13 +8,16 @@
         # check if given set is part of object
         if(!set %in% names(object@sets)){
             set <- object@active.set
-            .msgsubwarn(stringr::str_glue("Set `{set}` not found, using active.set"))
+            .msgwarn(stringr::str_glue("Set `{set}` not found, using active.set"))
         }
     }
     # check slot input
     if(!slot %in% c("counts","data")){
         slot <- "data"
-        .msgsubwarn(stringr::str_glue("Data `{slot}` not found, using data slot"))
+        .msgwarn(stringr::str_glue("Data `{slot}` not found, using data slot"))
+    }
+    if(set=="AS" & slot=="counts"){
+        slot <- "data"
     }
     # check group.by input
     if(!group.by %in% colnames(object@colData)){
