@@ -13,12 +13,17 @@ setMethod("testGeneCorr", "factR", function(
 
 .ASgenecorr <- function(object, vst = TRUE, ...){
 
+    psi <- object@sets$AS@data
+    n.psi.NA <- rowSums(!is.na(psi))
+    passed.ASevents <- names(n.psi.NA[n.psi.NA >= min_n])
+
+    normexp <- object@sets$gene@data
+
     # get AS-gene match
     AS2gene <- object[["AS"]] %>%
-        dplyr::select(AS_id, gene_id)
+        dplyr::select(AS_id, gene_id) %>%
+        dplyr::filter(AS_id %in% passed.ASevents)
 
-    psi <- object@sets$AS@data
-    normexp <- object@sets$gene@data
     if(vst){
         psi <- .asinTransform(psi)
         normexp <- DESeq2::varianceStabilizingTransformation( object@sets$gene@counts)
