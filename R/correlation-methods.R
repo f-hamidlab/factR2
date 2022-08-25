@@ -25,7 +25,7 @@ setMethod("testGeneCorr", "factR", function(
         dplyr::filter(AS_id %in% passed.ASevents)
 
     if(vst){
-        psi <- .asinTransform(psi)
+        psi <- suppressWarnings(.asinTransform(psi))
         normexp <- DESeq2::varianceStabilizingTransformation( object@sets$gene@counts)
     }
 
