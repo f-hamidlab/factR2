@@ -24,7 +24,7 @@ Imports:
 License: file LICENSE
 Encoding: UTF-8
 ByteCompile: true
-RoxygenNote: 7.2.0
+RoxygenNote: 7.2.1
 Suggests: 
     AnnotationHub (>= 2.22),
     testthat (>= 3.0.0)
@@ -37,11 +37,15 @@ Collate:
     'factRObject-class.R'
     'asnmd-methods.R'
     'cds-methods.R'
+    'check-methods.R'
+    'conservation-methods.R'
     'constructor.R'
+    'correlation-methods.R'
     'display-methods.R'
     'expression-methods.R'
     'mutate.R'
     'plot-funcs.R'
+    'plotFeatures.R'
     'protein-methods.R'
     'splicing-funcs.R'
     'subset.R'

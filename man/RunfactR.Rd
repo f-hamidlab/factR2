@@ -4,7 +4,7 @@
 \alias{runfactR}
 \title{Run factR workflow}
 \usage{
-runfactR(object, verbose = FALSE)
+runfactR(object, ...)
 }
 \arguments{
 \item{object}{factRObject}
