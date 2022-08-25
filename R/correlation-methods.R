@@ -37,7 +37,11 @@ setMethod("testGeneCorr", "factR", function(
         AS <- dat[1]
         gene <- dat[2]
 
-        test <- cor.test(psi[AS,samples], normexp[gene, samples], ...)
+        psi.dat <- psi[AS,samples]
+        exp.dat <- normexp[gene, samples]
+        exp.dat <- ifelse(is.na(psi.dat), NA, exp.dat) # match NA
+
+        test <- suppressWarnings(cor.test(psi.dat, exp.dat, ...))
         data.frame(estimate = test$estimate,
                    pvalue = test$p.value)
 
