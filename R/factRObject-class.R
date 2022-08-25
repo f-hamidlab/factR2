@@ -197,6 +197,7 @@ setMethod("colNames<-", "factR", function(object, value) {
 })
 
 ### Counts ####
+# TODO: counts not working, check why
 setGeneric("counts", function(object, ..., set = NULL, slot = "data") standardGeneric("counts"))
 setMethod("counts", "factR", function(object, ..., set = NULL) {
     if(is.null(set)){
