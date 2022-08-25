@@ -39,6 +39,7 @@
 #' @importFrom dplyr %>%
 #' @importFrom methods slot
 #' @import ggplot2
+#' @importFrom crayon green italic blue bold cyan white red
 #'
 setClass("factR",
          slots = c(
