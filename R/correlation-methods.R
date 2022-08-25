@@ -48,8 +48,10 @@ setMethod("testGeneCorr", "factR", function(
     }))
 
     # update ASE df
-    object@sets$AS@rowData$gene.cor.estimate <- out$estimate
-    object@sets$AS@rowData$gene.cor.pval <- out$pvalue
+    object@sets$AS@rowData$gene.cor.estimate <- NA
+    object@sets$AS@rowData$gene.cor.pval <- NA
+    object@sets$AS@rowData[AS2gene$AS_id, "gene.cor.est"] <- out$estimate
+    object@sets$AS@rowData[AS2gene$AS_id, "gene.cor.pval"] <- out$pvalue
 
     object
 }
