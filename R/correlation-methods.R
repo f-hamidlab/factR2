@@ -33,7 +33,7 @@ setMethod("testGeneCorr", "factR", function(
     samples <- rownames(object@colData)
 
     # run correlation
-    out <- do.call(rbind, apply(AS2gene, 1, function(dat){
+    out <- do.call(rbind, pbapply::pbapply(AS2gene, 1, function(dat){
         AS <- dat[1]
         gene <- dat[2]
 
