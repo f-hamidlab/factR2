@@ -4,6 +4,7 @@ setGeneric("testGeneCorr", function(object, ...) standardGeneric("testGeneCorr")
 setMethod("testGeneCorr", "factR", function(
         object,
         vst = TRUE,
+        min_n = 3,
         ...) {
 
     return(.ASgenecorr(object, vst, ...))
