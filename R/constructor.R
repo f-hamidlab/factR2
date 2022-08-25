@@ -72,7 +72,6 @@ createfactRObject <- function(gtf, reference,
 
     # add and prep counts data if given
     if(!is.null(countData)){
-        if(verbose){ .msgheader("Adding expression counts data")}
         obj <- addTxCounts(obj, countData, sampleData, design)
     }
 

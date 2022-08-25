@@ -24,6 +24,7 @@ setMethod("addTxCounts", "factR", function(object, countData, sampleData, design
         rlang::abort("Some transcript features are missing in countData")
     }
 
+    if(verbose){ .msgheader("Adding expression data")}
     # convert counts to integer
     countData <- as.matrix(countData)
     counts.names <- rownames(countData)
