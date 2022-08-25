@@ -7,6 +7,9 @@ setGeneric("predictNMD", function(object, NMD_threshold = 50, verbose = FALSE) s
 
 
 setMethod("predictNMD", "factR", function(object, NMD_threshold = 50, verbose = FALSE) {
+
+    if(verbose){.msgheader("Running transcript-level NMD prediction")}
+
     gtf <- slot(object, "transcriptome")
     gtf <- gtf[!gtf$type %in% c("gene", "AS")]
     genetxs <- object[["transcript"]]
@@ -24,6 +27,7 @@ setMethod("predictNMD", "factR", function(object, NMD_threshold = 50, verbose = 
                               progress_bar = FALSE))
     }
 
+    if(verbose){.msgsubinfo("Updating transcript feature data")}
     row.names <- rownames(genetxs)
     cols <- setdiff(colnames(genetxs), colnames(nmd.out))
 
@@ -57,6 +61,8 @@ setMethod("predictNMD", "factR", function(object, NMD_threshold = 50, verbose = 
 setGeneric("testASNMDevents", function(object, verbose = FALSE) standardGeneric("testASNMDevents"))
 setMethod("testASNMDevents", "factR", function(object, verbose = FALSE) {
 
+    if(verbose){.msgheader("Running AS-NMD testing")}
+
     genes <- object[["transcript"]]
     gtf <- object@transcriptome
     if(all(genes$cds == "no") & all(genes$nmd == "no")){
@@ -76,12 +82,15 @@ setMethod("testASNMDevents", "factR", function(object, verbose = FALSE) {
     #phastGScore <- .GScorecheck(ConsScores)
 
     # get reference CDS transcript for each gene
-    if(verbose){ rlang::inform("Getting best reference for AS-NMD testing")}
+
+    if(verbose){ .msgsubinfo("Getting best reference for AS-NMD testing")}
     ref <- .getbestref(gtf, genes)
 
     # run core function
-    if(verbose){ rlang::inform("Testing AS-NMD exons")}
-    ASNMDevents <- .runidentifynmdexons(ASevents, genes, ref, object@reference$genome, gtf)
+    if(verbose){ .msgsubinfo("Testing AS-NMD exons")}
+    ASNMDevents <- .runidentifynmdexons(ASevents, genes, ref,
+                                        object@reference$genome, gtf,
+                                        verbose)
 
     # update AS events if returned object is not null
     if(!is.null(ASNMDevents)){
@@ -93,7 +102,7 @@ setMethod("testASNMDevents", "factR", function(object, verbose = FALSE) {
         object@transcriptome <- c(gtf.others, ASevents)
 
         # update featureData
-        if(verbose){ rlang::inform("Updating AS feature data")}
+        if(verbose){ .msgsubinfo("Updating AS feature data")}
         ASevents.id <- rownames(features(object, set = "AS"))
         object <- mutate(object,
                          ASNMDtype = ifelse(ASevents.id %in% ASNMDevents$AS_id,
@@ -129,7 +138,7 @@ setMethod("testASNMDevents", "factR", function(object, verbose = FALSE) {
 
 
 
-.runidentifynmdexons <- function(ASevents, genes, ref, genome, gtf) {
+.runidentifynmdexons <- function(ASevents, genes, ref, genome, gtf, verbose) {
 
     #rlang::inform("Finding NMD causing exons")
     # NMD.pos <- genes[genes$nmd == "yes",]$transcript_id
@@ -190,7 +199,7 @@ setMethod("testASNMDevents", "factR", function(object, verbose = FALSE) {
 
     # return if no AS exons were found
     if(nrow(ASevents.fulltx) == 0) {
-        rlang::warn("No alternatively spliced exons found")
+        if(verbose){ .msgsubwarn("No alternatively spliced exons found")}
         return(NULL)
     }
 
@@ -254,7 +263,7 @@ setMethod("testASNMDevents", "factR", function(object, verbose = FALSE) {
 
     # return if none of the reconstructed transcripts are NMD sensitive
     if(sum(mod.NMD$is_NMD) == 0) {
-        rlang::warn("None of the alternative exons are NMD-causing")
+        if(verbose){ .msgsubwarn("None of the alternative exons are NMD-causing")}
         return(NULL)
     }
 

@@ -11,7 +11,7 @@ createfactRObject <- function(gtf, reference,
 
     # check input arguments
     if(verbose){
-        rlang::inform("Checking inputs")
+        .msgheader("Checking inputs")
     }
     ## GTF input
     if(missing(gtf)){
@@ -35,24 +35,26 @@ createfactRObject <- function(gtf, reference,
 
     # create new factRObject
     if(verbose){
-        rlang::inform("Creating factRObject")
+        .msgheader("Checking factRObject")
     }
     obj <- methods::new("factR")
     obj@version <- factR2version
 
     # import data
     if(verbose){
-        rlang::inform("Adding custom transcriptome")
+        .msgheader("Adding custom transcriptome")
     }
     obj@transcriptome <- .smartimport(gtf, ".gtf", "Custom transcriptome",verbose)
+    GenomeInfoDb::seqlevels(obj@transcriptome) <- as.character(
+        unique(GenomicRanges::seqnames(obj@transcriptome)))
 
     if(verbose){
-        rlang::inform("Adding annotation")
+        .msgheader("Adding annotation")
     }
     obj@reference$ranges <- .smartimport(reference.list[[1]], ".gtf", "Annotation",
                                          verbose)
     if(verbose){
-        rlang::inform("Adding genome sequence")
+        .msgheader("Adding genome sequence")
     }
     obj@reference$genome <- .smartimport(reference.list[[2]], ".fa", "Genome sequence",
                                          verbose)
@@ -70,7 +72,7 @@ createfactRObject <- function(gtf, reference,
 
     # add and prep counts data if given
     if(!is.null(countData)){
-        if(verbose){ rlang::inform("Adding expression counts data")}
+        if(verbose){ .msgheader("Adding expression counts data")}
         obj <- addTxCounts(obj, countData, sampleData, design)
     }
 
@@ -138,7 +140,7 @@ createfactRObject <- function(gtf, reference,
         }
         if(verbose){
             datatype <- as.character(class(input))
-            rlang::inform(sprintf("## Using %s object", datatype))
+            .msgsubinfo(sprintf("Using %s object", datatype))
         }
         return(input)
     }
@@ -148,7 +150,7 @@ createfactRObject <- function(gtf, reference,
     ## try local file
     else if (file.exists(input) & grepl(format, tolower(input))){
         if(verbose){
-            rlang::inform("## Importing from local directory")
+            .msgsubinfo("Importing from local directory")
         }
         if(format == ".gtf"){
             return(factR::importGTF(input))
@@ -160,7 +162,7 @@ createfactRObject <- function(gtf, reference,
     ## try AH
     else if(grepl("^AH", input)){
         if(verbose){
-            rlang::inform("## Importing from AnnotationHub")
+            .msgsubinfo("Importing from AnnotationHub")
 
             ah <- AnnotationHub::AnnotationHub()
             return(ah[[input]])
@@ -173,15 +175,15 @@ createfactRObject <- function(gtf, reference,
     ## try FTP
     else if(grepl("^http",input)){
         if(verbose){
-            rlang::inform("## Importing from URL")
+            .msgsubinfo("Importing from URL")
         }
         if(format == ".gtf"){
             tmpfile <- tempfile()
-            download.file(input, tmpfile, quiet = !verbose)
+            download.file(input, tmpfile, quiet = TRUE)
             return(factR::importGTF(tmpfile))
         } else if(format == ".fa"){
             tmpfile <- tempfile()
-            download.file(input, tmpfile, quiet = !verbose)
+            download.file(input, tmpfile, quiet = TRUE)
             return(factR::importFASTA(tmpfile))
         }
 
@@ -195,7 +197,7 @@ createfactRObject <- function(gtf, reference,
 .prepfactR <-  function(object, matchgenes, verbose = FALSE) {
     #  match chromosomes
     if(verbose){
-        rlang::inform("Matching chromosome names")
+        .msgheader("Matching chromosome names")
     }
     object@transcriptome <- factR::matchChromosomes(object@transcriptome,
                                                     object@reference$genome)
@@ -206,7 +208,7 @@ createfactRObject <- function(gtf, reference,
     if(matchgenes){
         ## try find variables that contain gene ids
         if(verbose){
-            rlang::inform("Matching gene names")
+            .msgheader("Matching gene names")
         }
         if("ref_gene_id" %in% colnames(as.data.frame(object@transcriptome))){
             if(verbose){
@@ -300,10 +302,10 @@ createfactRObject <- function(gtf, reference,
 
     # create genetxs dataframe
     if(verbose){
-        rlang::inform("Creating factRset objects")
+        .msgheader("Creating factRset objects")
     }
     if(verbose){
-        rlang::inform("## Adding gene information")
+        .msgsubinfo("Adding gene information")
     }
     object@active.set <- "AS"
     object@sets$gene <- methods::new("factRset")
@@ -316,7 +318,7 @@ createfactRObject <- function(gtf, reference,
     object@sets$gene@data <- as.matrix(data.frame(row.names =  rownames(object[["gene"]])))
 
     if(verbose){
-        rlang::inform("## Adding transcript information")
+        .msgsubinfo("Adding transcript information")
     }
     object@sets$transcript <- methods::new("factRset")
     object@sets$transcript@rowData <- as.data.frame(object@transcriptome) %>%
@@ -330,7 +332,7 @@ createfactRObject <- function(gtf, reference,
     object@sets$transcript@data <- as.matrix(data.frame(row.names =  rownames(object[["transcript"]])))
 
     if(verbose){
-        rlang::inform("## Adding alternative splicing information")
+        .msgsubinfo("Adding alternative splicing information")
     }
     object@sets$AS <- methods::new("factRset")
     object <- .findAS(object)
@@ -346,7 +348,7 @@ createfactRObject <- function(gtf, reference,
 
     # annotate new transcripts
     if(verbose){
-        rlang::inform("Annotating novel transcripts")
+        .msgheader("Annotating novel transcripts")
     }
     gtf <- granges(object, set = "transcript")
     newtxs <- suppressMessages(factR::subsetNewTranscripts(gtf,

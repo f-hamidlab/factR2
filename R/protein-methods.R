@@ -90,7 +90,7 @@ setMethod("predictDomain", "factR", function(object,
     x <- y <- instop <- NULL
 
     if(verbose){
-        rlang::inform("Checking CDSs and translating protein sequences")
+        .msgheader("Translating amino acid sequences")
     }
 
     cdsSeq <- GenomicFeatures::extractTranscriptSeqs(fasta, cds)
@@ -108,7 +108,8 @@ setMethod("predictDomain", "factR", function(object,
     # stop codon
     ## and remove entries without proteins after truncation
     if (TRUE %in% aaSeq$noATG) {
-        rlang::warn(sprintf("%s CDSs do not begin with ATG", sum(aaSeq$noATG)))
+        if(verbose){ .msgsubwarn(
+            sprintf("%s CDSs do not begin with ATG", sum(aaSeq$noATG)))}
     }
     if (TRUE %in% aaSeq$instop) {
         aaSeq <- suppressWarnings(aaSeq %>%
@@ -119,15 +120,18 @@ setMethod("predictDomain", "factR", function(object,
                                       )) %>%
                                       dplyr::mutate(y = strsplit(x, split = "")) %>%
                                       dplyr::ungroup())
+        if(verbose){ .msgsubwarn(
+            sprintf(paste0("%s CDSs contain internal stop codon. ",
+                           "Truncating CDS sequence to retain ORF"),
+                    sum(aaSeq$instop)))}
 
-        rlang::warn(sprintf(paste0("%s CDSs contain internal stop codon. ",
-                                   "Truncating CDS sequence to retain ORF"),
-                            sum(aaSeq$instop)))
         if ("" %in% aaSeq$x) {
-            rlang::warn(sprintf(paste0(
-                "After truncation, %s cds have no ",
-                "coding sequences. These CDSs were not analyzed"),
-                sum(aaSeq$x == "")))
+            if(verbose){ .msgsubwarn(
+                sprintf(paste0(
+                    "After truncation, %s cds have no ",
+                    "coding sequences. These CDSs were not analyzed"),
+                    sum(aaSeq$x == "")))}
+
             aaSeq <- aaSeq[aaSeq$x != "", ]
         }
     }
