@@ -63,7 +63,7 @@
     dplyr::mutate(test = ifelse(strand.y == "-", !test, test)) %>%
     dplyr::filter(test) %>%
     dplyr::select(group, dplyr::ends_with(".x")) %>%
-    dplyr::rename_with(~str_remove(., ".x")) %>%
+    dplyr::rename_with(~stringr::str_remove(., ".x")) %>%
     GenomicRanges::makeGRangesListFromDataFrame(split.field = "group")
   txs[as.numeric(names(out.gr))] <- out.gr
   return(txs)
