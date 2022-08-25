@@ -7,7 +7,7 @@ setGeneric("addTxCounts", function(object, countData, sampleData,
 setMethod("addTxCounts", "factR", function(object, countData, sampleData, design, verbose = FALSE) {
 
     # catch missing args
-    mandargs <- c("countData", "sampleData", "design")
+    mandargs <- c("countData", "sampleData")
     passed <- names(as.list(match.call())[-1])
     if (any(!mandargs %in% passed)) {
         rlang::abort(paste(
@@ -26,6 +26,7 @@ setMethod("addTxCounts", "factR", function(object, countData, sampleData, design
 
     if(verbose){ .msgheader("Adding expression data")}
     # convert counts to integer
+    if(verbose){ .msgsubinfo("Adding transcript counts")}
     countData <- as.matrix(countData)
     counts.names <- rownames(countData)
     counts.samples <- colnames(countData)
@@ -36,8 +37,8 @@ setMethod("addTxCounts", "factR", function(object, countData, sampleData, design
     object@sets$transcript@counts <- countData[txs,]
     object@colData <- data.frame(row.names = colnames(countData))
     object <- .addSampleData(object, sampleData)
-    object <- .addDesign(object, design)
-    object <- .processCounts(object)
+    #object <- .addDesign(object, design)
+    object <- .processCounts(object, verbose)
 
     return(object)
 })
@@ -118,6 +119,7 @@ setMethod("design<-", "factR", function(object, value) .addDesign(object, value)
 
     txcounts <- object@sets$transcript@counts
     # get gene counts
+    if(verbose){ .msgsubinfo("Adding gene counts")}
     txdata <- object[["transcript"]]
     genecounts <- rowsum(txcounts[txdata$transcript_id, ], group = txdata$gene_id)
     genecounts <- genecounts[object[["gene"]]$gene_id,]
@@ -125,6 +127,7 @@ setMethod("design<-", "factR", function(object, value) .addDesign(object, value)
 
 
     # get psi values
+    if(verbose){ .msgsubinfo("Adding spliced-event counts")}
     ## normalize tx reads by tx length
     txlengths <- txdata$width
     txcounts.norm <- apply(txcounts, 2, function(x) x/txlengths)
@@ -135,6 +138,7 @@ setMethod("design<-", "factR", function(object, value) .addDesign(object, value)
         dplyr::filter(type == "AS") %>%
         dplyr::distinct(AS_id, transcript_id)
 
+    # TODO: decide whether to add inc and total counts or not
     ASevents <- granges(object, set = "AS")
     transcripts <- granges(object, set = "transcript")
     transcripts <- transcripts[transcripts$type == "transcript"]
