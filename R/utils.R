@@ -40,4 +40,16 @@ factR2version <- "0.99.0"
 
 .asinTransform <-  function(x) { 2 * asin(sqrt(x))/pi }
 
+.msgheader <- function(x){
+    message(green$bold(stringr::str_glue("\U1F846  {x}")))
+}
+.msgsubinfo <- function(x){
+    message(blue("    \U2139 "), italic$white(x))
+}
+.msgsubwarn <- function(x){
+    message(red("    \U2757 "), italic$cyan(x))
+}
+
+
+
 # TODO: reattaching genome?
