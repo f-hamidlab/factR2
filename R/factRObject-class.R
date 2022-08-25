@@ -197,7 +197,6 @@ setMethod("colNames<-", "factR", function(object, value) {
 })
 
 ### Counts ####
-# TODO: counts not working, check why
 setGeneric("counts", function(object, ..., set = NULL, slot = "data") standardGeneric("counts"))
 setMethod("counts", "factR", function(object, ..., set = NULL) {
     if(is.null(set)){
@@ -209,10 +208,8 @@ setMethod("counts", "factR", function(object, ..., set = NULL) {
 
     if(set == "AS"){
         dat <- slot(object@sets[[set]], "data")
-        feat <- .getFeat(object, ..., out = "gene_id")
-        ASdata <- object[["AS"]]
-        selected_AS <- ASdata[ASdata$gene_id %in% feat,]$ASid
-        return(dat[selected_AS,])
+        feat <- .getFeat(object, ..., out = "AS_id")
+        return(dat[feat,])
 
     } else {
         dat <- slot(object@sets[[set]], slot)
