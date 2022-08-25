@@ -147,7 +147,7 @@ setMethod("features", "factR", function(object, ..., set = NULL) {
     out.type <- ifelse(set == "transcript", "transcript_id", "gene_id")
     feat <- .getFeat(object, ..., out = out.type)
     dat <- dat[dat[[out.type]] %in% feat,]
-    rownames(dat) <- NULL
+    #rownames(dat) <- NULL
     return(dat)
 })
 
