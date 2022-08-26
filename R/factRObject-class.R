@@ -197,6 +197,9 @@ setMethod("colNames<-", "factR", function(object, value) {
     return(.updatefactR(object))
 })
 
+setGeneric("ident", function(object) standardGeneric("ident"))
+setMethod("ident", "factR", function(object) object@active.ident)
+
 ### Counts ####
 setGeneric("counts", function(object, ..., set = NULL, slot = "data") standardGeneric("counts"))
 setMethod("counts", "factR", function(object, ..., set = NULL) {
@@ -221,11 +224,6 @@ setMethod("counts", "factR", function(object, ..., set = NULL) {
 })
 
 
-### Design ####
-setGeneric("design", function(object) standardGeneric("design"))
-setMethod("design", "factR", function(object) object@design)
-
-
 
 ### Domains ####
 setGeneric("domains", function(object, ...) standardGeneric("domains"))
@@ -248,8 +246,11 @@ setMethod("activeSet<-", "factR", function(object, value){
 })
 
 ### Set design ####
-setGeneric("design<-", function(object, value) standardGeneric("design<-"))
-
+setGeneric("ident<-", function(object, value) standardGeneric("ident<-"))
+setMethod("ident<-", "factR", function(object, value){
+    methods::slot(object, "active.ident") <- value
+    object
+})
 
 
 ### Add features/sample data ####
