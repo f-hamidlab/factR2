@@ -63,7 +63,7 @@ setClass("factRset",
              counts = "matrix",
              data = "matrix",
              rowData = "data.frame",
-             comparisons = "data.frame"
+             misc = "list"
          )
 )
 
