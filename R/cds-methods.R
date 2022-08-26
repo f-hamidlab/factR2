@@ -26,10 +26,9 @@ setMethod("buildCDS", "factR", function(object, verbose = FALSE) {
 
     if(verbose){.msgsubinfo("Updating transcript feature data")}
     cdss <- unique(gtf[gtf$type == "CDS"]$transcript_id)
-    txs <- object[["transcript"]]
-    object@sets$transcript@rowData$cds <- ifelse(txs$transcript_id %in% cdss,
-                                                 "yes",
-                                                 txs$cds)
+    object <- addMeta(object, meta = "transcript",
+                      cds = ifelse(transcript_id %in% cdss, "yes", cds))
+
     return(object)
 })
 

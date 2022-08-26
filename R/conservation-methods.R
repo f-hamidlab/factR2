@@ -100,8 +100,7 @@ setMethod("getAScons", "factR", function(
 
 
     # update ASE
-    object@sets$AS@rowData[colnames(fullout)] <- 0
-    object@sets$AS@rowData[rownames(fullout),colnames(fullout)] <- fullout
+    object <- addMeta(object, "AS", data = fullout)
 
     return(object)
 }

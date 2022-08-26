@@ -12,7 +12,6 @@ setMethod("predictNMD", "factR", function(object, NMD_threshold = 50, verbose = 
 
     gtf <- slot(object, "transcriptome")
     gtf <- gtf[!gtf$type %in% c("gene", "AS")]
-    genetxs <- object[["transcript"]]
 
     if(! "CDS" %in% gtf$type){
         rlang::abort("No CDSs found. Please run buildCDS() first")
@@ -28,16 +27,13 @@ setMethod("predictNMD", "factR", function(object, NMD_threshold = 50, verbose = 
     }
 
     if(verbose){.msgsubinfo("Updating transcript feature data")}
-    row.names <- rownames(genetxs)
-    cols <- setdiff(colnames(genetxs), colnames(nmd.out))
+    nmd.out <- nmd.out %>%
+        tibble::column_to_rownames("transcript")
+    object <- addMeta(object, meta = "transcript",
+                      data = nmd.out,
+                      nmd = ifelse(is_NMD & !is.na(is_NMD),
+                                   "yes", nmd))
 
-    genetxs <- genetxs %>%
-        dplyr::select(cols) %>%
-        dplyr::left_join(nmd.out, by = c("transcript_id"="transcript"))
-    genetxs$nmd <- ifelse(genetxs$is_NMD & !is.na(genetxs$is_NMD), "yes", genetxs$nmd)
-    genetxs$is_NMD <- NULL
-    rownames(genetxs) <- genetxs$transcript_id
-    object@sets$transcript@rowData <- genetxs[row.names,]
     return(object)
 })
 
@@ -103,13 +99,12 @@ setMethod("testASNMDevents", "factR", function(object, verbose = FALSE) {
 
         # update featureData
         if(verbose){ .msgsubinfo("Updating AS feature data")}
-        ASevents.id <- rownames(features(object, set = "AS"))
-        object <- mutate(object,
-                         ASNMDtype = ifelse(ASevents.id %in% ASNMDevents$AS_id,
-                                            ASNMDevents[ASevents.id,]$NMDtype, "NA"),
-                         ASNMD.in.cds = ifelse(ASevents.id %in% ASNMDevents$AS_id,
-                                               ASNMDevents[ASevents.id,]$within.CDS, "NA"),
-                         data = "AS")
+        ASNMDevents <- ASNMDevents %>%
+            as.data.frame() %>%
+            dplyr::select(ASNMDtype=NMDtype, ASNMD.in.cds=within.CDS)
+
+        object <- addMeta(object, "AS", data = ASNMDevents)
+
     }
 
     return(object)
