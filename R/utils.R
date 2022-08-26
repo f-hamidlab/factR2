@@ -66,6 +66,9 @@ factR2version <- "0.99.0"
 .msgwarn <- function(x){
     message(red("\U2757 "), italic$cyan(x))
 }
+.msginfo <- function(x){
+    message(blue("\U2139 "), italic$white(x))
+}
 
 
 
