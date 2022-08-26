@@ -1,4 +1,4 @@
-.plotLevels <- function(object, ..., set = NULL, group.by = NULL, slot = "data",
+.plotLvls <- function(object, ..., set = NULL, group.by = NULL, slot = "data",
                         ncol=1){
 
     # get levels data based on set
@@ -20,7 +20,9 @@
         slot <- "data"
     }
     # check group.by input
-    if(!group.by %in% colnames(object@colData)){
+    if(is.null(group.by)){
+        group.by <- object@active.ident
+    } else if(!group.by %in% colnames(object@colData)){
         rlang::abort("grouping not found")
     }
 
