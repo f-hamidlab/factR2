@@ -6,7 +6,6 @@ createfactRObject <- function(gtf, reference,
                               match_genes = TRUE,
                               countData = NULL,
                               sampleData = NULL,
-                              design = NULL,
                               psi = NULL,
                               verbose = TRUE){
 
