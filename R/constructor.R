@@ -25,11 +25,8 @@ createfactRObject <- function(gtf, reference,
     ## Count data input
     if(!is.null(countData)){
         # check if sampleData and design are given
-        if(any(c(is.null(sampleData), is.null(design)))){
-            args <- c("sampleData", "design")
-            args.null <- c(is.null(sampleData), is.null(design))
-            rlang::abort(sprintf("Counts data provided, but %s data missing",
-                                 paste(args[args.null], collapse = " and ")))
+        if(is.null(sampleData)){
+            rlang::abort("Counts data provided, but sample data missing")
         }
     }
 
@@ -74,7 +71,7 @@ createfactRObject <- function(gtf, reference,
 
     # add and prep counts data if given
     if(!is.null(countData)){
-        obj <- addTxCounts(obj, countData, sampleData, design)
+        obj <- addTxCounts(obj, countData, sampleData)
     }
 
     return(obj)
@@ -202,8 +199,9 @@ createfactRObject <- function(gtf, reference,
     }
     object@transcriptome <- factR::matchChromosomes(object@transcriptome,
                                                     object@reference$genome)
-    object@reference$ranges <- suppressWarnings(factR::matchChromosomes(object@reference$ranges,
-                                                                        object@reference$ranges))
+    object@reference$ranges <- suppressWarnings(
+        factR::matchChromosomes(object@reference$ranges,
+                                object@reference$ranges))
 
     # match gene ID if requested
     if(matchgenes){
