@@ -254,9 +254,9 @@ setMethod("ident<-", "factR", function(object, value){
 
 
 ### Add features/sample data ####
-setGeneric("mutate", function(object, ..., data = "samples") standardGeneric("mutate"))
-setMethod("mutate", "factR", function(object, ..., data = "samples"){
-    mutate.factR(object, ..., data = data)
+setGeneric("addMeta", function(object, meta="samples", data=NULL, ...) standardGeneric("addMeta"))
+setMethod("addMeta", "factR", function(object, meta="samples", data=NULL, ...){
+    mutate.factR(object, meta, data, ...)
 })
 
 
