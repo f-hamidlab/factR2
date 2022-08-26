@@ -1,10 +1,7 @@
 
-
-
-
 setGeneric("addTxCounts", function(object, countData, sampleData,
-                                   design, verbose = FALSE) standardGeneric("addTxCounts"))
-setMethod("addTxCounts", "factR", function(object, countData, sampleData, design, verbose = FALSE) {
+                                   verbose = TRUE) standardGeneric("addTxCounts"))
+setMethod("addTxCounts", "factR", function(object, countData, sampleData, verbose = TRUE) {
 
     # catch missing args
     mandargs <- c("countData", "sampleData")
@@ -37,7 +34,6 @@ setMethod("addTxCounts", "factR", function(object, countData, sampleData, design
     object@sets$transcript@counts <- countData[txs,]
     object@colData <- data.frame(row.names = colnames(countData))
     object <- .addSampleData(object, sampleData)
-    #object <- .addDesign(object, design)
     object <- .processCounts(object, verbose)
 
     return(object)
