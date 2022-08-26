@@ -1,6 +1,7 @@
 createfactRObject <- function(gtf, reference,
                               use_own_annotation = NULL,
                               use_own_genome = NULL,
+                              project_name = "factRProject",
                               genome_build = "auto",
                               match_genes = TRUE,
                               countData = NULL,
@@ -39,6 +40,7 @@ createfactRObject <- function(gtf, reference,
     }
     obj <- methods::new("factR")
     obj@version <- factR2version
+    obj@project <- project_name
 
     # import data
     if(verbose){
