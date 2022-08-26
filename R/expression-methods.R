@@ -103,11 +103,12 @@ setMethod("addTxCounts", "factR", function(object, countData, sampleData, verbos
     object@sets$AS@misc$total <- AS.txs.all.normcounts  #included norm counts
 
     # normalize gene and tx data
-    gene.dds <- DESeq2::DESeqDataSetFromMatrix(genecounts, object@colData, object@design)
+    if(verbose){ .msgsubinfo("Normalizing counts")}
+    gene.dds <- DESeq2::DESeqDataSetFromMatrix(genecounts, object@colData, ~1)
     gene.dds <- DESeq2::estimateSizeFactors(gene.dds)
     object@sets$gene@data <- DESeq2::counts(gene.dds, normalized = T)
 
-    tx.dds <- DESeq2::DESeqDataSetFromMatrix(txcounts, object@colData, object@design)
+    tx.dds <- DESeq2::DESeqDataSetFromMatrix(txcounts, object@colData, ~1)
     tx.dds <- DESeq2::estimateSizeFactors(tx.dds)
     object@sets$transcript@data <- DESeq2::counts(tx.dds, normalized = T)
 
