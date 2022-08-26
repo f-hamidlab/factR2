@@ -49,6 +49,7 @@ setClass("factR",
              domains = "list",
              project = "character",
              active.set = "character",
+             active.ident = "character",
              reference = "list",
              misc = "list",
              version = "character"
