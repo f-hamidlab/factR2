@@ -238,39 +238,6 @@ createfactRObject <- function(gtf, reference,
     }
 
 
-    # custom.df <- as.data.frame(object@transcriptome)
-    # potential_id_vars <- apply(custom.df, 2, function(x) any(grepl("ENS",x)))
-    # potential_id <- names(potential_id_vars)[potential_id_vars]
-    # potential_id <- potential_id[-which( potential_id %in% "transcript_id")]
-
-
-    # if(length(potential_id > 1)){
-    #     if(verbose){
-    #         object@transcriptome <- factR::matchGeneInfo(object@transcriptome,
-    #                                                      object@reference$ranges,
-    #                                                      primary_gene_id = "gene_id",
-    #                                                      secondary_gene_id = potential_id)
-    #     } else {
-    #         object@transcriptome <- suppressMessages(
-    #             factR::matchGeneInfo(object@transcriptome,
-    #                                  object@reference$ranges,
-    #                                  primary_gene_id = "gene_id",
-    #                                  secondary_gene_id = potential_id))
-    #     }
-    #
-    # } else {
-    #     if(verbose){
-    #         object@transcriptome <- factR::matchGeneInfo(object@transcriptome,
-    #                                                      object@reference$ranges,
-    #                                                      primary_gene_id = "gene_id")
-    #     } else {
-    #         object@transcriptome <- suppressMessages(
-    #             factR::matchGeneInfo(object@transcriptome,
-    #                                  object@reference$ranges,
-    #                                  primary_gene_id = "gene_id"))
-    #     }
-    # }
-
     # Add 'gene' type in GTF
     if(!"gene" %in% object@transcriptome$type){
         genes.gtf <- object@transcriptome
