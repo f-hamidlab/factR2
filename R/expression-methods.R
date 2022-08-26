@@ -155,6 +155,8 @@ setMethod("design<-", "factR", function(object, value) .addDesign(object, value)
     AS.psi <- AS.txs.included.normcounts/AS.txs.all.normcounts
     AS.psi <- signif(AS.psi, digits = 3)
     object@sets$AS@data <- AS.psi[rownames(object@sets$AS@rowData),]
+    object@sets$AS@misc$inc <- AS.txs.included.normcounts  #included norm counts
+    object@sets$AS@misc$total <- AS.txs.all.normcounts  #included norm counts
 
     # normalize gene and tx data
     gene.dds <- DESeq2::DESeqDataSetFromMatrix(genecounts, object@colData, object@design)
