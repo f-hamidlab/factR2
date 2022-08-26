@@ -34,11 +34,9 @@ mutate.factR <- function(object, meta = "samples", data=NULL, ...){
         }
 
         df <- dplyr::mutate(df, data)
-    } else{
-        # do dplyr mutate style transformation
+    } # do dplyr mutate style transformation
 
-        df <- dplyr::mutate(df, ...)
-    }
+    df <- dplyr::mutate(df, ...)
 
 
     # update meta and return object
