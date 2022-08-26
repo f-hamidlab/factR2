@@ -28,7 +28,9 @@ mutate.factR <- function(object, meta = "samples", data=NULL, ...){
             newdata[tokeep,colnames(data)] <- data[tokeep,colnames(data)]
             data <- newdata
         } else{
+            data$id <- rownames(data)
             data <- data[rownames(df),]
+            data$id <- NULL
         }
 
         df <- dplyr::mutate(df, data)
