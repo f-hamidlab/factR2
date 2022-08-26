@@ -11,13 +11,21 @@ setMethod("getAScons", "factR", function(
     return(.getASGScores(object, db, type, padding))
 })
 
-
 .getASGScores <- function(object, db = "phastCons", type = "exon", padding = 50){
 
     acceptedtypes <- c("exon","upstream", "downstream","flanks")
-    if(!type %in% acceptedtypes){
-        rlang::abort(stringr::str_glue("Input type `{type}` not recognised"))
+    if(!all(type %in% acceptedtypes)){
+        unacceptedtype <- paste0(type[!type %in% acceptedtypes], collapse = ",")
+        rlang::abort(stringr::str_glue("Input type(s) `{unacceptedtype}` not recognised"))
     }
+    if((length(type) != length(padding)) & length(padding)>1){
+        rlang::abort(stringr::str_glue(
+            "Length of vector `padding` ({length(padding)}) not equal to `type` ({length(type)})"))
+    }
+    if(length(padding)==1){
+        padding <- rep(padding, length(type))
+    }
+
 
     .msgheader("Quantifiying conservation scores")
     consDB <- .GScorecheck(db, object@reference$build)
@@ -26,63 +34,74 @@ setMethod("getAScons", "factR", function(
         return(object)
     }
 
-    .msgsubinfo(stringr::str_glue(
-        "Quantifying `{type}` conservation scores with {padding} padding"))
-    AS.exons <- object@transcriptome[object@transcriptome$type %in% "AS"]
-    AS.exons <- AS.exons %>% as.data.frame() %>%
-        dplyr::distinct(AS_id, .keep_all = TRUE) %>%
-        dplyr::filter(seqnames %in% GenomeInfoDb::seqnames(consDB)) %>%
-        GenomicRanges::makeGRangesFromDataFrame(keep.extra.columns = TRUE)
+    fullout <- do.call(cbind, lapply(seq_along(type), function(x){
+        thistype <- type[x]
+        thispadding <- padding[x]
+        .msgsubinfo(stringr::str_glue(
+            "Quantifying `{thistype}` conservation scores with {thispadding} padding"))
+        AS.exons <- object@transcriptome[object@transcriptome$type %in% "AS"]
+        AS.exons <- AS.exons %>% as.data.frame() %>%
+            dplyr::distinct(AS_id, .keep_all = TRUE) %>%
+            dplyr::filter(seqnames %in% GenomeInfoDb::seqnames(consDB)) %>%
+            GenomicRanges::makeGRangesFromDataFrame(keep.extra.columns = TRUE)
 
 
 
-    ConsScoresDF <- tryCatch(
-        {
-            if(type == "flanks"){
-                AS.exons.start <- GenomicRanges::flank(AS.exons, start = TRUE, width = padding, both = F)
-                AS.exons.end <- GenomicRanges::flank(AS.exons, start = FALSE, width = padding, both = F)
+        ConsScoresDF <- tryCatch(
+            {
+                if(thistype == "flanks"){
+                    AS.exons.start <- GenomicRanges::flank(AS.exons, start = TRUE, width = thispadding, both = F)
+                    AS.exons.end <- GenomicRanges::flank(AS.exons, start = FALSE, width = thispadding, both = F)
 
-                AS.exons.start <- GenomicScores::gscores(consDB, AS.exons.start)
-                AS.exons.end <- GenomicScores::gscores(consDB, AS.exons.end)
+                    AS.exons.start <- GenomicScores::gscores(consDB, AS.exons.start)
+                    AS.exons.end <- GenomicScores::gscores(consDB, AS.exons.end)
 
-                scores <- rowMeans(cbind(AS.exons.start$default,
-                                                   AS.exons.end$default),
-                                             na.rm = TRUE)
-                data.frame(scores = scores,
-                                  row.names = AS.exons$AS_id)
-            } else if(type == "upstream"){
-                AS.exons.start <- GenomicRanges::flank(AS.exons, start = TRUE, width = padding, both = F)
-                AS.exons.start <- GenomicScores::gscores(consDB, AS.exons.start)
+                    scores <- rowMeans(cbind(AS.exons.start$default,
+                                             AS.exons.end$default),
+                                       na.rm = TRUE)
+                    data.frame(scores = scores,
+                               row.names = AS.exons$AS_id)
+                } else if(thistype == "upstream"){
+                    AS.exons.start <- GenomicRanges::flank(AS.exons, start = TRUE, width = thispadding, both = F)
+                    AS.exons.start <- GenomicScores::gscores(consDB, AS.exons.start)
 
-                data.frame(scores = AS.exons.start$default,
-                           row.names = AS.exons$AS_id)
+                    data.frame(scores = AS.exons.start$default,
+                               row.names = AS.exons$AS_id)
 
-            } else if(type == "downstream"){
-                AS.exons.end <- GenomicRanges::flank(AS.exons, start = FALSE, width = padding, both = F)
-                AS.exons.end <- GenomicScores::gscores(consDB, AS.exons.end)
+                } else if(thistype == "downstream"){
+                    AS.exons.end <- GenomicRanges::flank(AS.exons, start = FALSE, width = thispadding, both = F)
+                    AS.exons.end <- GenomicScores::gscores(consDB, AS.exons.end)
 
-                data.frame(scores = AS.exons.end$default,
-                           row.names = AS.exons$AS_id)
+                    data.frame(scores = AS.exons.end$default,
+                               row.names = AS.exons$AS_id)
 
-            } else if(type == "exon"){
-                scores <- GenomicScores::gscores(consDB, AS.exons+padding)
-                data.frame(scores = scores$default,
-                                  row.names = AS.exons$AS_id)
-            } else {
-                rlang::abort()
+                } else if(thistype == "exon"){
+                    scores <- GenomicScores::gscores(consDB, AS.exons+thispadding)
+                    data.frame(scores = scores$default,
+                               row.names = AS.exons$AS_id)
+                } else {
+                    rlang::abort()
+                }
+            },
+            error = function(cond){
+                rlang::abort("Unable to quantify exon conservation scores. Check if annotation package matches the genome used")
+                return(AS.exons)
             }
-        },
-        error = function(cond){
-            rlang::abort("Unable to quantify exon conservation scores. Check if annotation package matches the genome used")
-            return(AS.exons)
-        }
-    )
-    ConsScoresDF$scores <- tidyr::replace_na(ConsScoresDF$scores, 0)
+        )
+        ConsScoresDF$scores <- tidyr::replace_na(ConsScoresDF$scores, 0)
+
+        # return df
+        colname <- stringr::str_glue("Cons.{thistype}.pad{thispadding}")
+        out <- data.frame(dat = ConsScoresDF$scores,
+                          row.names = rownames(ConsScoresDF))
+        colnames(out) <- colname
+        return(out)
+    }))
+
 
     # update ASE
-    colname <- stringr::str_glue("Cons.{type}.pad{padding}")
-    object@sets$AS@rowData[colname] <- 0
-    object@sets$AS@rowData[rownames(ConsScoresDF),colname] <- ConsScoresDF$scores
+    object@sets$AS@rowData[colnames(fullout)] <- 0
+    object@sets$AS@rowData[rownames(fullout),colnames(fullout)] <- fullout
 
     return(object)
 }
