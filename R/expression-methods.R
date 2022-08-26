@@ -49,63 +49,6 @@ setMethod("addTxCounts", "factR", function(object, countData, sampleData, verbos
                                     function(x) factor(x, levels = unique(x)))
 
 
-
-    # add sampleData if no data is currently present
-    if(nrow(samples(object)) == 0){
-        samples(object) <- sampleData
-    }
-    # else, check for sample consistencies
-    else {
-        current_samples <- rownames(samples(object))
-
-        if(!identical(rownames(sampleData), as.character(c(1:nrow(sampleData))))){
-            if(!all(current_samples %in% rownames(sampleData))){
-                rlang::abort("Some samples are missing in sampleData")
-            }
-        } else {
-            if(nrow(sampleData) != length(current_samples)){
-                rlang::abort(sprintf("Number of samples in sampleData (%s) is not equal to %s",
-                                     nrow(sampleData), length(current_samples)))
-            } else {
-                poss_sample_vars <- apply(sampleData, 2, function(x) all(current_samples %in% x))
-                poss_var <- names(poss_sample_vars)[poss_sample_vars]
-
-                if(length(poss_var) > 0){
-                    rownames(sampleData) <- sampleData[[poss_var]]
-
-                } else {
-                    rlang::abort("Unable to resolve sample names. Please add missing rownames.")
-                }
-            }
-        }
-        # actual appending of data
-        object@colData <- cbind(object@colData, sampleData[current_samples,])
-    }
-    return(object)
-}
-
-
-
-setMethod("design<-", "factR", function(object, value) .addDesign(object, value))
-
-.addDesign <- function(object, design) {
-    design <- formula(design)
-    sample.meta <- samples(object)
-
-    # check if design variables are in samples
-    if(nrow(sample.meta) == 0){
-        rlang::abort("Samples metadata not constructed yet")
-    } else {
-        vars <- as.character(design)
-        vars <- strsplit(vars[2], "[[:punct:]]| ")[[1]]
-        vars <- vars[vars != ""]
-
-        if(!all(vars %in% colnames(sample.meta))){
-            rlang::abort("Some design variables not in samples metadata")
-        } else {
-            object@design <- design
-        }
-    }
     return(object)
 }
 
