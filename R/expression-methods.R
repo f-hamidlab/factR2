@@ -18,6 +18,7 @@ setMethod("addTxCounts", "factR", function(object, countData, sampleData, verbos
     if(is.null(rownames(countData))){
         rlang::abort("Input countData do not have feature names")
     } else if(!all(txs %in% rownames(countData))){
+        # TODO: consider returning warning instead. But how to handle no exp counts?
         rlang::abort("Some transcript features are missing in countData")
     }
 
@@ -58,7 +59,6 @@ setMethod("addTxCounts", "factR", function(object, countData, sampleData, verbos
 }
 
 
-
 .processCounts <- function(object, verbose = FALSE) {
 
     txcounts <- object@sets$transcript@counts
@@ -82,7 +82,6 @@ setMethod("addTxCounts", "factR", function(object, countData, sampleData, verbos
         dplyr::filter(type == "AS") %>%
         dplyr::distinct(AS_id, transcript_id)
 
-    # TODO: decide whether to add inc and total counts or not
     ASevents <- granges(object, set = "AS")
     transcripts <- granges(object, set = "transcript")
     transcripts <- transcripts[transcripts$type == "transcript"]
