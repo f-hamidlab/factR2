@@ -267,8 +267,11 @@ setGeneric("select", function(object, ...) standardGeneric("select"))
 setMethod("select", "factR", function(object, ..., data = "samples"){
     select.factR(object, ...)
 })
-setMethod("[", "factR", function(x, i, j){
-    select.factR(x, j)
+setMethod("[", "factR", function(x, i, j, set = "sample"){
+    if(set=="sample"){
+        x@colData[[i]]
+    }
+    #select.factR(x, j)
 })
 
 
