@@ -42,7 +42,7 @@ setMethod("addTxCounts", "factR", function(object, countData, sampleData, verbos
 
 .addSampleData <- function(object, sampleData) {
 
-    object@colData <- data.frame(row.names = colnames(countData))
+    object@colData <- data.frame(row.names = rownames(sampleData))
     object@colData$proj.ident <- object@project
     object@active.ident <- "proj.ident"
 
