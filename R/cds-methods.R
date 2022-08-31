@@ -4,7 +4,7 @@
 setGeneric("buildCDS", function(object, verbose = FALSE) standardGeneric("buildCDS"))
 setMethod("buildCDS", "factR", function(object, verbose = FALSE) {
 
-    .msgheader("Building CDS information")
+    if(verbose){.msgheader("Building CDS information")}
     gtf <- granges(object, set = "all")
     gtf <- gtf[!gtf$type %in% "CDS"]
 
