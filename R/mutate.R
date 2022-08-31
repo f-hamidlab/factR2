@@ -21,7 +21,7 @@ mutate.factR <- function(object, meta = "samples", data=NULL, ...){
             if(nrow(data) != nrow(df)){
                 rlang::abort("Length mismatch")
             }
-        } else if(!all(rownames(data) %in% rownames(df))){
+        } else if(!all(rownames(df) %in% rownames(data))){
             # create new data.frame with rownames from df
             tokeep <- rownames(data)[rownames(data) %in% rownames(df)]
             newdata <- data.frame(row.names = rownames(df))
