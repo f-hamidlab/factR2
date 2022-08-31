@@ -11,7 +11,7 @@ setMethod("testGeneCorr", "factR", function(
 })
 
 
-.ASgenecorr <- function(object, vst = TRUE, ...){
+.ASgenecorr <- function(object, vst = TRUE, min_n=3, ...){
 
     psi <- object@sets$AS@data
     n.psi.NA <- rowSums(!is.na(psi))
