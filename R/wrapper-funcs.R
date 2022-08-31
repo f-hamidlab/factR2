@@ -26,7 +26,7 @@ setMethod("runfactR", "factR", function(
     object <- predictNMD(object, NMD_threshold, verbose)
     object <- getAAsequence(object, verbose)
     object <- testASNMDevents(object, verbose)
-    object <- getAScons(object, cons_db, "exon", 0)
+    object <- getAScons(object, cons_db, "exon", 0)  # TODO: get upstream and downstream, with some padding
     object
 })
 

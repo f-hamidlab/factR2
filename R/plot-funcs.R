@@ -18,7 +18,7 @@ setMethod("plotTranscripts", "factR", function(object, ...,
         exon <- ase(object)[...,]
         x <- x[x$gene_id %in% exon$gene_id & !x$type %in% c("AS", "gene")]
         xrange <-  stringr::str_split(exon$coord, ":|-")[[1]][c(2,3)]
-        
+
     }else {
         # select features by data
         feat <- .getFeat(object, ...)
@@ -64,7 +64,7 @@ setMethod("plotTranscripts", "factR", function(object, ...,
 
 })
 
-
+# TODO: color reference transcript
 
 setMethod("plotDomains", "factR", function(object, ..., ncol = 1){
     # check if CDS have been built
