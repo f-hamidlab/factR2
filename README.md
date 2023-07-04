@@ -26,7 +26,7 @@ with custom-assembled transcriptomes. Below are *factR2*'s key features:
 The development version can be installed using devtools:
 ```r
 # install.packages("devtools")
-devtools::install_github("fursham-h/factR")
+devtools::install_github("f-hamidlab/factR2")
 ```
 
 
