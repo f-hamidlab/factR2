@@ -1,3 +1,47 @@
+#' Construct factR object class
+#'
+#' @description
+#' Create a factR object from custom GTF transcriptome
+#'
+#'
+#' @param gtf Either path to custom transcriptome file (GTF) or a GenomicRanges
+#' object containing GTF transcriptome data
+#' @param reference Character value of the ID of genome used as reference. See
+#' \link{listSupportedGenomes()} to print a list of supported genomes. Input can
+#' also be name of species (Homo sapiens or Hsapiens or Human).
+#' @param use_own_annotation Can be one of the following:
+#' \itemize{
+#'  \item{}{Path to local transcriptome file}
+#'  \item{}{GenomicRanges object containing GTF transcriptome data}
+#'  \item{}{AnnotationHub data ID [AHxxxxx]}
+#'  \item{}{URL to GTF file}
+#' }
+#' @param use_own_genome Can be one of the following:
+#' \itemize{
+#'  \item{}{Path to local FASTA file}
+#'  \item{}{Biostrings object containing full genome sequence}
+#'  \item{}{AnnotationHub data ID [AHxxxxx]}
+#'  \item{}{URL to FASTA file}
+#' }
+#' @param project_name Character value of the name of project
+#' @param genome_build Character value of the genome build. Will be determined
+#' automatically by default.
+#' @param match_genes Boolean value as to whether genes in custom transcriptome
+#' is to be matched to reference (Default: TRUE)
+#' @param countData (Optional) Matrix of counts data
+#' @param sampleData Dataframe containing sample metadata
+#' @param psi (Optional) Matrix of splicing PSI data
+#' @param verbose Boolean value as to whether messages should be printed (Default: TRUE)
+#'
+#' @return
+#' factR object class
+#'
+#' @export
+#'
+#' @examples
+#' gtf <- system.file("extdata/sc_merged_sample.gtf.gz", package = "factR")
+#' factR.object <- createfactRObject(gtf, "mm10")
+#'
 createfactRObject <- function(gtf, reference,
                               use_own_annotation = NULL,
                               use_own_genome = NULL,

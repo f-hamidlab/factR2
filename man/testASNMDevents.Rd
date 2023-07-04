@@ -10,10 +10,14 @@ testASNMDevents(object, verbose = FALSE)
 \item{object}{factRObject}
 }
 \value{
-Updated factRObject
+factRObject with updated ASE metadata
 }
 \description{
-This function will xxx
+Pinpoints alternative splicing events underlying NMD sensitivity.
+Metadata of AS events will be updated to include columns "ASNMDtype" and "ASNMD.in.cds".
+Values of "ASNMDtype" can be Repressing (skipping of exon causes transcripts to be NMD-sensitive),
+Stimulating (splicing of exon causes transcripts to be NMD-sensitive) or
+NA (does not cause transcripts to NMD-sensitive).
 }
 \examples{
 data(factRsample)

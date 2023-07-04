@@ -1,7 +1,31 @@
-## TODO: do up documentation
-### type can be exon, flanks, upstream, downstream
-
-setGeneric("getAScons", function(object, ...) standardGeneric("getAScons"))
+#' Quantify feature conservation
+#'
+#' @description Returns sequence conservation scores at the level of exons.
+#'
+#' @param object factR object
+#' @param db Database to extract sequence conservation. Can be "phastCons" (Default) or "phylop"
+#' @param type Feature to quantify conservation. Can be one of the following:
+#' \itemize{
+#'  \item{"exon"}{ : Sequence conservation of the entire exon}
+#'  \item{"flanks"}{ : Conservation of sequences flanking exons}
+#'  \item{"upstream"}{ : Conservation of sequences upstream of exons}
+#'  \item{"downstream"}{ : Conservation of sequences downstream of exons}
+#' }
+#' @param padding Additional width to pad the sequence by. For cons_type "exons" and "flanks", paddings will be added on both sides.
+#'
+#' @return factRObject with additional columns in ASE metadata.
+#' @export
+#' @seealso \code{\link{runfactR}}
+#'
+#' @rdname getASCons
+#' @examples
+#' data(factRsample)
+#' factRsample <- getASCons(factRsample)
+setGeneric("getAScons", function(
+        object,
+        db = "phastCons",
+        type = "exon",
+        padding = 50)  standardGeneric("getAScons"))
 setMethod("getAScons", "factR", function(
           object,
           db = "phastCons",

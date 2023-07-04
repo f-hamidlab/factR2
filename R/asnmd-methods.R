@@ -1,7 +1,20 @@
+#' Predict NMD-sensitive transcripts
+#'
+#' @description Annotates NMD-sensitive transcripts based on Exon-Junction model.
+#' By default, stop codons which are >50bp upstream of the last exon junction will
+#' be annotated as NMD-sensitive
+#'
+#' @param object factRObject
+#' @param NMD_threshold Minimum distance between PTC and downstream exon-exon junction to trigger NMD (Default: 50)
+
+#' @export
+#' @seealso \code{\link{runfactR}}
 #' @include factRObject-class.R
-
-
-
+#' @rdname predictNMD
+#' @examples
+#' data(factRsample)
+#' factRsample <- buildCDS(factRsample)
+#' factRsample <- predictNMD(factRsample)
 setGeneric("predictNMD", function(object, NMD_threshold = 50, verbose = FALSE) standardGeneric("predictNMD"))
 
 
@@ -41,11 +54,15 @@ setMethod("predictNMD", "factR", function(object, NMD_threshold = 50, verbose = 
 
 #' Identify AS-NMD events
 #'
-#' @description This function will xxx
+#' @description Pinpoints alternative splicing events underlying NMD sensitivity.
+#' Metadata of AS events will be updated to include columns "ASNMDtype" and "ASNMD.in.cds".
+#' Values of "ASNMDtype" can be Repressing (skipping of exon causes transcripts to be NMD-sensitive),
+#' Stimulating (splicing of exon causes transcripts to be NMD-sensitive) or
+#' NA (does not cause transcripts to NMD-sensitive).
 #'
 #' @param object factRObject
 #'
-#' @return Updated factRObject
+#' @return factRObject with updated ASE metadata
 #' @export
 #' @seealso \code{\link{runfactR}}
 #'
@@ -147,17 +164,17 @@ setMethod("testASNMDevents", "factR", function(object, verbose = FALSE) {
 
     ## remove transcripts that are not NMD causing
     NMD.pos <- genes[genes$nmd == "yes",]$transcript_id
-    ASevents <- ASevents[ASevents$transcript_id %in% NMD.pos]
-    ASevents <- ASevents[ASevents$gene_id %in% ref$gene_id]
+    NMDevents <- ASevents[ASevents$transcript_id %in% NMD.pos]
+    NMDevents <- NMDevents[NMDevents$gene_id %in% ref$gene_id]
 
     ## get AS segments and annotate its splicing nature
-    ref_overlaps <- IRanges::findOverlapPairs(ASevents, ref[ref$type == "exon"]) %>%
+    ref_overlaps <- IRanges::findOverlapPairs(NMDevents, ref[ref$type == "exon"]) %>%
         as.data.frame() %>%
         dplyr::filter(first.gene_id == second.gene_id) %>%
         dplyr::filter(first.X.start >= second.X.start) %>%
         dplyr::filter(first.X.end <= second.X.end) %>%
         dplyr::pull(first.X.AS_id)
-    ASspliced <- ASevents[!ASevents$AS_id %in% ref_overlaps] %>%
+    ASspliced <- NMDevents[!NMDevents$AS_id %in% ref_overlaps] %>%
         as.data.frame() %>%
         dplyr::mutate(coord = paste0(seqnames, "_", start, "_",
                                      end, "_", strand, "_", AStype)) %>%
@@ -165,7 +182,7 @@ setMethod("testASNMDevents", "factR", function(object, verbose = FALSE) {
         dplyr::mutate(splice = "spliced")
 
     ## get AS segments missing from ref
-    AStogene <- ASevents %>%
+    AStogene <- NMDevents %>%
         as.data.frame() %>%
         dplyr::distinct(transcript_id, gene_id)
 
@@ -185,6 +202,7 @@ setMethod("testASNMDevents", "factR", function(object, verbose = FALSE) {
                              dplyr::distinct(),
                          by = c("seqnames", "start", "end", "strand")) %>%
         dplyr::filter(!is.na(AS_id)) %>%
+        dplyr::filter(gene_id %in% ref$gene_id) %>%
         dplyr::mutate(coord = paste0(seqnames, "_", start, "_",
                                      end, "_", strand, "_", AStype)) %>%
         dplyr::select(AS_id, gene_id, transcript_id = group_name, coord) %>%
