@@ -1,7 +1,20 @@
-#' @include factRObject-class.R
+#' Build coding segments
 #'
-
+#' @description Constructs CDS information on transcripts from custom annotation
+#'
+#' @param object factRObject
+#'
+#' @return Update factRObject with additional data from buildCDS
+#' @export
+#' @seealso \code{\link{runfactR}}
+#' @include factRObject-class.R
+#' @rdname buildCDS
+#' @examples
+#' data(factRsample)
+#' factRsample <- buildCDS(factRsample)
 setGeneric("buildCDS", function(object, verbose = FALSE) standardGeneric("buildCDS"))
+
+
 setMethod("buildCDS", "factR", function(object, verbose = FALSE) {
 
     if(verbose){.msgheader("Building CDS information")}

@@ -4,25 +4,51 @@
 \alias{runfactR}
 \title{Run factR workflow}
 \usage{
-runfactR(object, ...)
+runfactR(
+  object,
+  NMD_threshold = 50,
+  cons_db = "phastCons",
+  cons_type = "exon",
+  cons_padding = 0,
+  verbose = TRUE
+)
 }
 \arguments{
-\item{object}{factRObject}
+\item{object}{factR object}
 
-\item{verbose}{whether to display workflow progress}
+\item{NMD_threshold}{Minimum distance between PTC and downstream exon-exon junction to trigger NMD (Default: 50)}
+
+\item{cons_db}{Database to extract sequence conservation. Can be "phastCons" (Default) or "phylop"}
+
+\item{cons_type}{Feature to quantify conservation. Can be one of the following:
+\itemize{
+ \item{"exon"}{ : Sequence conservation of the entire exon}
+ \item{"flanks"}{ : Conservation of sequences flanking exons}
+ \item{"upstream"}{ : Conservation of sequences upstream of exons}
+ \item{"downstream"}{ : Conservation of sequences downstream of exons}
+}}
+
+\item{cons_padding}{Additional width to pad the sequence by. For cons_type "exons" and "flanks", paddings will be added on both sides.}
+
+\item{verbose}{Whether to show pipeline messages (Default: TRUE)}
 }
 \value{
-Updated factRObject
+Update factRObject with additional data from runfactR
 }
 \description{
 This wrapper function will perform the core factR workflow which
-include (1) building of CDSs, (2) predicting of NMD-sensitive transcripts
-and (3) labelling of alternative splicing segments.
+includes:
+\itemize{
+ \item{1: }{ Building CDS structures }
+ \item{2: }{ Predicting NMD-sensitive transcripts }
+ \item{3: }{ Translating open-reading frames }
+ \item{4: }{ Quantify sequence conservation of alternative exons }
+}
 }
 \examples{
 data(factRsample)
 factRsample <- runfactR(factRsample)
 }
 \seealso{
-\code{\link{buildCDS}}, \code{\link{predictNMD}}, \code{\link{findAltSplicing}}
+\code{\link{buildCDS}}, \code{\link{predictNMD}}, \code{\link{testASNMDevents}}, \code{\link{getAScons}}, \code{\link{getAAsequence}}
 }

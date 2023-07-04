@@ -24,7 +24,7 @@ Imports:
 License: file LICENSE
 Encoding: UTF-8
 ByteCompile: true
-RoxygenNote: 7.2.1
+RoxygenNote: 7.2.3
 Suggests: 
     AnnotationHub (>= 2.22),
     testthat (>= 3.0.0)
@@ -38,6 +38,7 @@ Collate:
     'asnmd-methods.R'
     'cds-methods.R'
     'check-methods.R'
+    'compareLevels.R'
     'conservation-methods.R'
     'constructor.R'
     'correlation-methods.R'
@@ -46,6 +47,7 @@ Collate:
     'mutate.R'
     'plot-funcs.R'
     'plotFeatures.R'
+    'plotLevels.R'
     'protein-methods.R'
     'splicing-funcs.R'
     'subset.R'
