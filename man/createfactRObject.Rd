@@ -66,6 +66,6 @@ Create a factR object from custom GTF transcriptome
 }
 \examples{
 gtf <- system.file("extdata/sc_merged_sample.gtf.gz", package = "factR")
-factR.object <- createfactRObject(gtf, "mm10")
+factR.object <- createfactRObject(gtf, "Mouse")
 
 }

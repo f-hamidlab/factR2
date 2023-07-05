@@ -84,17 +84,33 @@ setClass("factRset",
 #XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
 ### General ####
+#' Preview factR object
+#' @export
+#'
+#'
 setMethod("show", "factR", function(object) show.factR(object))
+
+#' Preview factR object
+#' @export
+#'
+#'
 setMethod("summary", "factR", function(object) object )
 
 # head and tail previews featureData of current set
+
+#' @export
 setMethod("head", "factR", function(x, n = 6L){
     utils::head(x[[]], n = n)
 })
+#' @export
 setMethod("tail", "factR", function(x, n = 6L){ utils::tail(x[[]], n = n) })
-
+#' @export
 setMethod("dim", "factR", function(x){ dim(x@sets[[x@active.set]]@data) })
+
+#' @export
 setMethod("nrow", "factR", function(x){ base::nrow(x@sets[[x@active.set]]@data) })
+
+#' @export
 setMethod("ncol", "factR", function(x){ base::ncol(x@sets[[x@active.set]]@data) })
 
 
@@ -102,14 +118,19 @@ setMethod("ncol", "factR", function(x){ base::ncol(x@sets[[x@active.set]]@data) 
 
 
 ### Sets ####
+#' @export
 setGeneric("activeSet", function(object) standardGeneric("activeSet"))
 setMethod("activeSet", "factR", function(object){
     methods::slot(object, "active.set")
 })
+
+#' @export
 setGeneric("activeSet<-", function(object, value) standardGeneric("activeSet<-"))
 setMethod("activeSet<-", "factR", function(object, value){
     object@active.set <- value
 })
+
+#' @export
 setGeneric("listSets", function(object) standardGeneric("listSets"))
 setMethod("listSets", "factR", function(object){ names(object@sets) })
 
@@ -118,6 +139,7 @@ setMethod("listSets", "factR", function(object){ names(object@sets) })
 
 
 ### GRanges ####
+#' @export
 setGeneric("granges", function(object, ..., set = NULL) standardGeneric("granges"))
 setMethod("granges", "factR", function(object, ..., set = NULL) {
     granges.factR(object, ..., set = set)
@@ -125,6 +147,7 @@ setMethod("granges", "factR", function(object, ..., set = NULL) {
 
 
 ### Features ####
+#' @export
 setMethod("[[", "factR", function(x, i){
     if(missing(i)){
         x@sets[[x@active.set]]@rowData
@@ -136,6 +159,7 @@ setMethod("[[", "factR", function(x, i){
 })
 
 # feature preview with option to subset data
+#' @export
 setGeneric("features", function(object, ..., set = NULL) standardGeneric("features"))
 setMethod("features", "factR", function(object, ..., set = NULL) {
     if(is.null(set)){
@@ -154,22 +178,27 @@ setMethod("features", "factR", function(object, ..., set = NULL) {
 })
 
 # wrappers to quickly get genes, transcripts and AS
+#' @export
 setGeneric("genes", function(object, ...) standardGeneric("genes"))
 setMethod("genes", "factR", function(object, ...) {
 
     return(features(object,..., set="gene"))
 })
-
+#' @export
 setGeneric("transcripts", function(object, ...) standardGeneric("transcripts"))
 setMethod("transcripts", "factR", function(object, ...) {
 
     return(features(object,..., set="transcript"))
 })
+
+#' @export
 setGeneric("txs", function(object, ...) standardGeneric("txs"))
 setMethod("txs", "factR", function(object, ...) {
 
     return(features(object,..., set="transcript"))
 })
+
+#' @export
 setGeneric("ase", function(object, ...) standardGeneric("ase"))
 setMethod("ase", "factR", function(object, ...) {
 
@@ -178,18 +207,22 @@ setMethod("ase", "factR", function(object, ...) {
 
 
 
-
+#' @export
 setGeneric("rowNames", function(object) standardGeneric("rowNames"))
 setMethod("rowNames", "factR", function(object) {
     rownames(object@sets[[object@active.set]]@rowData) })
 
 
 ### Samples ####
+#' @export
 setGeneric("samples", function(object) standardGeneric("samples"))
 setMethod("samples", "factR", function(object) { object@colData })
 
+#' @export
 setGeneric("colNames", function(object) standardGeneric("colNames"))
 setMethod("colNames", "factR", function(object) { rownames(object@colData) })
+
+#' @export
 setGeneric("colNames<-", function(object, value) standardGeneric("colNames<-"))
 setMethod("colNames<-", "factR", function(object, value) {
     object@colData$old.names <- rownames(object@colData)
@@ -197,10 +230,13 @@ setMethod("colNames<-", "factR", function(object, value) {
     return(.updatefactR(object))
 })
 
+
+#' @export
 setGeneric("ident", function(object) standardGeneric("ident"))
 setMethod("ident", "factR", function(object) object@active.ident)
 
 ### Counts ####
+#' @export
 setGeneric("counts", function(object, ..., set = NULL, slot = "data") standardGeneric("counts"))
 setMethod("counts", "factR", function(object, ..., set = NULL) {
     if(is.null(set)){
@@ -226,6 +262,7 @@ setMethod("counts", "factR", function(object, ..., set = NULL) {
 
 
 ### Domains ####
+#' @export
 setGeneric("domains", function(object, ...) standardGeneric("domains"))
 setMethod("domains", "factR", function(object, ...){
     feat <- .getFeat(object, ...)
@@ -239,6 +276,7 @@ setMethod("domains", "factR", function(object, ...){
 #XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
 ### Set active set ####
+#' @export
 setGeneric("activeSet<-", function(object, value) standardGeneric("activeSet<-"))
 setMethod("activeSet<-", "factR", function(object, value){
     methods::slot(object, "active.set") <- value
@@ -246,6 +284,7 @@ setMethod("activeSet<-", "factR", function(object, value){
 })
 
 ### Set design ####
+#' @export
 setGeneric("ident<-", function(object, value) standardGeneric("ident<-"))
 setMethod("ident<-", "factR", function(object, value){
     methods::slot(object, "active.ident") <- value
@@ -254,6 +293,7 @@ setMethod("ident<-", "factR", function(object, value){
 
 
 ### Add features/sample data ####
+#' @export
 setGeneric("addMeta", function(object, meta="samples", data=NULL, ...) standardGeneric("addMeta"))
 setMethod("addMeta", "factR", function(object, meta="samples", data=NULL, ...){
     mutate.factR(object, meta, data, ...)
@@ -263,6 +303,7 @@ setMethod("addMeta", "factR", function(object, meta="samples", data=NULL, ...){
 #XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 ## Subsetters ====
 #XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+#' @export
 setGeneric("select", function(object, ...) standardGeneric("select"))
 setMethod("select", "factR", function(object, ..., data = "samples"){
     select.factR(object, ...)
@@ -280,18 +321,20 @@ setMethod("[", "factR", function(x, i, j, set = "sample"){
 #XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
 ### Transcripts ####
+#' @export
 setGeneric("plotTranscripts", function(object, ...,
                                        rescale_introns = FALSE,
                                        ncol = 1) standardGeneric("plotTranscripts"))
 
 ### Domains ####
+#' @export
 setGeneric("plotDomains", function(object, ..., ncol = 1) standardGeneric("plotDomains"))
 
 
 #XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 ## Validty ====
 #XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-
+#' @export
 setGeneric("checkfactR", function(object) standardGeneric("checkfactR"))
 setMethod("checkfactR", "factR", function(object){
     checkfactR.factR(object)
