@@ -386,7 +386,7 @@ createfactRObject <- function(gtf, reference,
         dplyr::mutate(id = paste0(coord,strand, gene_id)) %>%
         dplyr::pull(id)
 
-    object@sets$AS@rowData$Novel <- ifelse(AS.id %in% ref.AS.id, "yes", "no")
+    object@sets$AS@rowData$novel <- ifelse(!AS.id %in% ref.AS.id, "yes", "no")
 
 
 
