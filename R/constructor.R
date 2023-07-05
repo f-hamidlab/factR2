@@ -40,7 +40,7 @@
 #'
 #' @examples
 #' gtf <- system.file("extdata/sc_merged_sample.gtf.gz", package = "factR")
-#' factR.object <- createfactRObject(gtf, "mm10")
+#' factR.object <- createfactRObject(gtf, "Mouse")
 #'
 createfactRObject <- function(gtf, reference,
                               use_own_annotation = NULL,
@@ -369,6 +369,28 @@ createfactRObject <- function(gtf, reference,
                                      "yes","no"),
                       cds = "no",
                       nmd = "no")
+
+    # annotate new events
+    if(verbose){
+        .msgheader("Annotating novel AS events")
+    }
+    ref.gtf <- object@reference$ranges
+    ref.AS <- .runAS(ref.gtf[ref.gtf$type == "exon"])
+
+    AS.id <- ase(object) %>%
+        dplyr::mutate(id = paste0(coord,strand, gene_id)) %>%
+        dplyr::pull(id)
+    ref.AS.id <- ref.AS %>%
+        as.data.frame() %>%
+        dplyr::mutate(coord = paste0(seqnames, ":", start, "-", end)) %>%
+        dplyr::mutate(id = paste0(coord,strand, gene_id)) %>%
+        dplyr::pull(id)
+
+    object@sets$AS@rowData$Novel <- ifelse(AS.id %in% ref.AS.id, "yes", "no")
+
+
+
+
     object
 }
 
