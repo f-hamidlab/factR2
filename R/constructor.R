@@ -378,12 +378,32 @@ createfactRObject <- function(gtf, reference,
     ref.AS <- .runAS(ref.gtf[ref.gtf$type == "exon"])
 
     AS.id <- ase(object) %>%
-        dplyr::mutate(id = paste0(coord,strand, gene_id)) %>%
+        dplyr::mutate(id = paste0(coord,gene_id,strand,AStype)) %>%
+        dplyr::mutate(id = ifelse(AStype == "AF",
+                                  paste0(stringr::str_replace(
+                                      coord, ":[0-9]+-",":"),
+                                      gene_id,strand,AStype),
+                                  id)) %>%
+        dplyr::mutate(id = ifelse(AStype == "AL",
+                                  paste0(stringr::str_replace(
+                                      coord, "-[0-9]+$",""),
+                                      gene_id,strand,AStype),
+                                  id))  %>%
         dplyr::pull(id)
     ref.AS.id <- ref.AS %>%
         as.data.frame() %>%
         dplyr::mutate(coord = paste0(seqnames, ":", start, "-", end)) %>%
         dplyr::mutate(id = paste0(coord,strand, gene_id)) %>%
+        dplyr::mutate(id = ifelse(AStype == "AF",
+                                  paste0(stringr::str_replace(
+                                      coord, ":[0-9]+-",":"),
+                                      gene_id,strand,AStype),
+                                  id)) %>%
+        dplyr::mutate(id = ifelse(AStype == "AL",
+                                  paste0(stringr::str_replace(
+                                      coord, "-[0-9]+$",""),
+                                      gene_id,strand,AStype),
+                                  id)) %>%
         dplyr::pull(id)
 
     object@sets$AS@rowData$novel <- ifelse(!AS.id %in% ref.AS.id, "yes", "no")
