@@ -42,7 +42,7 @@
 #'
 #' @examples
 #' gtf <- system.file("extdata/sc_merged_sample.gtf.gz", package = "factR")
-#' factR.object <- createfactRObject(gtf, "Mouse")
+#' factR.object <- createfactRObject(gtf, "vM25")
 #'
 createfactRObject <- function(gtf, reference,
                               use_own_annotation = NULL,
