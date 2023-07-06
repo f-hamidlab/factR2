@@ -7,9 +7,9 @@
   <img src="man/figures/factR2.png" width="450"/>
 </p>
 
-*factR2* is a significant upgrade of its predecessor 
-[*factR*](https://fursham-h.github.io/factR/) package with user-friendly tools to work 
-with custom-assembled transcriptomes. Below are *factR2*'s key features:
+**factR2** is a significant upgrade of its predecessor 
+[**factR**](https://fursham-h.github.io/factR/) package with user-friendly tools to work 
+with custom-assembled transcriptomes. Below are **factR2**'s key features:
 
 * Core features
   1. Matches gene information on custom transcriptomes to reference annotation
@@ -31,4 +31,30 @@ The development version can be installed using devtools:
 devtools::install_github("f-hamidlab/factR2")
 ```
 
+## How to use **factR2**
+
+**factR2** requires a custom-assembled transcriptome in GTF format. Below is 
+a quick-start on using **factR2** using a sample GTF file:
+
+```r
+library(factR2)
+
+# get path to sample GTF file
+gtf <- system.file("extdata/sc_merged_sample.gtf.gz", package = "factR")
+
+# create factRObject
+factR.object <- createfactRObject(gtf, "vM25")
+
+# interacting with factRObject
+ase(factR.object)  #get alternative splicing metadata
+plotTranscripts(factR.object, "Dab2")
+plotTranscripts(factR.object, "AS00179")
+
+# run main factR pipeline
+factR.object <- runfactR(factR.object)
+
+# export alternative splicing metadata
+exportTable(factR.object, data = "AS")
+
+```
 
