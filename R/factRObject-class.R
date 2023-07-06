@@ -351,8 +351,17 @@ setMethod("checkfactR", "factR", function(object){
 #XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
 ## TODO: do up export functions (exportGTF, exportTable)
+#' @export
+setGeneric("exportGTF", function(object, out=getwd()) standardGeneric("exportGTF"))
+setMethod("exportGTF", "factR", function(object, out=getwd()){
+    export.factR(object, out, "gtf")
+})
 
-
+#' @export
+setGeneric("exportTable", function(object, out=getwd(), data = "AS") standardGeneric("exportTable"))
+setMethod("exportTable", "factR", function(object, out=getwd(), data = "AS"){
+    export.factR(object, out, data)
+})
 
 
 
