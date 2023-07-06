@@ -43,6 +43,7 @@ Collate:
     'constructor.R'
     'correlation-methods.R'
     'display-methods.R'
+    'export-funcs.R'
     'expression-methods.R'
     'mutate.R'
     'plot-funcs.R'
