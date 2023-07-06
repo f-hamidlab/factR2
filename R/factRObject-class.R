@@ -363,6 +363,15 @@ setMethod("exportTable", "factR", function(object, out=getwd(), data = "AS"){
     export.factR(object, out, data)
 })
 
+#' @export
+setGeneric("exportAll", function(object, path=getwd()) standardGeneric("exportAll"))
+setMethod("exportAll", "factR", function(object, path=getwd()){
+    export.factR(object, path, "gtf")
+    export.factR(object, path, "gene")
+    export.factR(object, path, "transcript")
+    export.factR(object, path, "AS")
+})
+
 
 
 
