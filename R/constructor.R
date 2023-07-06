@@ -379,29 +379,49 @@ createfactRObject <- function(gtf, reference,
 
     AS.id <- ase(object) %>%
         dplyr::mutate(id = paste0(coord,gene_id,strand,AStype)) %>%
-        dplyr::mutate(id = ifelse(AStype == "AF",
+        dplyr::mutate(id = ifelse(AStype == "AF" & strand == "+",
                                   paste0(stringr::str_replace(
                                       coord, ":[0-9]+-",":"),
                                       gene_id,strand,AStype),
                                   id)) %>%
-        dplyr::mutate(id = ifelse(AStype == "AL",
+        dplyr::mutate(id = ifelse(AStype == "AF" & strand == "-",
+                                  paste0(stringr::str_replace(
+                                      coord, "-[0-9]+$",""),
+                                      gene_id,strand,AStype),
+                                  id)) %>%
+        dplyr::mutate(id = ifelse(AStype == "AL" & strand == "+",
                                   paste0(stringr::str_replace(
                                       coord, "-[0-9]+$",""),
                                       gene_id,strand,AStype),
                                   id))  %>%
-        dplyr::pull(id)
-    ref.AS.id <- ref.AS %>%
-        as.data.frame() %>%
-        dplyr::mutate(coord = paste0(seqnames, ":", start, "-", end)) %>%
-        dplyr::mutate(id = paste0(coord,strand, gene_id)) %>%
-        dplyr::mutate(id = ifelse(AStype == "AF",
+        dplyr::mutate(id = ifelse(AStype == "AL" & strand == "-",
                                   paste0(stringr::str_replace(
                                       coord, ":[0-9]+-",":"),
                                       gene_id,strand,AStype),
                                   id)) %>%
-        dplyr::mutate(id = ifelse(AStype == "AL",
+        dplyr::pull(id)
+    ref.AS.id <- ref.AS %>%
+        as.data.frame() %>%
+        dplyr::mutate(coord = paste0(seqnames, ":", start, "-", end)) %>%
+        dplyr::mutate(id = paste0(coord,gene_id,strand,AStype)) %>%
+        dplyr::mutate(id = ifelse(AStype == "AF" & strand == "+",
+                                  paste0(stringr::str_replace(
+                                      coord, ":[0-9]+-",":"),
+                                      gene_id,strand,AStype),
+                                  id)) %>%
+        dplyr::mutate(id = ifelse(AStype == "AF" & strand == "-",
                                   paste0(stringr::str_replace(
                                       coord, "-[0-9]+$",""),
+                                      gene_id,strand,AStype),
+                                  id)) %>%
+        dplyr::mutate(id = ifelse(AStype == "AL" & strand == "+",
+                                  paste0(stringr::str_replace(
+                                      coord, "-[0-9]+$",""),
+                                      gene_id,strand,AStype),
+                                  id))  %>%
+        dplyr::mutate(id = ifelse(AStype == "AL" & strand == "-",
+                                  paste0(stringr::str_replace(
+                                      coord, ":[0-9]+-",":"),
                                       gene_id,strand,AStype),
                                   id)) %>%
         dplyr::pull(id)
