@@ -13,6 +13,13 @@ is_gtf <- function(x) {
     return(FALSE)
 }
 
+is_dir <- function(x){
+    tools::file_ext(x) == ""
+}
+is_file <- function(x){
+    tools::file_ext(x) != ""
+}
+
 
 
 listSupportedGenomes <- function(){
