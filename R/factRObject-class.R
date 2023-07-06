@@ -184,6 +184,10 @@ setMethod("genes", "factR", function(object, ...) {
 
     return(features(object,..., set="gene"))
 })
+
+#TODO: set shortname for genes to gns
+
+
 #' @export
 setGeneric("transcripts", function(object, ...) standardGeneric("transcripts"))
 setMethod("transcripts", "factR", function(object, ...) {
