@@ -20,14 +20,17 @@ Imports:
     BSgenome,
     patchwork,
     ggplot2,
-    wiggleplotr
+    wiggleplotr,
+    crayon,
+    methods
 License: file LICENSE
 Encoding: UTF-8
 ByteCompile: true
 RoxygenNote: 7.2.3
 Suggests: 
     AnnotationHub (>= 2.22),
-    testthat (>= 3.0.0)
+    testthat (>= 3.0.0),
+    knitr
 VignetteBuilder: knitr
 LazyData: FALSE
 BiocType: Software
