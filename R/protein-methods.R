@@ -1,3 +1,4 @@
+#' @export
 setGeneric("getAAsequence", function(object, verbose = FALSE) standardGeneric("getAAsequence"))
 setMethod("getAAsequence", "factR", function(object, verbose = FALSE) {
     gtf <- object@transcriptome
@@ -28,11 +29,11 @@ setMethod("getAAsequence", "factR", function(object, verbose = FALSE) {
     return(object)
 })
 
-
-setGeneric("predictDomain", function(object, ...,
+#' @export
+setGeneric("predictDomains", function(object, ...,
                                      database = "superfamily",
-                                     ncores = 4) standardGeneric("predictDomain"))
-setMethod("predictDomain", "factR", function(object,
+                                     ncores = 4) standardGeneric("predictDomains"))
+setMethod("predictDomains", "factR", function(object,
                                               ...,
                                               database = "superfamily",
                                               ncores = 4) {
