@@ -13,7 +13,7 @@ setMethod("getAAsequence", "factR", function(object, verbose = FALSE) {
     if("DNAStringSet" %in% is(object@reference$genome)){
         chrnames <- names(object@reference$genome)
     } else {
-        chrnames <- GenomeInfoDb::seqnames(object@reference$genome)
+        chrnames <- GenomeInfoDb::seqinfo(object@reference$genome)@seqnames
     }
 
     gtf <- gtf[as.character(GenomeInfoDb::seqnames(gtf)) %in% chrnames]
