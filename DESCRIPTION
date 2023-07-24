@@ -24,7 +24,8 @@ Imports:
     crayon,
     methods,
     AnnotationHub (>= 2.22),
-    plotly
+    plotly, 
+    GenomicScore
 License: file LICENSE
 Encoding: UTF-8
 ByteCompile: true
