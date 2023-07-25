@@ -1,6 +1,6 @@
 Package: factR2
 Title: Functional Annotation of Custom Transcriptomes v2
-Version: 0.99.0
+Version: 0.99.1
 Authors@R: person("Fursham", "Hamid", 
     email = "fursham.h@gmail.com", 
     role = c("aut", "cre"))
@@ -24,7 +24,8 @@ Imports:
     crayon,
     methods,
     AnnotationHub (>= 2.22),
-    plotly
+    plotly,
+    GenomicScores
 License: file LICENSE
 Encoding: UTF-8
 ByteCompile: true
