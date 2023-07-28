@@ -36,7 +36,8 @@ Suggests:
     GenomicRanges,
     IRanges,
     RCulr,
-    S4Vectors
+    S4Vectors,
+    BSgenome.Mmusculus.UCSC.mm10
 VignetteBuilder: knitr
 LazyData: FALSE
 BiocType: Software
