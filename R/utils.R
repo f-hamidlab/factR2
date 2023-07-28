@@ -22,6 +22,15 @@ is_file <- function(x){
 
 
 
+#' List supported genomes
+#'
+#' @return Dataframe of the IDs of genomes and its description
+#'
+#'
+#' @export
+#'
+#' @examples
+#' listSupportedGenomes()
 listSupportedGenomes <- function(){
     data("genomes")
     genomes[c("ID","species","database","release.date")]
