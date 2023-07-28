@@ -85,12 +85,15 @@ setClass("factRset",
 
 ### General ####
 #' Preview factR object
+#'
+#' @param object factRObject
 #' @export
 #'
 #'
 setMethod("show", "factR", function(object) show.factR(object))
 
 #' Preview factR object
+#' #' @param object factRObject
 #' @export
 #'
 #'

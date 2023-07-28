@@ -3,6 +3,7 @@
 #' @description Constructs CDS information on transcripts from custom annotation
 #'
 #' @param object factRObject
+#' @param verbose Whether to print out messages (Default: FALSE)
 #'
 #' @return Update factRObject with additional data from buildCDS
 #' @export
