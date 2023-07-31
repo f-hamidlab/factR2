@@ -1,5 +1,14 @@
-#' @export
 setGeneric("getAAsequence", function(object, verbose = FALSE) standardGeneric("getAAsequence"))
+
+
+#' Translate coding sequence
+#'
+#' @param factR
+#'
+#' @return
+#' @export
+#'
+#' @examples
 setMethod("getAAsequence", "factR", function(object, verbose = FALSE) {
     gtf <- object@transcriptome
     if(! "CDS" %in% gtf$type){

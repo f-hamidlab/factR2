@@ -85,12 +85,15 @@ setClass("factRset",
 
 ### General ####
 #' Preview factR object
+#'
+#' @param object factRObject
 #' @export
 #'
 #'
 setMethod("show", "factR", function(object) show.factR(object))
 
 #' Preview factR object
+#' #' @param object factRObject
 #' @export
 #'
 #'
@@ -182,7 +185,7 @@ setMethod("features", "factR", function(object, ..., set = NULL) {
 setGeneric("genes", function(object, ...) standardGeneric("genes"))
 setMethod("genes", "factR", function(object, ...) {
 
-    return(features(object,..., set="gene"))
+    return(tibble::as_tibble(features(object,..., set="gene")))
 })
 
 #TODO: set shortname for genes to gns
@@ -192,21 +195,21 @@ setMethod("genes", "factR", function(object, ...) {
 setGeneric("transcripts", function(object, ...) standardGeneric("transcripts"))
 setMethod("transcripts", "factR", function(object, ...) {
 
-    return(features(object,..., set="transcript"))
+    return(tibble::as_tibble(features(object,..., set="transcript")))
 })
 
 #' @export
 setGeneric("txs", function(object, ...) standardGeneric("txs"))
 setMethod("txs", "factR", function(object, ...) {
 
-    return(features(object,..., set="transcript"))
+    return(tibble::as_tibble(features(object,..., set="transcript")))
 })
 
 #' @export
 setGeneric("ase", function(object, ...) standardGeneric("ase"))
 setMethod("ase", "factR", function(object, ...) {
 
-    return(features(object,..., set="AS"))
+    return(tibble::as_tibble(features(object,..., set="AS")))
 })
 
 

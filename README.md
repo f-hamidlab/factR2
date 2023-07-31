@@ -46,9 +46,22 @@ gtf <- system.file("extdata/sc_merged_sample.gtf.gz", package = "factR")
 factR.object <- createfactRObject(gtf, "vM25")
 
 # interacting with factRObject
-ase(factR.object)  #get alternative splicing metadata
-plotTranscripts(factR.object, "Dab2")
-plotTranscripts(factR.object, "AS00179")
+## print out metadata of various levels
+genes(factR.object)  # gene metadata
+txs(factR.object)  # transcript metadata
+ase(factR.object)  # alternative splicing metadata
+
+## print out transcript metadata for particular genes
+txs(factR.object, "Dab2")
+txs(factR.object, "Dab2", "Osmr")  # accepts multiple input genes
+
+## View transcript isoforms
+plotTranscripts(factR.object, "Dab2")  #from specific genes
+plotTranscripts(factR.object, "ENSMUST00000078019.12") # of specific transcripts
+### to rescale introns (useful for transcripts with long introns)
+plotTranscripts(factR.object, "ENSMUST00000078019.12", rescale_introns=TRUE) 
+plotTranscripts(factR.object, "AS00179")  # of specific AS events
+
 
 # run main factR pipeline
 factR.object <- runfactR(factR.object)

@@ -20,7 +20,7 @@
 #' @rdname getASCons
 #' @examples
 #' data(factRsample)
-#' factRsample <- getASCons(factRsample)
+#' factRsample <- getAScons(factRsample)
 setGeneric("getAScons", function(
         object,
         db = "phastCons",

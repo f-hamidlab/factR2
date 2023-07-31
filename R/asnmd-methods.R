@@ -6,6 +6,7 @@
 #'
 #' @param object factRObject
 #' @param NMD_threshold Minimum distance between PTC and downstream exon-exon junction to trigger NMD (Default: 50)
+#' @param verbose Whether to print out messages (Default: FALSE)
 
 #' @export
 #' @seealso \code{\link{runfactR}}
@@ -61,6 +62,7 @@ setMethod("predictNMD", "factR", function(object, NMD_threshold = 50, verbose = 
 #' NA (does not cause transcripts to NMD-sensitive).
 #'
 #' @param object factRObject
+#' @param verbose Whether to print out messages (Default: FALSE)
 #'
 #' @return factRObject with updated ASE metadata
 #' @export

@@ -1,6 +1,6 @@
 Package: factR2
 Title: Functional Annotation of Custom Transcriptomes v2
-Version: 0.99.0
+Version: 0.99.1
 Authors@R: person("Fursham", "Hamid", 
     email = "fursham.h@gmail.com", 
     role = c("aut", "cre"))
@@ -21,17 +21,24 @@ Imports:
     patchwork,
     ggplot2,
     wiggleplotr,
+    tibble,
     crayon,
     methods,
     AnnotationHub (>= 2.22),
-    plotly
+    plotly,
+    GenomicScores
 License: file LICENSE
 Encoding: UTF-8
 ByteCompile: true
 RoxygenNote: 7.2.3
 Suggests: 
     testthat (>= 3.0.0),
-    knitr
+    knitr,
+    GenomicRanges,
+    IRanges,
+    RCulr,
+    S4Vectors,
+    BSgenome.Mmusculus.UCSC.mm10
 VignetteBuilder: knitr
 LazyData: FALSE
 BiocType: Software
