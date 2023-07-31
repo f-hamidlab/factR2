@@ -21,6 +21,7 @@ Imports:
     patchwork,
     ggplot2,
     wiggleplotr,
+    tibble,
     crayon,
     methods,
     AnnotationHub (>= 2.22),
