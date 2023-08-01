@@ -2,10 +2,12 @@
 % Please edit documentation in R/factRObject-class.R
 \name{summary,factR-method}
 \alias{summary,factR-method}
-\title{Preview factR object}
+\title{Preview factR object
+#' @param object factRObject}
 \usage{
 \S4method{summary}{factR}(object)
 }
 \description{
 Preview factR object
+#' @param object factRObject
 }

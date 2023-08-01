@@ -8,6 +8,8 @@ buildCDS(object, verbose = FALSE)
 }
 \arguments{
 \item{object}{factRObject}
+
+\item{verbose}{Whether to print out messages (Default: FALSE)}
 }
 \value{
 Update factRObject with additional data from buildCDS

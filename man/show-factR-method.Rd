@@ -6,6 +6,9 @@
 \usage{
 \S4method{show}{factR}(object)
 }
+\arguments{
+\item{object}{factRObject}
+}
 \description{
 Preview factR object
 }
