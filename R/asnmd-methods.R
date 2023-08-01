@@ -72,6 +72,7 @@ setMethod("predictNMD", "factR", function(object, NMD_threshold = 50, verbose = 
 #' @examples
 #' data(factRsample)
 #' factRsample <- buildCDS(factRsample)
+#' factRsample <- predictNMD(factRsample)
 #' factRsample <- testASNMDevents(factRsample)
 setGeneric("testASNMDevents", function(object, verbose = FALSE) standardGeneric("testASNMDevents"))
 setMethod("testASNMDevents", "factR", function(object, verbose = FALSE) {
