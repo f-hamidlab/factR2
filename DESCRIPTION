@@ -36,7 +36,7 @@ Suggests:
     knitr,
     GenomicRanges,
     IRanges,
-    RCulr,
+    RCurl,
     S4Vectors,
     BSgenome.Mmusculus.UCSC.mm10
 VignetteBuilder: knitr
