@@ -38,7 +38,10 @@ Suggests:
     IRanges,
     RCulr,
     S4Vectors,
-    BSgenome.Mmusculus.UCSC.mm10
+    BSgenome.Mmusculus.UCSC.mm10,
+    BSgenome.Mmusculus.UCSC.mm39,
+    BSgenome.Hsapiens.UCSC.hg38,
+    BSgenome.Hsapiens.UCSC.hg19
 VignetteBuilder: knitr
 LazyData: FALSE
 BiocType: Software
