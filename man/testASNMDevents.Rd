@@ -8,6 +8,8 @@ testASNMDevents(object, verbose = FALSE)
 }
 \arguments{
 \item{object}{factRObject}
+
+\item{verbose}{Whether to print out messages (Default: FALSE)}
 }
 \value{
 factRObject with updated ASE metadata

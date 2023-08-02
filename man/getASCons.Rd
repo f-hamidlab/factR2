@@ -29,7 +29,7 @@ Returns sequence conservation scores at the level of exons.
 }
 \examples{
 data(factRsample)
-factRsample <- getASCons(factRsample)
+factRsample <- getAScons(factRsample)
 }
 \seealso{
 \code{\link{runfactR}}

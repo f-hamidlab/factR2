@@ -10,6 +10,8 @@ predictNMD(object, NMD_threshold = 50, verbose = FALSE)
 \item{object}{factRObject}
 
 \item{NMD_threshold}{Minimum distance between PTC and downstream exon-exon junction to trigger NMD (Default: 50)}
+
+\item{verbose}{Whether to print out messages (Default: FALSE)}
 }
 \description{
 Annotates NMD-sensitive transcripts based on Exon-Junction model.
