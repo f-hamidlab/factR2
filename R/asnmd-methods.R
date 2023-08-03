@@ -13,9 +13,9 @@ setGeneric("predictNMD", function(object, NMD_threshold = 50, verbose = FALSE) s
 #' @param verbose Whether to print out messages (Default: FALSE)
 
 #' @export
-#' @seealso \code{\link{runfactR}}
+#' @seealso \code{\link{runfactR}} \code{\link{testASNMDevents}}
 #' @include factRObject-class.R
-#' @rdname predictNMD
+#' @rdname NMD
 #' @examples
 #' data(factRsample)
 #' factRsample <- buildCDS(factRsample)
@@ -66,9 +66,9 @@ setMethod("predictNMD", "factR", function(object, NMD_threshold = 50, verbose = 
 #'
 #' @return factRObject with updated ASE metadata
 #' @export
-#' @seealso \code{\link{runfactR}}
+#' @seealso \code{\link{runfactR}} \code{\link{predictNMD}}
 #'
-#' @rdname testASNMDevents
+#' @rdname NMD
 #' @examples
 #' data(factRsample)
 #' factRsample <- buildCDS(factRsample)
