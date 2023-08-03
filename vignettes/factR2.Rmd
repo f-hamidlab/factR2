@@ -18,7 +18,23 @@ knitr::opts_chunk$set(
 library(factR2)
 ```
 
-## How to use **factR2**
+## Introduction 
+
+## Getting started
+
+### Installing factR2
+
+### Materials needed
+
+## Using factR2
+
+
+### Creating factRObject
+### Interacting with factRObject
+### Running factR pipeline
+### Quantifying additional conservation scores
+### Predicting protein domains
+
 
 **factR2** requires a custom-assembled transcriptome in GTF format. Below is 
 a quick-start on using **factR2** using a sample GTF file:
