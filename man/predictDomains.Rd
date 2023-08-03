@@ -15,6 +15,15 @@ predictDomains(object, ..., database = "superfamily", ncores = 4)
 
 \item{ncores}{Number of cores to run prediction on}
 }
+\value{
+Updated factRObject
+}
 \description{
 Predict protein domains
+}
+\examples{
+data(factRsample)
+factRsample <- buildCDS(factRsample)
+factRsample <- getAAsequence(factRsample)
+factRsample <- predictDomains(factRsample, "Osmr")
 }
