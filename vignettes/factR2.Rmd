@@ -1,5 +1,5 @@
 ---
-title: "factR2"
+title: "Working with custom transcriptomes using factR2"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{factR2}
