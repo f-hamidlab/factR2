@@ -49,7 +49,8 @@ Suggests:
     phyloP100way.UCSC.hg38,
     phyloP100way.UCSC.hg19,
     phyloP35way.UCSC.mm39,
-    phyloP35way.UCSC.mm10
+    phyloP35way.UCSC.mm10,
+    rmarkdown
 VignetteBuilder: knitr
 LazyData: FALSE
 BiocType: Software
