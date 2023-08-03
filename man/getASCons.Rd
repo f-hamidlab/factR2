@@ -19,7 +19,7 @@ getAScons(object, db = "phastCons", type = "exon", padding = 50)
  \item{"downstream"}{ : Conservation of sequences downstream of exons}
 }}
 
-\item{padding}{Additional width to pad the sequence by. For cons_type "exons" and "flanks", paddings will be added on both sides.}
+\item{padding}{Additional width to pad the sequence by. For cons_type "exons" and "flanks", padding will be added on both sides.}
 }
 \value{
 factRObject with additional columns in ASE metadata.

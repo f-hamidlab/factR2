@@ -1,4 +1,4 @@
-
+# TODO: Need to add sample data and refine this
 setGeneric("addTxCounts", function(object, countData, sampleData,
                                    verbose = TRUE) standardGeneric("addTxCounts"))
 setMethod("addTxCounts", "factR", function(object, countData, sampleData, verbose = TRUE) {

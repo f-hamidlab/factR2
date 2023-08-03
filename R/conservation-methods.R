@@ -11,7 +11,7 @@
 #'  \item{"upstream"}{ : Conservation of sequences upstream of exons}
 #'  \item{"downstream"}{ : Conservation of sequences downstream of exons}
 #' }
-#' @param padding Additional width to pad the sequence by. For cons_type "exons" and "flanks", paddings will be added on both sides.
+#' @param padding Additional width to pad the sequence by. For cons_type "exons" and "flanks", padding will be added on both sides.
 #'
 #' @return factRObject with additional columns in ASE metadata.
 #' @export

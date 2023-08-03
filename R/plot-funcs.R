@@ -1,3 +1,28 @@
+#' Plot transcript architecture
+#'
+#' @param object factR object class
+#' @param ... One or more features to plot. Can be the following:
+#' \itemize{
+#'  \item{gene_id: }{ID of gene to plot}
+#'  \item{gene_name: }{Name of gene to plot}
+#'  \item{transcript_id: }{ID of transcript to plot}
+#'  \item{AS_id: }{ID of alternative splicing event (ASxxxxx)}
+#'  \item{coordinate: }{In the form of chromosome:start-end}
+#' }
+#' @param collapse Whether to collapse all transcripts into one (Default: FALSE)
+#' @param rescale_introns Whether to rescale intron sizes. Useful for genes with
+#' extremely long introns, this will place emphasis on the exon architectures
+#' @param ncol Dimension of patchworked plot. Applicable if 2 or more features are plotted
+#'
+#' @return
+#' Interactive plotly plot
+#' @export
+#'
+#' @examples
+#' data(factRsample)
+#' plotTranscripts(factRsample, "Dab2")
+#' plotTranscripts(factRsample, "Dab2", collapse=TRUE)
+#' plotTranscripts(factRsample, "Dab2", rescale_introns=TRUE)
 setMethod("plotTranscripts", "factR", function(object, ...,
                                                collapse = FALSE,
                                                rescale_introns = FALSE,
@@ -66,6 +91,26 @@ setMethod("plotTranscripts", "factR", function(object, ...,
 
 # TODO: color reference transcript
 
+#' Plot domain architecture
+#'
+#' @param object factR object class
+#' @param ... One or more features to plot. Can be the following:
+#' \itemize{
+#'  \item{gene_id: }{ID of gene to plot}
+#'  \item{gene_name: }{Name of gene to plot}
+#'  \item{transcript_id: }{ID of transcript to plot}
+#' }
+#' @param ncol Dimension of patchworked plot. Applicable if 2 or more features are plotted
+#'
+#' @return
+#' Interactive plotly plot
+#' @export
+#'
+#' @examples
+#' data(factRsample)
+#' plotTranscripts(factRsample, "Dab2")
+#' plotTranscripts(factRsample, "Dab2", collapse=TRUE)
+#' plotTranscripts(factRsample, "Dab2", rescale_introns=TRUE)
 setMethod("plotDomains", "factR", function(object, ..., ncol = 1){
     # check if CDS have been built
     gtf <- object@transcriptome
@@ -83,7 +128,7 @@ setMethod("plotDomains", "factR", function(object, ..., ncol = 1){
     # check if all transcripts have been tested
     untested.txs <- txs[!txs %in% slot(object, "domains")$tested]
     if(length(untested.txs) > 0){
-        object <- predictDomain(object, txs)
+        object <- predictDomains(object, txs)
 
         argnames <- as.character(match.call())[-1]
         assign(argnames[1], object, envir = .GlobalEnv)
