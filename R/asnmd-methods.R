@@ -1,3 +1,7 @@
+
+setGeneric("predictNMD", function(object, NMD_threshold = 50, verbose = FALSE) standardGeneric("predictNMD"))
+
+
 #' Predict NMD-sensitive transcripts
 #'
 #' @description Annotates NMD-sensitive transcripts based on Exon-Junction model.
@@ -16,10 +20,6 @@
 #' data(factRsample)
 #' factRsample <- buildCDS(factRsample)
 #' factRsample <- predictNMD(factRsample)
-setGeneric("predictNMD", function(object, NMD_threshold = 50, verbose = FALSE) standardGeneric("predictNMD"))
-
-
-
 setMethod("predictNMD", "factR", function(object, NMD_threshold = 50, verbose = FALSE) {
 
     if(verbose){.msgheader("Running transcript-level NMD prediction")}

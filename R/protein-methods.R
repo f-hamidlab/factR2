@@ -5,10 +5,13 @@ setGeneric("getAAsequence", function(object, verbose = FALSE) standardGeneric("g
 #'
 #' @param factR
 #'
-#' @return
+#' @return Updated factR object
 #' @export
 #'
 #' @examples
+#' data(factRsample)
+#' factRsample <- buildCDS(factRsample)
+#' factRsample <- getAAsequence(factRsample)
 setMethod("getAAsequence", "factR", function(object, verbose = FALSE) {
     gtf <- object@transcriptome
     if(! "CDS" %in% gtf$type){
@@ -38,7 +41,22 @@ setMethod("getAAsequence", "factR", function(object, verbose = FALSE) {
     return(object)
 })
 
+
+#' Predict protein domains
+#'
+#' @param object factRObject
+#' @param ... Features to predict for. Can be gene_name, gene_id or transcript_id
+#' @param database HMM database to query.
+#' @param ncores Number of cores to run prediction on
+#'
+#' @return Updated factRObject
 #' @export
+#'
+#' @examples
+#' data(factRsample)
+#' factRsample <- buildCDS(factRsample)
+#' factRsample <- getAAsequence(factRsample)
+#' factRsample <- predictDomains(factRsample, "Osmr")
 setGeneric("predictDomains", function(object, ...,
                                      database = "superfamily",
                                      ncores = 4) standardGeneric("predictDomains"))
