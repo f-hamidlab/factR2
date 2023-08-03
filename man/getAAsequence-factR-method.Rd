@@ -9,6 +9,14 @@
 \arguments{
 \item{factR}{}
 }
+\value{
+Updated factR object
+}
 \description{
 Translate coding sequence
+}
+\examples{
+data(factRsample)
+factRsample <- buildCDS(factRsample)
+factRsample <- getAAsequence(factRsample)
 }
