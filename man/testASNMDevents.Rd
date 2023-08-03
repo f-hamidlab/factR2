@@ -24,6 +24,7 @@ NA (does not cause transcripts to NMD-sensitive).
 \examples{
 data(factRsample)
 factRsample <- buildCDS(factRsample)
+factRsample <- predictNMD(factRsample)
 factRsample <- testASNMDevents(factRsample)
 }
 \seealso{
