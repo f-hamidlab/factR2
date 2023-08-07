@@ -20,13 +20,21 @@ of a transcriptome.
 
 \describe{
    \item{factRObject can be easily constructed as such:}{
-      \code{createfactRObject(gtf, reference)}
+      \code{\code{\link{createfactRObject}}(gtf, reference)}
    }
 }
 }
 
 \section{Accessors}{
 
-Test
+Interact with a factRObject (x) the following ways:
+\describe{
+   \item{\code{summary(x)}{ : Prints preview of factRObject}
+   }
+   \item{\code{head(x, n=6L)}{ : Prints the first 6 rows of the active set metadata}
+   }
+   \item{\code{tail(x, n=6L)}{ : Prints the last 6 rows of the active set metadata}
+   }
+}
 }
 

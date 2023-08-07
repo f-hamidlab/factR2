@@ -60,6 +60,8 @@ is to be matched to reference (Default: TRUE)}
 }
 \value{
 factR object class
+
+#' @seealso \code{\link{factRObject-class}}
 }
 \description{
 Create a factR object from custom GTF transcriptome

@@ -17,12 +17,14 @@ testASNMDevents(object, verbose = FALSE)
 \item{verbose}{Whether to print out messages (Default: FALSE)}
 }
 \value{
+factRObject with update transcripts metadata
+
 factRObject with updated ASE metadata
 }
 \description{
 Annotates NMD-sensitive transcripts based on Exon-Junction model.
-By default, stop codons which are >50bp upstream of the last exon junction will
-be annotated as NMD-sensitive
+Protein-coding transcrupts with a premature stop codon >50bp upstream of the 
+last exon junction will be annotated as NMD-sensitive.
 
 Pinpoints alternative splicing events underlying NMD sensitivity.
 Metadata of AS events will be updated to include columns "ASNMDtype" and "ASNMD.in.cds".

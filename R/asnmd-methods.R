@@ -5,13 +5,15 @@ setGeneric("predictNMD", function(object, NMD_threshold = 50, verbose = FALSE) s
 #' Predict NMD-sensitive transcripts
 #'
 #' @description Annotates NMD-sensitive transcripts based on Exon-Junction model.
-#' By default, stop codons which are >50bp upstream of the last exon junction will
-#' be annotated as NMD-sensitive
+#' Protein-coding transcrupts with a premature stop codon >50bp upstream of the 
+#' last exon junction will be annotated as NMD-sensitive.
 #'
 #' @param object factRObject
 #' @param NMD_threshold Minimum distance between PTC and downstream exon-exon junction to trigger NMD (Default: 50)
 #' @param verbose Whether to print out messages (Default: FALSE)
-
+#' 
+#' @return factRObject with update transcripts metadata
+#' 
 #' @export
 #' @seealso \code{\link{runfactR}} \code{\link{testASNMDevents}}
 #' @include factRObject-class.R

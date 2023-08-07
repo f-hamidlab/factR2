@@ -37,6 +37,8 @@
 #'
 #' @return
 #' factR object class
+#' 
+#' #' @seealso \code{\link{factRObject-class}}
 #'
 #' @export
 #'

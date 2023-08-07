@@ -12,10 +12,19 @@ buildCDS(object, verbose = FALSE)
 \item{verbose}{Whether to print out messages (Default: FALSE)}
 }
 \value{
-Update factRObject with additional data from buildCDS
+Updated factRObject with updated transcripts metadata.
 }
 \description{
 Constructs CDS information on transcripts from custom annotation
+using reference-based approach.
+}
+\details{
+This function will firstly identify custom transcripts with identical 
+exon structures as those in the reference annotation. If these reference
+transripts contain CDS segments, the coordinates will be passed to its paired-
+custom transcript. The putative start codon of the remaining transcripts
+will be the first ATG sequence that is in-frame with the coding sequence
+of reference transcripts.
 }
 \examples{
 data(factRsample)
