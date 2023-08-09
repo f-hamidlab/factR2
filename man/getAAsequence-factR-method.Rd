@@ -7,7 +7,7 @@
 \S4method{getAAsequence}{factR}(object, verbose = FALSE)
 }
 \arguments{
-\item{factR}{}
+\item{factRObject}{}
 }
 \value{
 Updated factR object

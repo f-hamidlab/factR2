@@ -9,7 +9,12 @@ predictDomains(object, ..., database = "superfamily", ncores = 4)
 \arguments{
 \item{object}{factRObject}
 
-\item{...}{Features to predict for. Can be gene_name, gene_id or transcript_id}
+\item{...}{One or more features to display. Can be the following:
+\itemize{
+ \item{gene_id: }{ID of gene to plot}
+ \item{gene_name: }{Name of gene to plot}
+ \item{transcript_id: }{ID of transcript to plot}
+}}
 
 \item{database}{HMM database to query.}
 

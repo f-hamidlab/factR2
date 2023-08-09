@@ -3,7 +3,7 @@ setGeneric("getAAsequence", function(object, verbose = FALSE) standardGeneric("g
 
 #' Translate coding sequence
 #'
-#' @param factR
+#' @param factRObject
 #'
 #' @return Updated factR object
 #' @export
@@ -45,7 +45,12 @@ setMethod("getAAsequence", "factR", function(object, verbose = FALSE) {
 #' Predict protein domains
 #'
 #' @param object factRObject
-#' @param ... Features to predict for. Can be gene_name, gene_id or transcript_id
+#' @param ... One or more features to display. Can be the following:
+#' \itemize{
+#'  \item{gene_id: }{ID of gene to plot}
+#'  \item{gene_name: }{Name of gene to plot}
+#'  \item{transcript_id: }{ID of transcript to plot}
+#' }
 #' @param database HMM database to query.
 #' @param ncores Number of cores to run prediction on
 #'
