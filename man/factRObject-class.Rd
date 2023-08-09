@@ -52,39 +52,39 @@ Interact with a factRObject (x) the following ways:
 Working with Sets object:
 \describe{
    \item{}{
-      \code{listSets(x): Lists Sets in object}
+      \code{\code{\link{listSets}}(x): Lists Sets in object}
    }
    \item{}{
-      \code{activeSet(x): Returns the active Set of object}
+      \code{\code{\link{activeSet}}(x): Returns the active Set of object}
    }
    \item{}{
-      \code{activeSet(x)<-: Change the active Set}
+      \code{\code{\link{activeSet}}(x)<-: Change the active Set}
    }
 }
 
 Preview Sets metadata as such:
 \describe{
    \item{}{
-      \code{features(x): Displays metadata of active Set}
+      \code{\code{\link{features}}(x): Displays metadata of active Set}
    }
    \item{}{
-      \code{genes(x) or gns(x): Displays gene metadata}
+      \code{\code{\link{genes}}(x) or \code{\link{gns}}(x): Displays gene metadata}
    }
    \item{}{
-      \code{transcripts(x) or txs(x): Displays transcript metadata}
+      \code{\code{\link{transcripts}}(x) or \code{\link{txs}}(x): Displays transcript metadata}
    }
    \item{}{
-      \code{ase(x): Displays alternative splicing events metadata}
+      \code{\code{\link{ase}}(x): Displays alternative splicing events metadata}
    }
 }
 
 Plot transcripts or domains:
 \describe{
    \item{}{
-      \code{plotTranscripts(x, "gene of interest"): Plots transcripts}
+      \code{\code{\link{plotTranscripts}}(x, "gene of interest"): Plots transcripts}
    }
    \item{}{
-      \code{plotDomains(x, "gene of interest")): Plots domains}
+      \code{\code{\link{plotDomains}}(x, "gene of interest")): Plots domains}
    }
 }
 }

@@ -24,7 +24,7 @@ exon structures as those in the reference annotation. If these reference
 transripts contain CDS segments, the coordinates will be passed to its paired-
 custom transcript. The putative start codon of the remaining transcripts
 will be the first ATG sequence that is in-frame with the coding sequence
-of reference transcripts.
+of reference transcripts and an in-frame stop codon will be determined.
 }
 \examples{
 data(factRsample)
