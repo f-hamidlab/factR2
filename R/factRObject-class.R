@@ -76,6 +76,16 @@
 #'       \code{ase(x): Displays alternative splicing events metadata}
 #'    }
 #' }
+#' 
+#' Plot transcripts or domains:
+#' \describe{
+#'    \item{}{
+#'       \code{plotTranscripts(x, "gene of interest"): Plots transcripts}
+#'    }
+#'    \item{}{
+#'       \code{plotDomains(x, "gene of interest")): Plots domains}
+#'    }
+#' }
 #'
 #
 #'
@@ -164,8 +174,24 @@ setMethod("ncol", "factR", function(x){ base::ncol(x@sets[[x@active.set]]@data) 
 
 
 ### GRanges ####
-#' @export
+
 setGeneric("granges", function(object, ..., set = NULL) standardGeneric("granges"))
+#' Display factR data
+#'
+#' @param object factRObject
+#' @param ... One or more features to display. Can be the following:
+#' \itemize{
+#'  \item{gene_id: }{ID of gene to plot}
+#'  \item{gene_name: }{Name of gene to plot}
+#'  \item{transcript_id: }{ID of transcript to plot}
+#' }
+#' @param set Set metadata to display. Can be "gene", "transcript" or "AS".
+#'
+#' @export
+#' @rdname factR-meta
+#' @examples
+#' data("factRsample")
+#' granges(factRsample)
 setMethod("granges", "factR", function(object, ..., set = NULL) {
     granges.factR(object, ..., set = set)
 })
@@ -173,20 +199,38 @@ setMethod("granges", "factR", function(object, ..., set = NULL) {
 
 
 ### Sets ####
-#' @export
+
 setGeneric("activeSet", function(object) standardGeneric("activeSet"))
+#' @param object factRObject
+#' @export
+#' @rdname factR-meta
+#' @examples
+#' data("factRsample")
+#' activeSet(factRsample)
 setMethod("activeSet", "factR", function(object){
     methods::slot(object, "active.set")
 })
 
-#' @export
 setGeneric("activeSet<-", function(object, value) standardGeneric("activeSet<-"))
+#' @param object factRObject
+#' @param value Character value of one of the following: "gene", "transcript" or "AS"
+#' @export
+#' @rdname factR-meta
+#' @examples
+#' data("factRsample")
+#' activeSet(factRsample) <- "transcript"
 setMethod("activeSet<-", "factR", function(object, value){
     object@active.set <- value
 })
 
 #' @export
 setGeneric("listSets", function(object) standardGeneric("listSets"))
+#' @param object factRObject
+#' @export
+#' @rdname factR-meta
+#' @examples
+#' data("factRsample")
+#' listSets(factRsample)
 setMethod("listSets", "factR", function(object){ names(object@sets) })
 
 
@@ -197,7 +241,13 @@ setMethod("listSets", "factR", function(object){ names(object@sets) })
 
 
 ### Features ####
+#' @param x factRObject
+#' @param i Character value of one of the following: "gene", "transcript" or "AS"
 #' @export
+#' @rdname factR-meta
+#' @examples
+#' data("factRsample")
+#' factRsample[["gene"]]
 setMethod("[[", "factR", function(x, i){
     if(missing(i)){
         x@sets[[x@active.set]]@rowData
@@ -209,8 +259,21 @@ setMethod("[[", "factR", function(x, i){
 })
 
 # feature preview with option to subset data
-#' @export
 setGeneric("features", function(object, ..., set = NULL) standardGeneric("features"))
+#' @param object factRObject
+#' @param ... One or more features to display. Can be the following:
+#' \itemize{
+#'  \item{gene_id: }{ID of gene to plot}
+#'  \item{gene_name: }{Name of gene to plot}
+#'  \item{transcript_id: }{ID of transcript to plot}
+#' }
+#' @param set Set metadata to display. Can be "gene", "transcript" or "AS".
+#' @export
+#' @rdname factR-meta
+#' @examples
+#' data("factRsample")
+#' features(factRsample)
+#' features(factRsample, "Dab2", set="gene")
 setMethod("features", "factR", function(object, ..., set = NULL) {
     if(is.null(set)){
         set <- slot(object, "active.set")
@@ -228,37 +291,93 @@ setMethod("features", "factR", function(object, ..., set = NULL) {
 })
 
 # wrappers to quickly get genes, transcripts and AS
-#' @export
 setGeneric("genes", function(object, ...) standardGeneric("genes"))
+#' @param object factRObject
+#' @param ... One or more features to display. Can be the following:
+#' \itemize{
+#'  \item{gene_id: }{ID of gene to plot}
+#'  \item{gene_name: }{Name of gene to plot}
+#'  \item{transcript_id: }{ID of transcript to plot}
+#' }
+#' @export
+#' @rdname factR-meta
+#' @examples
+#' data("factRsample")
+#' genes(factRsample, "Dab2")
 setMethod("genes", "factR", function(object, ...) {
 
     return(tibble::as_tibble(features(object,..., set="gene")))
 })
 
-#' @export
 setGeneric("gns", function(object, ...) standardGeneric("gns"))
+#' @param object factRObject
+#' @param ... One or more features to display. Can be the following:
+#' \itemize{
+#'  \item{gene_id: }{ID of gene to plot}
+#'  \item{gene_name: }{Name of gene to plot}
+#'  \item{transcript_id: }{ID of transcript to plot}
+#' }
+#' @export
+#' @rdname factR-meta
+#' @examples
+#' data("factRsample")
+#' gns(factRsample, "Dab2")
 setMethod("gns", "factR", function(object, ...) {
 
     return(tibble::as_tibble(features(object,..., set="gene")))
 })
 
 
-#' @export
 setGeneric("transcripts", function(object, ...) standardGeneric("transcripts"))
+#' @param object factRObject
+#' @param ... One or more features to display. Can be the following:
+#' \itemize{
+#'  \item{gene_id: }{ID of gene to plot}
+#'  \item{gene_name: }{Name of gene to plot}
+#'  \item{transcript_id: }{ID of transcript to plot}
+#' }
+#' @export
+#' @rdname factR-meta
+#' @examples
+#' data("factRsample")
+#' transcripts(factRsample, "Dab2")
 setMethod("transcripts", "factR", function(object, ...) {
 
     return(tibble::as_tibble(features(object,..., set="transcript")))
 })
 
-#' @export
 setGeneric("txs", function(object, ...) standardGeneric("txs"))
+#' @param object factRObject
+#' @param ... One or more features to display. Can be the following:
+#' \itemize{
+#'  \item{gene_id: }{ID of gene to plot}
+#'  \item{gene_name: }{Name of gene to plot}
+#'  \item{transcript_id: }{ID of transcript to plot}
+#' }
+#' @export
+#' @rdname factR-meta
+#' @examples
+#' data("factRsample")
+#' txs(factRsample, "Dab2")
 setMethod("txs", "factR", function(object, ...) {
 
     return(tibble::as_tibble(features(object,..., set="transcript")))
 })
 
-#' @export
+
 setGeneric("ase", function(object, ...) standardGeneric("ase"))
+#' @param object factRObject
+#' @param ... One or more features to display. Can be the following:
+#' \itemize{
+#'  \item{gene_id: }{ID of gene to plot}
+#'  \item{gene_name: }{Name of gene to plot}
+#'  \item{transcript_id: }{ID of transcript to plot}
+#' }
+#' @export
+#' @rdname factR-meta
+#' @examples
+#' data("factRsample")
+#' ase(factRsample, "Dab2")
 setMethod("ase", "factR", function(object, ...) {
 
     return(tibble::as_tibble(features(object,..., set="AS")))
@@ -321,8 +440,22 @@ setMethod("counts", "factR", function(object, ..., set = NULL) {
 
 
 ### Domains ####
-#' @export
 setGeneric("domains", function(object, ...) standardGeneric("domains"))
+#' @param object factRObject
+#' @param ... One or more features to display. Can be the following:
+#' \itemize{
+#'  \item{gene_id: }{ID of gene to plot}
+#'  \item{gene_name: }{Name of gene to plot}
+#'  \item{transcript_id: }{ID of transcript to plot}
+#' }
+#' @export
+#' @rdname factR-meta
+#' @examples
+#' data("factRsample")
+#' factRsample <- buildCDS(factRsample)
+#' factRsample <- getAAsequence(factRsample)
+#' factRsample <- predictDomains(factRsample, "Dab2")
+#' domains(factRsample, "Dab2")
 setMethod("domains", "factR", function(object, ...){
     feat <- .getFeat(object, ...)
     domains <- object@domains$data

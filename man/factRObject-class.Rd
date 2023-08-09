@@ -77,5 +77,15 @@ Preview Sets metadata as such:
       \code{ase(x): Displays alternative splicing events metadata}
    }
 }
+
+Plot transcripts or domains:
+\describe{
+   \item{}{
+      \code{plotTranscripts(x, "gene of interest"): Plots transcripts}
+   }
+   \item{}{
+      \code{plotDomains(x, "gene of interest")): Plots domains}
+   }
+}
 }
 
