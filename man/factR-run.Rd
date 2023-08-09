@@ -33,7 +33,8 @@ runfactR(
 \item{verbose}{Whether to show pipeline messages (Default: TRUE)}
 }
 \value{
-Update factRObject with additional data from runfactR
+Update factRObject with additional data from runfactR. See links below
+for detailed description of each function in this wrapper.
 }
 \description{
 This wrapper function will perform the core factR workflow which
@@ -46,7 +47,10 @@ includes:
 }
 }
 \examples{
+## Load sample factRObject
 data(factRsample)
+
+## Run factR pipeline
 factRsample <- runfactR(factRsample)
 }
 \seealso{

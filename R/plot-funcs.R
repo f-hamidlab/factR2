@@ -1,4 +1,4 @@
-#' Plot transcript architecture
+#' Plot exon and domain architectures
 #'
 #' @param object factR object class
 #' @param ... One or more features to plot. Can be the following:
@@ -18,11 +18,24 @@
 #' Interactive plotly plot
 #' @export
 #'
+#' @name factR-plottings
+#' @rdname factR-plottings
+#'
 #' @examples
+#' ## Load sample factRObject
 #' data(factRsample)
+#'
+#' ## Plot transcript archtectures:
 #' plotTranscripts(factRsample, "Dab2")
 #' plotTranscripts(factRsample, "Dab2", collapse=TRUE)
 #' plotTranscripts(factRsample, "Dab2", rescale_introns=TRUE)
+#'
+#' ## To plot protein-coding domains, the CDS segments need to be built first:
+#' factRsample <- buildCDS(factRsample)
+#' factRsample <- getAAsequence(factRsample)
+#'
+#' ## Plotting of domains:
+#' plotDomains(factRsample, "Dab2")
 setMethod("plotTranscripts", "factR", function(object, ...,
                                                collapse = FALSE,
                                                rescale_introns = FALSE,
@@ -91,8 +104,7 @@ setMethod("plotTranscripts", "factR", function(object, ...,
 
 # TODO: color reference transcript
 
-#' Plot domain architecture
-#'
+
 #' @param object factR object class
 #' @param ... One or more features to plot. Can be the following:
 #' \itemize{
@@ -101,16 +113,9 @@ setMethod("plotTranscripts", "factR", function(object, ...,
 #'  \item{transcript_id: }{ID of transcript to plot}
 #' }
 #' @param ncol Dimension of patchworked plot. Applicable if 2 or more features are plotted
+#' @rdname factR-plottings
 #'
-#' @return
-#' Interactive plotly plot
 #' @export
-#'
-#' @examples
-#' data(factRsample)
-#' plotTranscripts(factRsample, "Dab2")
-#' plotTranscripts(factRsample, "Dab2", collapse=TRUE)
-#' plotTranscripts(factRsample, "Dab2", rescale_introns=TRUE)
 setMethod("plotDomains", "factR", function(object, ..., ncol = 1){
     # check if CDS have been built
     gtf <- object@transcriptome

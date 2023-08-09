@@ -22,13 +22,17 @@
 #' @param cons_padding Additional width to pad the sequence by. For cons_type "exons" and "flanks", paddings will be added on both sides.
 #' @param verbose Whether to show pipeline messages (Default: TRUE)
 #'
-#' @return Update factRObject with additional data from runfactR
+#' @return Update factRObject with additional data from runfactR. See links below
+#' for detailed description of each function in this wrapper.
 #' @export
 #' @seealso \code{\link{buildCDS}}, \code{\link{predictNMD}}, \code{\link{testASNMDevents}}, \code{\link{getAScons}}, \code{\link{getAAsequence}}
 #'
-#' @rdname RunfactR
+#' @rdname factR-run
 #' @examples
+#' ## Load sample factRObject
 #' data(factRsample)
+#'
+#' ## Run factR pipeline
 #' factRsample <- runfactR(factRsample)
 setGeneric("runfactR", function(
         object,
@@ -50,7 +54,7 @@ setMethod("runfactR", "factR", function(
     object <- predictNMD(object, NMD_threshold, verbose)
     object <- getAAsequence(object, verbose)
     object <- testASNMDevents(object, verbose)
-    object <- getAScons(object, cons_db, cons_type, cons_padding)  # TODO: get upstream and downstream, with some padding
+    object <- getAScons(object, cons_db, cons_type, cons_padding)
     object
 })
 

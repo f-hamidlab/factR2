@@ -12,14 +12,18 @@ buildCDS(object, verbose = FALSE)
 \item{verbose}{Whether to print out messages (Default: FALSE)}
 }
 \value{
-Updated factRObject with updated transcripts metadata.
+Updated factRObject.
+The GTF GenomicRanges object will now contain "CDS" type features.
+
+The `cds` variable from the transcript metadata will return "yes" for coding
+transcripts and "no" for non-coding transcripts
 }
 \description{
 Constructs CDS information on transcripts from custom annotation
 using reference-based approach.
 }
 \details{
-This function will firstly identify custom transcripts with identical 
+This function will firstly identify custom transcripts with identical
 exon structures as those in the reference annotation. If these reference
 transripts contain CDS segments, the coordinates will be passed to its paired-
 custom transcript. The putative start codon of the remaining transcripts
@@ -27,7 +31,10 @@ will be the first ATG sequence that is in-frame with the coding sequence
 of reference transcripts and an in-frame stop codon will be determined.
 }
 \examples{
+## Load sample data
 data(factRsample)
+
+## Build coding sequences
 factRsample <- buildCDS(factRsample)
 }
 \seealso{

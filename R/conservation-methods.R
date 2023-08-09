@@ -1,18 +1,23 @@
+setGeneric("getAScons", function(
+        object,
+        db = "phastCons",
+        type = "exon",
+        padding = 50)  standardGeneric("getAScons"))
 #' Quantify feature conservation
 #'
-#' @description Quantify sequence conservation scores of alternatively-spliced exons. 
-#' 
+#' @description Quantify sequence conservation scores of alternatively-spliced exons.
+#'
 #' @details
 #' By default, this function quantifies the sequence conservation of the entire
 #' exon together with 50 base-pair flanking sequence using the phastCons database.
 #' Alternatively, this function can also quantify the mean conservation scores
 #' of sequences flanking exons, or sequences upstream/downstream of alternative exons.
-#' 
+#'
 #' The `padding` argument has different meaning depending on the `type` input.
 #' If `type` is "exon", then `padding` refers to the amount of intronic sequences
 #' on both sides of the exon to include in the quantification. If `type` is
 #' "flanks", "upstream" or "downstream", then `padding` refers to the amount
-#' of intronic sequnce to 
+#' of intronic sequnce to
 #'
 #' @param object factR object
 #' @param db Database to extract sequence conservation. Can be "phastCons" (Default) or "phylop"
@@ -23,22 +28,40 @@
 #'  \item{"upstream"}{ : Conservation of sequences upstream of exons}
 #'  \item{"downstream"}{ : Conservation of sequences downstream of exons}
 #' }
-#' @param padding Additional width to pad the sequence by. 
+#' @param padding Additional width to pad the sequence by.
 #' For cons_type "exons" and "flanks", padding will be added on both sides.
 #'
-#' @return factRObject with additional columns in ASE metadata.
+#' @return factRObject with additional columns in AS metadata.
+#'
+#' The name of column(s) created will be "Cons.<type>.pad<padding>"
+#'
+#'
 #' @export
 #' @seealso \code{\link{runfactR}}
 #'
 #' @rdname getASCons
 #' @examples
+#' ## Load sample factRObject
 #' data(factRsample)
+#'
+#' ## By default, quantifies conservation of exon with 50bp paddings on each side
 #' factRsample <- getAScons(factRsample)
-setGeneric("getAScons", function(
-        object,
-        db = "phastCons",
-        type = "exon",
-        padding = 50)  standardGeneric("getAScons"))
+#'
+#' ## To quantify conservation of flanking intronic sequences
+#' ### 100bp on both sides
+#' factRsample <- getAScons(factRsample, type = "flanks", padding = 100)
+#'
+#' ### 50bp upstream
+#' factRsample <- getAScons(factRsample, type = "upstream", padding = 50)
+#'
+#' ## To quantify conservation of sequences at the beginning and/or at the
+#' end of an exon
+#' ### 50bp Beginning and ending
+#' factRsample <- getAScons(factRsample, type = "flanks", padding = -50)
+#'
+#' ### 50bp Beginningg
+#' factRsample <- getAScons(factRsample, type = "upstream", padding = -50)
+#'
 setMethod("getAScons", "factR", function(
           object,
           db = "phastCons",

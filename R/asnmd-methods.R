@@ -2,26 +2,65 @@
 setGeneric("predictNMD", function(object, NMD_threshold = 50, verbose = FALSE) standardGeneric("predictNMD"))
 
 
-#' Predict NMD-sensitive transcripts
+#' NMD predictions at transcript and exon levels
 #'
-#' @description Annotates NMD-sensitive transcripts based on Exon-Junction model.
-#' Protein-coding transcrupts with a premature stop codon >50bp upstream of the 
+#' @description
+#' Nonsense-mediated decay is an RNA surveillance mechanism which clears
+#' transcripts harboring a premature stop codon. These transcripts can be
+#' products of alternative splicing events (AS-NMD) which ultimately serve as
+#' a post-transcriptional gene regulation mechanism.
+#'
+#' The functions below annotates all transcripts in the factRObject for its
+#' sensitivity to NMD, based on the canonical exon-junction model. Protein-coding
+#' transcripts containing a premature stop codon >50bp upstream of the
 #' last exon junction will be annotated as NMD-sensitive.
+#'
+#' Sequentially, the `testASNMDevents` function will pinpoint the alternative
+#' splicing events that lead to NMD. AS-NMD events are categorised as "stimulating"
+#' or "repressing". "Stimulating" events trigger NMD upon its splicing
+#' while "repressing" events trigger NMD upon exon skipping.
 #'
 #' @param object factRObject
 #' @param NMD_threshold Minimum distance between PTC and downstream exon-exon junction to trigger NMD (Default: 50)
 #' @param verbose Whether to print out messages (Default: FALSE)
-#' 
-#' @return factRObject with update transcripts metadata
-#' 
+#'
+#' @return factRObject with updated metadata
+#'
+#' For `predictNMD`, 4 additional variables are added to the transcript metadata:
+#' \itemize{
+#'  \item{nmd: }{"yes" or "no" value as to whether the transcript is NMD-sensitive}
+#'  \item{stop_to_lastEJ: }{Integer of the distance between the first stop codon
+#'  to the last exon-junction. Positive values indicate that the stop codon
+#'  is upstream of the EJ while negative values indicate that the stop codon
+#'  is downstrea of the EJ }
+#'  \item{num_of_downEJs: }{Number of EJs downstream of the first stop codon}
+#'  \item{3'UTR_length: }{Length of the 3'UTR}
+#' }
+#'
+#' For `testASNMDevents`, 2 additional variables are added to the AS metadata:
+#' \itemize{
+#'  \item{ASNMDtype: }{Type of AS-NMD event. Can be "Repressing" if skipping
+#'  of the exon leads to NMD or "Stimulating" if splicing of the exon leads to
+#'  NMD}
+#'  \item{ASNMD.in.cds: }{Whether or not the event is found within the CDS or UTR}
+#' }
+#'
 #' @export
-#' @seealso \code{\link{runfactR}} \code{\link{testASNMDevents}}
+#' @seealso \code{\link{runfactR}}
 #' @include factRObject-class.R
-#' @rdname NMD
+#'
+#' @rdname factR-NMD
+#' @name factR-NMD
 #' @examples
+#' ## Load sample factR object and predict CDS segments
 #' data(factRsample)
 #' factRsample <- buildCDS(factRsample)
+#'
+#' ## Predict transcript-level NMD sensitivities
 #' factRsample <- predictNMD(factRsample)
+#'
+#' ## Annotate NMD-causing splicing events
+#' factRsample <- testASNMDevents(factRsample)
 setMethod("predictNMD", "factR", function(object, NMD_threshold = 50, verbose = FALSE) {
 
     if(verbose){.msgheader("Running transcript-level NMD prediction")}
@@ -54,29 +93,15 @@ setMethod("predictNMD", "factR", function(object, NMD_threshold = 50, verbose = 
 })
 
 
+setGeneric("testASNMDevents", function(object, verbose = FALSE) standardGeneric("testASNMDevents"))
 
-#' Identify AS-NMD events
-#'
-#' @description Pinpoints alternative splicing events underlying NMD sensitivity.
-#' Metadata of AS events will be updated to include columns "ASNMDtype" and "ASNMD.in.cds".
-#' Values of "ASNMDtype" can be Repressing (skipping of exon causes transcripts to be NMD-sensitive),
-#' Stimulating (splicing of exon causes transcripts to be NMD-sensitive) or
-#' NA (does not cause transcripts to NMD-sensitive).
-#'
+
 #' @param object factRObject
 #' @param verbose Whether to print out messages (Default: FALSE)
 #'
-#' @return factRObject with updated ASE metadata
 #' @export
-#' @seealso \code{\link{runfactR}} \code{\link{predictNMD}}
 #'
-#' @rdname NMD
-#' @examples
-#' data(factRsample)
-#' factRsample <- buildCDS(factRsample)
-#' factRsample <- predictNMD(factRsample)
-#' factRsample <- testASNMDevents(factRsample)
-setGeneric("testASNMDevents", function(object, verbose = FALSE) standardGeneric("testASNMDevents"))
+#' @rdname factR-NMD
 setMethod("testASNMDevents", "factR", function(object, verbose = FALSE) {
 
     if(verbose){.msgheader("Running AS-NMD testing")}

@@ -1,5 +1,3 @@
-## TODO: make 1-asin a contextual arg
-
 #' Assess regulatory potential of AS events
 #'
 #' @description Correlates inclusion levels of exons with gene expression levels

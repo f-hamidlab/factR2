@@ -3,7 +3,9 @@
 #' Construct factR object class
 #'
 #' @description
-#' Create a factR object from custom GTF transcriptome
+#' Create a factR object from custom GTF transcriptomes
+#'
+#'
 #'
 #'
 #' @param gtf Either path to custom transcriptome file (GTF) or a GenomicRanges
@@ -31,12 +33,12 @@
 #' @param match_genes Boolean value as to whether genes in custom transcriptome
 #' is to be matched to reference (Default: TRUE)
 #' @param countData (Optional) Matrix of counts data
-#' @param sampleData Dataframe containing sample metadata
+#' @param sampleData (Optional) Dataframe containing sample metadata
 #' @param psi (Optional) Matrix of splicing PSI data
 #' @param verbose Boolean value as to whether messages should be printed (Default: TRUE)
 #'
 #' @return
-#' factR object class
+#' factRObject class.
 #'
 #' @seealso \code{\link{factRObject-class}}
 #'
@@ -155,13 +157,29 @@ createfactRObject <- function(gtf, reference,
         }
 
         annotation <- selected_genome$annotation
+
         ## test if BSgenome object is installed
         if(selected_genome$genome.pri %in% BSgenome::installed.genomes()){
             suppressPackageStartupMessages(require(selected_genome$genome.pri, character.only = T,
                     quietly = !verbose))
             genome <- get(selected_genome$genome.pri)
         } else {
-            genome <- selected_genome$genome.sec
+            # prompt to download BSgenome
+            .msgsubinfo(stringr::str_glue(
+                "The BSgenome object {selected_genome$genome.pri} is available
+                for this annotation. Do you wish to download? [Y/N]"))
+            resp <- stringr::str_to_upper(readline(prompt=""))
+            if(resp=="Y"){
+                suppressMessages(BiocManager::install(selected_genome$genome.pri,
+                                     quiet=TRUE,
+                                     ask=FALSE))
+                genome <- get(selected_genome$genome.pri)
+
+            } else{
+                genome <- selected_genome$genome.sec
+            }
+
+
         }
         build <- selected_genome$build
     }

@@ -52,17 +52,17 @@ is to be matched to reference (Default: TRUE)}
 
 \item{countData}{(Optional) Matrix of counts data}
 
-\item{sampleData}{Dataframe containing sample metadata}
+\item{sampleData}{(Optional) Dataframe containing sample metadata}
 
 \item{psi}{(Optional) Matrix of splicing PSI data}
 
 \item{verbose}{Boolean value as to whether messages should be printed (Default: TRUE)}
 }
 \value{
-factR object class
+factRObject class.
 }
 \description{
-Create a factR object from custom GTF transcriptome
+Create a factR object from custom GTF transcriptomes
 }
 \examples{
 gtf <- system.file("extdata/sc_merged_sample.gtf.gz", package = "factR")

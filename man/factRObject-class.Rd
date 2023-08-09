@@ -49,7 +49,10 @@ Interact with a factRObject (x) the following ways:
    }
 }
 
-Working with Sets object:
+A factRObject consists of 3 `Sets` of data: gene, transcript and AS. At any
+one time, one of these `Sets` will be made the active Set and some factR2
+functions will be called only on this active Set. Below are some ways to
+check and change the active Set:
 \describe{
    \item{}{
       \code{\code{\link{listSets}}(x): Lists Sets in object}
@@ -62,7 +65,9 @@ Working with Sets object:
    }
 }
 
-Preview Sets metadata as such:
+Each `Set` of an factRObject hold rich information of the features that it
+contains. Below are some convenient wrappers to display the metadata in
+each `Set`.
 \describe{
    \item{}{
       \code{\code{\link{features}}(x): Displays metadata of active Set}
@@ -78,7 +83,8 @@ Preview Sets metadata as such:
    }
 }
 
-Plot transcripts or domains:
+factR2 also contain functions to plot exon-level and domain-level
+structures as an interactive plot:
 \describe{
    \item{}{
       \code{\code{\link{plotTranscripts}}(x, "gene of interest"): Plots transcripts}

@@ -48,7 +48,10 @@
 #'    }
 #' }
 #'
-#' Working with Sets object:
+#' A factRObject consists of 3 `Sets` of data: gene, transcript and AS. At any
+#' one time, one of these `Sets` will be made the active Set and some factR2
+#' functions will be called only on this active Set. Below are some ways to
+#' check and change the active Set:
 #' \describe{
 #'    \item{}{
 #'       \code{\code{\link{listSets}}(x): Lists Sets in object}
@@ -61,7 +64,9 @@
 #'    }
 #' }
 #'
-#' Preview Sets metadata as such:
+#' Each `Set` of an factRObject hold rich information of the features that it
+#' contains. Below are some convenient wrappers to display the metadata in
+#' each `Set`.
 #' \describe{
 #'    \item{}{
 #'       \code{\code{\link{features}}(x): Displays metadata of active Set}
@@ -76,8 +81,9 @@
 #'       \code{\code{\link{ase}}(x): Displays alternative splicing events metadata}
 #'    }
 #' }
-#' 
-#' Plot transcripts or domains:
+#'
+#' factR2 also contain functions to plot exon-level and domain-level
+#' structures as an interactive plot:
 #' \describe{
 #'    \item{}{
 #'       \code{\code{\link{plotTranscripts}}(x, "gene of interest"): Plots transcripts}
@@ -142,14 +148,9 @@ setClass("factRset",
 #XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
 ### General ####
-#' Preview factR object
-#'
-#' @param object factRObject
 #' @export
 setMethod("show", "factR", function(object) show.factR(object))
 
-#' Preview factR object
-#' #' @param object factRObject
 #' @export
 setMethod("summary", "factR", function(object) object )
 
@@ -176,7 +177,13 @@ setMethod("ncol", "factR", function(x){ base::ncol(x@sets[[x@active.set]]@data) 
 ### GRanges ####
 
 setGeneric("granges", function(object, ..., set = NULL) standardGeneric("granges"))
-#' Display factR data
+#' Display factR2 object data
+#'
+#' @description
+#' A factRObject-class contains different types of data at the gene, transcript,
+#'  alternative splicing (AS) and protein domain levels. The functions below are
+#'  designed to display specific contents of a factRObject.
+#'
 #'
 #' @param object factRObject
 #' @param ... One or more features to display. Can be the following:
@@ -188,10 +195,53 @@ setGeneric("granges", function(object, ..., set = NULL) standardGeneric("granges
 #' @param set Set metadata to display. Can be "gene", "transcript" or "AS".
 #'
 #' @export
+#' @return
+#' \itemize{
+#'  \item{`granges`: }{GenomicRanges object of selected features}
+#'  \item{`activeSet` and `listSets`: }{Character value/vector}
+#'  \item{All other functions: }{Tibble dataframe containing metadata of selected features}
+#' }
+#'
+#'
+#' @name factR-meta
 #' @rdname factR-meta
 #' @examples
+#' ### Load sample factRObject
 #' data("factRsample")
-#' granges(factRsample)
+#'
+#' ## Prints out activeSet
+#' activeSet(factRsample)
+#'
+#' ## Change activeSet
+#' activeSet(factRsample) <- "transcript"
+#'
+#' ## Returns coordinates and metadata of features as a GenomicRanges object
+#' granges(factRsample)   # from activeSet
+#' granges(factRsample, "Dab2")   # specific features
+#' granges(factRsample, "Dab2", set = "gene")   # specific features from different Set
+#'
+#' ## Returns metadata of features
+#' features(factRsample)   # from activeSet
+#' features(factRsample, "Dab2")   # specific features
+#' features(factRsample, "Dab2", set = "gene")   # specific features from different Set
+#'
+#' ### This is the same as:
+#' genes(factRsample, "Dab2")
+#'
+#'
+#' ## To return protein-coding domains, the protein-coding domains need to be predicted first:
+#' factRsample <- buildCDS(factRsample)
+#' factRsample <- getAAsequence(factRsample)
+#' factRsample <- predictDomains(factRsample, "Dab2")
+#'
+#' ## Then, the domains of the selected gene can be printed as such:
+#' domains(factRsample, "Dab2")
+#'
+#' ## All outputs can be assigned to a variable and manipulated further using other functions:
+#' ase(factRsample) %>% dplyr::filter(AStype == "CE")
+#'
+#'
+
 setMethod("granges", "factR", function(object, ..., set = NULL) {
     granges.factR(object, ..., set = set)
 })
@@ -204,9 +254,6 @@ setGeneric("activeSet", function(object) standardGeneric("activeSet"))
 #' @param object factRObject
 #' @export
 #' @rdname factR-meta
-#' @examples
-#' data("factRsample")
-#' activeSet(factRsample)
 setMethod("activeSet", "factR", function(object){
     methods::slot(object, "active.set")
 })
@@ -216,9 +263,6 @@ setGeneric("activeSet<-", function(object, value) standardGeneric("activeSet<-")
 #' @param value Character value of one of the following: "gene", "transcript" or "AS"
 #' @export
 #' @rdname factR-meta
-#' @examples
-#' data("factRsample")
-#' activeSet(factRsample) <- "transcript"
 setMethod("activeSet<-", "factR", function(object, value){
     object@active.set <- value
 })
@@ -228,9 +272,6 @@ setGeneric("listSets", function(object) standardGeneric("listSets"))
 #' @param object factRObject
 #' @export
 #' @rdname factR-meta
-#' @examples
-#' data("factRsample")
-#' listSets(factRsample)
 setMethod("listSets", "factR", function(object){ names(object@sets) })
 
 
@@ -241,13 +282,8 @@ setMethod("listSets", "factR", function(object){ names(object@sets) })
 
 
 ### Features ####
-#' @param x factRObject
-#' @param i Character value of one of the following: "gene", "transcript" or "AS"
+
 #' @export
-#' @rdname factR-meta
-#' @examples
-#' data("factRsample")
-#' factRsample[["gene"]]
 setMethod("[[", "factR", function(x, i){
     if(missing(i)){
         x@sets[[x@active.set]]@rowData
@@ -270,10 +306,6 @@ setGeneric("features", function(object, ..., set = NULL) standardGeneric("featur
 #' @param set Set metadata to display. Can be "gene", "transcript" or "AS".
 #' @export
 #' @rdname factR-meta
-#' @examples
-#' data("factRsample")
-#' features(factRsample)
-#' features(factRsample, "Dab2", set="gene")
 setMethod("features", "factR", function(object, ..., set = NULL) {
     if(is.null(set)){
         set <- slot(object, "active.set")
@@ -301,9 +333,6 @@ setGeneric("genes", function(object, ...) standardGeneric("genes"))
 #' }
 #' @export
 #' @rdname factR-meta
-#' @examples
-#' data("factRsample")
-#' genes(factRsample, "Dab2")
 setMethod("genes", "factR", function(object, ...) {
 
     return(tibble::as_tibble(features(object,..., set="gene")))
@@ -319,9 +348,6 @@ setGeneric("gns", function(object, ...) standardGeneric("gns"))
 #' }
 #' @export
 #' @rdname factR-meta
-#' @examples
-#' data("factRsample")
-#' gns(factRsample, "Dab2")
 setMethod("gns", "factR", function(object, ...) {
 
     return(tibble::as_tibble(features(object,..., set="gene")))
@@ -338,9 +364,6 @@ setGeneric("transcripts", function(object, ...) standardGeneric("transcripts"))
 #' }
 #' @export
 #' @rdname factR-meta
-#' @examples
-#' data("factRsample")
-#' transcripts(factRsample, "Dab2")
 setMethod("transcripts", "factR", function(object, ...) {
 
     return(tibble::as_tibble(features(object,..., set="transcript")))
@@ -356,9 +379,6 @@ setGeneric("txs", function(object, ...) standardGeneric("txs"))
 #' }
 #' @export
 #' @rdname factR-meta
-#' @examples
-#' data("factRsample")
-#' txs(factRsample, "Dab2")
 setMethod("txs", "factR", function(object, ...) {
 
     return(tibble::as_tibble(features(object,..., set="transcript")))
@@ -375,9 +395,6 @@ setGeneric("ase", function(object, ...) standardGeneric("ase"))
 #' }
 #' @export
 #' @rdname factR-meta
-#' @examples
-#' data("factRsample")
-#' ase(factRsample, "Dab2")
 setMethod("ase", "factR", function(object, ...) {
 
     return(tibble::as_tibble(features(object,..., set="AS")))
@@ -450,16 +467,11 @@ setGeneric("domains", function(object, ...) standardGeneric("domains"))
 #' }
 #' @export
 #' @rdname factR-meta
-#' @examples
-#' data("factRsample")
-#' factRsample <- buildCDS(factRsample)
-#' factRsample <- getAAsequence(factRsample)
-#' factRsample <- predictDomains(factRsample, "Dab2")
-#' domains(factRsample, "Dab2")
 setMethod("domains", "factR", function(object, ...){
     feat <- .getFeat(object, ...)
     domains <- object@domains$data
-    domains[domains$transcript_id %in% feat & domains$type == "DOMAIN",]
+    domains <- domains[domains$transcript_id %in% feat & domains$type == "DOMAIN",]
+    tibble::as_tibble(domains)
 })
 
 
@@ -513,13 +525,11 @@ setMethod("[", "factR", function(x, i, j, set = "sample"){
 #XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
 ### Transcripts ####
-#' @export
 setGeneric("plotTranscripts", function(object, ...,
                                        rescale_introns = FALSE,
                                        ncol = 1) standardGeneric("plotTranscripts"))
 
 ### Domains ####
-#' @export
 setGeneric("plotDomains", function(object, ..., ncol = 1) standardGeneric("plotDomains"))
 
 
@@ -538,14 +548,13 @@ setMethod("checkfactR", "factR", function(object){
 ## Exporters ====
 #XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
-## TODO: do up export functions (exportGTF, exportTable)
 setGeneric("exportGTF", function(object, out=getwd()) standardGeneric("exportGTF"))
 
 #' Exporting data from factRObject
 #' @param object factRObject
 #' @param out Path to output directory or path to output file. If the former,
 #' the output file will be named "factR.gtf"
-#' 
+#'
 #' @export
 #' @rdname factR-export
 setMethod("exportGTF", "factR", function(object, out=getwd()){
@@ -557,7 +566,7 @@ setGeneric("exportTable", function(object, out=getwd(), data = "AS") standardGen
 #' @param out Path to output directory or path to output file. If the former,
 #' the output file will be named "factR.gtf"
 #' @param data Set metadata to export Can be "gene", "transcript" or "AS".
-#' 
+#'
 #' @export
 #' @rdname factR-export
 setMethod("exportTable", "factR", function(object, out=getwd(), data = activeSet(object)){
@@ -566,8 +575,8 @@ setMethod("exportTable", "factR", function(object, out=getwd(), data = activeSet
 
 setGeneric("exportAll", function(object, path=getwd()) standardGeneric("exportAll"))
 #' @param object factRObject
-#' @param path Path to output directory or path to output file. 
-#' 
+#' @param path Path to output directory or path to output file.
+#'
 #' @export
 #' @rdname factR-export
 setMethod("exportAll", "factR", function(object, path=getwd()){

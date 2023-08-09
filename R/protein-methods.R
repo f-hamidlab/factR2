@@ -1,17 +1,47 @@
+#TODO: prints out AA sequence or transcript sequence?
+
 setGeneric("getAAsequence", function(object, verbose = FALSE) standardGeneric("getAAsequence"))
 
 
-#' Translate coding sequence
+#' Protein-level functions
+#'
+#' @description
+#' Upon building CDS information on custom transcripts, one can query the translated
+#' sequence of protein-coding transcripts and determine the encoding protein
+#' domains and motifs.
+#'
+#' `predictDomains` queries the HMM database ({\url{https://www.ebi.ac.uk/Tools/hmmer/search/hmmscan}})
+#' for known protein domain families using either the "superfamily" or "pfam"
+#' database. This prediction can be performed globally on all protein coding
+#' transcripts or on specific transcript families (recommended).
+#'
+#'
 #'
 #' @param factRObject
 #'
-#' @return Updated factR object
-#' @export
+#' @return Updated factRObject.
+#' `getAAsequence` stores an AAStringSet object in the factRObject class.
 #'
+#' `predictDomains` stores a dataframe of predicted protein domains in the factRObject.
+#'
+#'
+#' @export
+#' @name factR-proteins
+#' @rdname factR-proteins
 #' @examples
+#' ## Load sample factRObject and build CDS
 #' data(factRsample)
 #' factRsample <- buildCDS(factRsample)
+#'
+#' ## Get peptide sequences
 #' factRsample <- getAAsequence(factRsample)
+#'
+#' ## Predict domains of gene families
+#' factRsample <- predictDomains(factRsample, "Osmr")
+#'
+#' ## Predict domains of entire coding transcriptome
+#' ### This takes some time. Increase `ncores` where necessary
+#' factRsample <- predictDomains(factRsample)
 setMethod("getAAsequence", "factR", function(object, verbose = FALSE) {
     gtf <- object@transcriptome
     if(! "CDS" %in% gtf$type){
@@ -41,9 +71,10 @@ setMethod("getAAsequence", "factR", function(object, verbose = FALSE) {
     return(object)
 })
 
+setGeneric("predictDomains", function(object, ...,
+                                      database = "superfamily",
+                                      ncores = 4) standardGeneric("predictDomains"))
 
-#' Predict protein domains
-#'
 #' @param object factRObject
 #' @param ... One or more features to display. Can be the following:
 #' \itemize{
@@ -51,20 +82,11 @@ setMethod("getAAsequence", "factR", function(object, verbose = FALSE) {
 #'  \item{gene_name: }{Name of gene to plot}
 #'  \item{transcript_id: }{ID of transcript to plot}
 #' }
-#' @param database HMM database to query.
+#' @param database HMM database to query. Can be "superfamily" or "pfam".
 #' @param ncores Number of cores to run prediction on
 #'
-#' @return Updated factRObject
+#' @rdname factR-proteins
 #' @export
-#'
-#' @examples
-#' data(factRsample)
-#' factRsample <- buildCDS(factRsample)
-#' factRsample <- getAAsequence(factRsample)
-#' factRsample <- predictDomains(factRsample, "Osmr")
-setGeneric("predictDomains", function(object, ...,
-                                     database = "superfamily",
-                                     ncores = 4) standardGeneric("predictDomains"))
 setMethod("predictDomains", "factR", function(object,
                                               ...,
                                               database = "superfamily",
