@@ -60,8 +60,6 @@ is to be matched to reference (Default: TRUE)}
 }
 \value{
 factR object class
-
-#' @seealso \code{\link{factRObject-class}}
 }
 \description{
 Create a factR object from custom GTF transcriptome
@@ -70,4 +68,7 @@ Create a factR object from custom GTF transcriptome
 gtf <- system.file("extdata/sc_merged_sample.gtf.gz", package = "factR")
 factR.object <- createfactRObject(gtf, "vM25")
 
+}
+\seealso{
+\code{\link{factRObject-class}}
 }

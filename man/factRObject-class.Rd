@@ -10,8 +10,8 @@ A container for storing and processing custom transcriptome.
 \details{
 The factRObject is a representation of custom-assembled transcriptome data.
 Coordinate and metadata information from an input transcriptome (GTF) is
-parsed and grouped into 3 data sets which corresponds to the levels of gene,
-transcript and alternative splicing (AS). With the aid of a compatible
+parsed and grouped into 3 data Sets which corresponds to the levels of gene (genes),
+transcript (txs) and alternative splicing (ase). With the aid of a compatible
 reference genome and expression data, functional and
 comparative analyses can be performed to better understand the complexity
 of a transcriptome.
@@ -19,8 +19,8 @@ of a transcriptome.
 \section{Constructor}{
 
 \describe{
-   \item{factRObject can be easily constructed as such:}{
-      \code{\code{\link{createfactRObject}}(gtf, reference)}
+     \item{factRObject can be easily constructed as such:}{
+         \code{\code{\link{createfactRObject}}(gtf, reference)}
    }
 }
 }
@@ -29,11 +29,52 @@ of a transcriptome.
 
 Interact with a factRObject (x) the following ways:
 \describe{
-   \item{\code{summary(x)}{ : Prints preview of factRObject}
+   \item{}{
+      \code{summary(x): Prints preview of factRObject}
    }
-   \item{\code{head(x, n=6L)}{ : Prints the first 6 rows of the active set metadata}
+   \item{}{
+      \code{head(x): Prints the first 6 metadata entries of the active Set}
    }
-   \item{\code{tail(x, n=6L)}{ : Prints the last 6 rows of the active set metadata}
+   \item{}{
+      \code{tail(x): Prints the last 6 metadata entries of the active Set}
+   }
+   \item{}{
+      \code{dim(x): Prints the dimension of the active set (features x samples)}
+   }
+   \item{}{
+      \code{nrow(x): Returns the number of features of the active set}
+   }
+   \item{}{
+      \code{ncol(x): Returns the number of samples}
+   }
+}
+
+Working with Sets object:
+\describe{
+   \item{}{
+      \code{listSets(x): Lists Sets in object}
+   }
+   \item{}{
+      \code{activeSet(x): Returns the active Set of object}
+   }
+   \item{}{
+      \code{activeSet(x)<-: Change the active Set}
+   }
+}
+
+Preview Sets metadata as such:
+\describe{
+   \item{}{
+      \code{features(x): Displays metadata of active Set}
+   }
+   \item{}{
+      \code{genes(x) or gns(x): Displays gene metadata}
+   }
+   \item{}{
+      \code{transcripts(x) or txs(x): Displays transcript metadata}
+   }
+   \item{}{
+      \code{ase(x): Displays alternative splicing events metadata}
    }
 }
 }
