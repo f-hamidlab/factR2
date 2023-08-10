@@ -25,6 +25,7 @@ Below are **factR2**'s key features:
   1. Predicts protein domains on productively spliced transcripts
   2. Plots transcript architectures 
   3. Plots protein domain architectures
+  
 ## How to install
 The development version can be installed using devtools:
 ```r
@@ -32,6 +33,22 @@ The development version can be installed using devtools:
 devtools::install_github("f-hamidlab/factR2")
 ```
 
+## Quickstart on using factR2
+factR2 requires a custom-assembled transcriptome in GTF format. 
+Below is a quick-start on using factR2 using your own GTF file:
+```r
+library(factR2)
+
+# check supported genomes and take note of ID
+listSupportedGenomes()
+
+factR.object <- createfactRObject(gtf = "PATH/TO/GTF",
+                                  reference = genome_ID)
+factR.object <- runfactR(factR.object)
+
+# export annotated GTF and metadata of genes,transcripts and alternative exons
+exportAll(runfactR, path = "PATH/TO/OUTPUT")
+```
 
 
 
