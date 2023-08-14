@@ -4,15 +4,37 @@ setGeneric("addTxCounts", function(object, countData, sampleData,
 #' Expression function
 #'
 #' @description
-#' Text text
+#' A set of functions to incorporate expression data into factR object and
+#' tests regulatory potential of alternative splicing events.
+#'
+#' @details
+#' `addTxCounts` converts transcript-level expression counts into gene-level
+#' expression counts. If "psiData" is not provided, this function will determine
+#' the inclusion level of alternative splicing events (psi) for each sample
+#' by calculating the proportion of transcripts containing the splicing event
+#' over all transcripts that spans that splicing event. If "psiData" is provided,
+#' will check for common exon coordinates and non-overlapping ones detected
+#' by factR2 will be set to NA. Row names of "sampleData" dataframe can be unnamed,
+#' and this function will search for column variable corresponding to sample names.
+#' If unsuccessful or if row names of "sampleData" does not match to column names
+#' of "countData", an error will be returned.
+#'
 #'
 #'
 #' @param object factR object
 #' @param countData Matrix object containing transcript-level expression counts data.
-#' Column names
-#' @param sampleData Dataframe containing samples information.
+#' @param sampleData Dataframe containing samples information. Dataframe rows
+#' can be named to match the sample names in `countData`. If `sampleData` has no
+#' row names, function will attempt to pick the column containing sample names
+#' and assign it as rownames.
+#' @param verbose Boolean value as to whether messages should be printed (Default: TRUE)
 #'
-#' @return
+#' @rdname factR-exp
+#' @name factR-exp
+#'
+#' @return factRObject with updated counts data and samples metadata.
+#'
+#' @seealso \code{\link{runfactR}}
 #' @export
 #'
 #' @examples
