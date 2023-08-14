@@ -1,5 +1,3 @@
-#TODO: reduce warning messages during createfactRObject
-
 #' Construct factR object class
 #'
 #' @description
