@@ -1,6 +1,21 @@
 # TODO: Need to add sample data and refine this
 setGeneric("addTxCounts", function(object, countData, sampleData,
                                    verbose = TRUE) standardGeneric("addTxCounts"))
+#' Expression function
+#'
+#' @description
+#' Text text
+#'
+#'
+#' @param object factR object
+#' @param countData Matrix object containing transcript-level expression counts data.
+#' Column names
+#' @param sampleData Dataframe containing samples information.
+#'
+#' @return
+#' @export
+#'
+#' @examples
 setMethod("addTxCounts", "factR", function(object, countData, sampleData, verbose = TRUE) {
 
     # catch missing args
@@ -50,6 +65,12 @@ setMethod("addTxCounts", "factR", function(object, countData, sampleData, verbos
     # order sampleData according to samples
     if(!all(rownames(sampleData) %in% object@colData)){
         samples.col <- sapply(sampleData, function(x){all(x==samples)})
+        if(!any(samples.col)){
+            rlang::abort("
+            Unable to match sample names to samples metadata.
+            Please provide `sampleData` with row.names that
+            matches sample names in expression data")
+        }
         row.names(sampleData) <- sampleData[[names(samples.col)[samples.col]]]
     }
 
