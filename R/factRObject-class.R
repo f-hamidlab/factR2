@@ -94,12 +94,40 @@
 #'    }
 #' }
 #'
+#' If transcript-level counts data is provided, additional accessors are available:
+#' \describe{
+#'    \item{}{
+#'       \code{\code{\link{counts}}(x): View/extract counts data}
+#'    }
+#'    \item{}{
+#'       \code{\code{\link{samples}}(x)): Prints sample metadata}
+#'    }
+#'    \item{}{
+#'       \code{\code{\link{rowNames}}(x)): Print feature names of current Set}
+#'    }
+#'    \item{}{
+#'       \code{\code{\link{colNames}}(x)): Prints sample names}
+#'    }
+#'    \item{}{
+#'       \code{\code{\link{colNames}}(x))<-: Set new sample names}
+#'    }
+#'    \item{}{
+#'       \code{\code{\link{ident}}(x)): Prints default sample identity}
+#'    }
+#'    \item{}{
+#'       \code{\code{\link{ident}}(x))<-: Set new sample identity}
+#'    }
+#' }
+#'
+#'
 #
 #'
 #' @docType class
 #' @name factRObject-class
 #' @rdname factRObject-class
 #' @exportClass factR
+#'
+#' @seealso \code{\link{factR-meta}} \code{\link{factR-exp-meta}}
 #'
 #' @importFrom dplyr %>%
 #' @importFrom methods slot
@@ -426,23 +454,55 @@ setMethod("ase", "factR", function(object, ...,
 
 
 
-#' @export
+
 setGeneric("rowNames", function(object) standardGeneric("rowNames"))
+
+#' Display factR2 samples and expression data
+#'
+#' @description
+#' If expression data from multiple samples is provided,
+#' factRObject-class will store the expression values at the gene, transcript and
+#' alternative exon levels as well as samples metadata.
+#' The functions below display contents pertaining to expression and samples data:
+#'
+#'
+#' @param object factRObject
+#'
+#' @export
+#' @return
+#' \itemize{
+#'  \item{`counts`: }{Count matrix}
+#'  \item{All other functions: }{Character vector of values}
+#' }
+#'
+#' @details
+#' See \code{\link{factR-exp}} for example codes
+#'
+#'
+#' @seealso \code{\link{factR-exp}}
+#' @name factR-exp-meta
+#' @rdname factR-exp-meta
+
 setMethod("rowNames", "factR", function(object) {
     rownames(object@sets[[object@active.set]]@rowData) })
 
 
 ### Samples ####
-#' @export
 setGeneric("samples", function(object) standardGeneric("samples"))
+#' @export
+#' @rdname factR-exp-meta
 setMethod("samples", "factR", function(object) { object@colData })
 
-#' @export
 setGeneric("colNames", function(object) standardGeneric("colNames"))
+#' @export
+#' @rdname factR-exp-meta
 setMethod("colNames", "factR", function(object) { rownames(object@colData) })
 
-#' @export
+
 setGeneric("colNames<-", function(object, value) standardGeneric("colNames<-"))
+#' @export
+#' @param value New sample names. Length should match number of columns
+#' @rdname factR-exp-meta
 setMethod("colNames<-", "factR", function(object, value) {
     object@colData$old.names <- rownames(object@colData)
     rownames(object@colData) <- value
@@ -450,14 +510,25 @@ setMethod("colNames<-", "factR", function(object, value) {
 })
 
 
-#' @export
 setGeneric("ident", function(object) standardGeneric("ident"))
+#' @export
+#' @rdname factR-exp-meta
 setMethod("ident", "factR", function(object) object@active.ident)
 
 ### Counts ####
-#' @export
+
 setGeneric("counts", function(object, ..., set = NULL, slot = "data") standardGeneric("counts"))
-setMethod("counts", "factR", function(object, ..., set = NULL) {
+#' @export
+#' @param ... One or more features to display. Can be the following:
+#' \itemize{
+#'  \item{gene_id: }{ID of gene to plot}
+#'  \item{gene_name: }{Name of gene to plot}
+#'  \item{transcript_id: }{ID of transcript to plot}
+#' }
+#' @param set Set metadata to display. Can be "gene", "transcript" or "AS".
+#' @param slot Data slot to display. Can be "counts" or "data" (default)
+#' @rdname factR-exp-meta
+setMethod("counts", "factR", function(object, ..., set = NULL, slot="data") {
     if(is.null(set)){
         set <- slot(object, "active.set")
     } else if(!set %in% listSets(object)){

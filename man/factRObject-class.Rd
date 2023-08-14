@@ -93,5 +93,33 @@ structures as an interactive plot:
       \code{\code{\link{plotDomains}}(x, "gene of interest")): Plots domains}
    }
 }
+
+If transcript-level counts data is provided, additional accessors are available:
+\describe{
+   \item{}{
+      \code{\code{\link{counts}}(x): View/extract counts data}
+   }
+   \item{}{
+      \code{\code{\link{samples}}(x)): Prints sample metadata}
+   }
+   \item{}{
+      \code{\code{\link{rowNames}}(x)): Print feature names of current Set}
+   }
+   \item{}{
+      \code{\code{\link{colNames}}(x)): Prints sample names}
+   }
+   \item{}{
+      \code{\code{\link{colNames}}(x))<-: Set new sample names}
+   }
+   \item{}{
+      \code{\code{\link{ident}}(x)): Prints default sample identity}
+   }
+   \item{}{
+      \code{\code{\link{ident}}(x))<-: Set new sample identity}
+   }
+}
 }
 
+\seealso{
+\code{\link{factR-meta}} \code{\link{factR-exp-meta}}
+}

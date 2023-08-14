@@ -1,6 +1,6 @@
 setGeneric("addTxCounts", function(object, countData, sampleData,
                                    verbose = TRUE) standardGeneric("addTxCounts"))
-#' Expression function
+#' Expression/samples-related functions
 #'
 #' @description
 #' A set of functions to incorporate expression data into factR object and
