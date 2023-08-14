@@ -22,17 +22,17 @@
 
 \S4method{listSets}{factR}(object)
 
-\S4method{features}{factR}(object, ..., set = NULL)
+\S4method{features}{factR}(object, ..., set = NULL, show_more = FALSE)
 
-\S4method{genes}{factR}(object, ...)
+\S4method{genes}{factR}(object, ..., show_more = FALSE)
 
-\S4method{gns}{factR}(object, ...)
+\S4method{gns}{factR}(object, ..., show_more = FALSE)
 
-\S4method{transcripts}{factR}(object, ...)
+\S4method{transcripts}{factR}(object, ..., show_more = FALSE)
 
-\S4method{txs}{factR}(object, ...)
+\S4method{txs}{factR}(object, ..., show_more = FALSE)
 
-\S4method{ase}{factR}(object, ...)
+\S4method{ase}{factR}(object, ..., show_more = FALSE)
 
 \S4method{domains}{factR}(object, ...)
 }

@@ -1,4 +1,3 @@
-# TODO: Need to add sample data and refine this
 setGeneric("addTxCounts", function(object, countData, sampleData,
                                    verbose = TRUE) standardGeneric("addTxCounts"))
 #' Expression function
@@ -20,7 +19,6 @@ setGeneric("addTxCounts", function(object, countData, sampleData,
 #' of "countData", an error will be returned.
 #'
 #'
-#'
 #' @param object factR object
 #' @param countData Matrix object containing transcript-level expression counts data.
 #' @param sampleData Dataframe containing samples information. Dataframe rows
@@ -34,10 +32,9 @@ setGeneric("addTxCounts", function(object, countData, sampleData,
 #'
 #' @return factRObject with updated counts data and samples metadata.
 #'
-#' @seealso \code{\link{runfactR}}
+#' @seealso \code{\link{factRObject-class}}
 #' @export
 #'
-#' @examples
 setMethod("addTxCounts", "factR", function(object, countData, sampleData, verbose = TRUE) {
 
     # catch missing args
