@@ -295,7 +295,8 @@ setMethod("[[", "factR", function(x, i){
 })
 
 # feature preview with option to subset data
-setGeneric("features", function(object, ..., set = NULL) standardGeneric("features"))
+setGeneric("features", function(object, ..., set = NULL,
+                                show_more = FALSE) standardGeneric("features"))
 #' @param object factRObject
 #' @param ... One or more features to display. Can be the following:
 #' \itemize{
@@ -306,7 +307,8 @@ setGeneric("features", function(object, ..., set = NULL) standardGeneric("featur
 #' @param set Set metadata to display. Can be "gene", "transcript" or "AS".
 #' @export
 #' @rdname factR-meta
-setMethod("features", "factR", function(object, ..., set = NULL) {
+setMethod("features", "factR", function(object, ..., set = NULL,
+                                        show_more = FALSE) {
     if(is.null(set)){
         set <- slot(object, "active.set")
     } else if(!set %in% listSets(object)){
@@ -319,11 +321,19 @@ setMethod("features", "factR", function(object, ..., set = NULL) {
     feat <- .getFeat(object, ..., out = out.type)
     dat <- dat[dat[[out.type]] %in% feat,]
     #rownames(dat) <- NULL
-    return(tibble::as_tibble(dat))
+    if(!show_more){
+        .msginfo("Set `show_more to TRUE to show more info`")
+        return(tibble::as_tibble(dat))
+    } else {
+        return(dat)
+    }
+
+
 })
 
 # wrappers to quickly get genes, transcripts and AS
-setGeneric("genes", function(object, ...) standardGeneric("genes"))
+setGeneric("genes", function(object, ...,
+                             show_more = FALSE) standardGeneric("genes"))
 #' @param object factRObject
 #' @param ... One or more features to display. Can be the following:
 #' \itemize{
@@ -333,12 +343,14 @@ setGeneric("genes", function(object, ...) standardGeneric("genes"))
 #' }
 #' @export
 #' @rdname factR-meta
-setMethod("genes", "factR", function(object, ...) {
+setMethod("genes", "factR", function(object, ...,
+                                     show_more = FALSE) {
 
-    return(tibble::as_tibble(features(object,..., set="gene")))
+    return((features(object,..., set="gene")))
 })
 
-setGeneric("gns", function(object, ...) standardGeneric("gns"))
+setGeneric("gns", function(object, ...,
+                           show_more = FALSE) standardGeneric("gns"))
 #' @param object factRObject
 #' @param ... One or more features to display. Can be the following:
 #' \itemize{
@@ -348,44 +360,16 @@ setGeneric("gns", function(object, ...) standardGeneric("gns"))
 #' }
 #' @export
 #' @rdname factR-meta
-setMethod("gns", "factR", function(object, ...) {
+setMethod("gns", "factR", function(object, ...,
+                                   show_more = FALSE) {
 
-    return(tibble::as_tibble(features(object,..., set="gene")))
-})
-
-
-setGeneric("transcripts", function(object, ...) standardGeneric("transcripts"))
-#' @param object factRObject
-#' @param ... One or more features to display. Can be the following:
-#' \itemize{
-#'  \item{gene_id: }{ID of gene to plot}
-#'  \item{gene_name: }{Name of gene to plot}
-#'  \item{transcript_id: }{ID of transcript to plot}
-#' }
-#' @export
-#' @rdname factR-meta
-setMethod("transcripts", "factR", function(object, ...) {
-
-    return(tibble::as_tibble(features(object,..., set="transcript")))
-})
-
-setGeneric("txs", function(object, ...) standardGeneric("txs"))
-#' @param object factRObject
-#' @param ... One or more features to display. Can be the following:
-#' \itemize{
-#'  \item{gene_id: }{ID of gene to plot}
-#'  \item{gene_name: }{Name of gene to plot}
-#'  \item{transcript_id: }{ID of transcript to plot}
-#' }
-#' @export
-#' @rdname factR-meta
-setMethod("txs", "factR", function(object, ...) {
-
-    return(tibble::as_tibble(features(object,..., set="transcript")))
+    return((features(object,..., set="gene",
+                     show_more = show_more)))
 })
 
 
-setGeneric("ase", function(object, ...) standardGeneric("ase"))
+setGeneric("transcripts", function(object, ...,
+                                   show_more = FALSE) standardGeneric("transcripts"))
 #' @param object factRObject
 #' @param ... One or more features to display. Can be the following:
 #' \itemize{
@@ -395,9 +379,48 @@ setGeneric("ase", function(object, ...) standardGeneric("ase"))
 #' }
 #' @export
 #' @rdname factR-meta
-setMethod("ase", "factR", function(object, ...) {
+setMethod("transcripts", "factR", function(object, ...,
+                                           show_more = FALSE) {
 
-    return(tibble::as_tibble(features(object,..., set="AS")))
+    return((features(object,..., set="transcript",
+                     show_more = show_more)))
+})
+
+setGeneric("txs", function(object, ...,
+                           show_more = FALSE) standardGeneric("txs"))
+#' @param object factRObject
+#' @param ... One or more features to display. Can be the following:
+#' \itemize{
+#'  \item{gene_id: }{ID of gene to plot}
+#'  \item{gene_name: }{Name of gene to plot}
+#'  \item{transcript_id: }{ID of transcript to plot}
+#' }
+#' @export
+#' @rdname factR-meta
+setMethod("txs", "factR", function(object, ...,
+                                   show_more = FALSE) {
+
+    return((features(object,..., set="transcript",
+                     show_more = show_more)))
+})
+
+
+setGeneric("ase", function(object, ...,
+                           show_more = FALSE) standardGeneric("ase"))
+#' @param object factRObject
+#' @param ... One or more features to display. Can be the following:
+#' \itemize{
+#'  \item{gene_id: }{ID of gene to plot}
+#'  \item{gene_name: }{Name of gene to plot}
+#'  \item{transcript_id: }{ID of transcript to plot}
+#' }
+#' @export
+#' @rdname factR-meta
+setMethod("ase", "factR", function(object, ...,
+                                   show_more = FALSE) {
+
+    return((features(object,..., set="AS",
+                     show_more = show_more)))
 })
 
 
