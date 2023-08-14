@@ -258,12 +258,21 @@ createfactRObject <- function(gtf, reference,
 
 
 .prepfactR <-  function(object, matchgenes, verbose = FALSE) {
+
+    # check chromosome overlap
+    `your custom GTF` <- object@transcriptome
+    `reference annotation` <- object@reference$ranges
+    result <- factR::has_consistentSeqlevels(`your custom GTF` ,
+                                             `reference annotation`)
+
+
     #  match chromosomes
     if(verbose){
         .msgheader("Matching chromosome names")
     }
-    object@transcriptome <- factR::matchChromosomes(object@transcriptome,
-                                                    object@reference$genome)
+    object@transcriptome <- suppressWarnings(
+        factR::matchChromosomes(object@transcriptome,
+                                                    object@reference$genome))
     object@reference$ranges <- suppressWarnings(
         factR::matchChromosomes(object@reference$ranges,
                                 object@reference$ranges))
@@ -276,27 +285,29 @@ createfactRObject <- function(gtf, reference,
         }
         if("ref_gene_id" %in% colnames(as.data.frame(object@transcriptome))){
             if(verbose){
-                object@transcriptome <- factR::matchGeneInfo(object@transcriptome,
-                                                             object@reference$ranges,
-                                                             primary_gene_id = "gene_id",
-                                                             secondary_gene_id = "ref_gene_id")
-            } else {
-                object@transcriptome <- suppressMessages(
+                object@transcriptome <- suppressWarnings(
                     factR::matchGeneInfo(object@transcriptome,
                                          object@reference$ranges,
                                          primary_gene_id = "gene_id",
                                          secondary_gene_id = "ref_gene_id"))
+} else {
+                object@transcriptome <- suppressMessages(suppressWarnings(
+                    factR::matchGeneInfo(object@transcriptome,
+                                         object@reference$ranges,
+                                         primary_gene_id = "gene_id",
+                                         secondary_gene_id = "ref_gene_id")))
             }
         } else {
             if(verbose){
-                object@transcriptome <- factR::matchGeneInfo(object@transcriptome,
-                                                             object@reference$ranges,
-                                                             primary_gene_id = "gene_id")
+                object@transcriptome <- suppressWarnings(
+                    factR::matchGeneInfo(object@transcriptome,
+                                             object@reference$ranges,
+                                             primary_gene_id = "gene_id"))
             } else {
-                object@transcriptome <- suppressMessages(
+                object@transcriptome <- suppressWarnings(suppressMessages(
                     factR::matchGeneInfo(object@transcriptome,
                                          object@reference$ranges,
-                                         primary_gene_id = "gene_id"))
+                                         primary_gene_id = "gene_id")))
             }
         }
 
@@ -382,9 +393,10 @@ createfactRObject <- function(gtf, reference,
         .msgheader("Annotating novel transcripts")
     }
     gtf <- granges(object, set = "transcript")
-    newtxs <- suppressMessages(factR::subsetNewTranscripts(gtf,
-                                                           object@reference$ranges,
-                                                           refine.by = "intron"))
+    newtxs <- suppressMessages(suppressWarnings(
+        factR::subsetNewTranscripts(gtf,
+                                    object@reference$ranges,
+                                    refine.by = "intron")))
     object <- addMeta(object,
                       meta="transcript",
                       novel = ifelse(transcript_id %in% newtxs$transcript_id,
@@ -452,7 +464,7 @@ createfactRObject <- function(gtf, reference,
 
 
 
-
+    .msginfo("factRobject created!")
     object
 }
 

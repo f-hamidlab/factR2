@@ -42,14 +42,14 @@ setMethod("buildCDS", "factR", function(object, verbose = FALSE) {
     gtf <- gtf[!gtf$type %in% "CDS"]
 
     if(verbose){
-        out.gtf <- factR::buildCDS(gtf,
+        out.gtf <- suppressWarnings(factR::buildCDS(gtf,
                                slot(object, "reference")$ranges,
-                               slot(object, "reference")$genome)
+                               slot(object, "reference")$genome))
     } else {
-        out.gtf <- suppressMessages(
+        out.gtf <- suppressMessages(suppressWarnings(
             factR::buildCDS(gtf,
                             slot(object, "reference")$ranges,
-                            slot(object, "reference")$genome))
+                            slot(object, "reference")$genome)))
     }
     out.gtf <- out.gtf[out.gtf$type %in% "CDS"]
     gtf <- c(gtf, out.gtf)
