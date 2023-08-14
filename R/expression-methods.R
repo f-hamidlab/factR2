@@ -33,18 +33,25 @@ setMethod("addTxCounts", "factR", function(object, countData, sampleData, verbos
     rownames(countData) <- counts.names
 
     object@sets$transcript@counts <- countData[txs,]
-    object <- .addSampleData(object, sampleData)
+    object <- .addSampleData(object, sampleData, counts.samples)
     object <- .processCounts(object, verbose)
 
     return(object)
 })
 
 
-.addSampleData <- function(object, sampleData) {
+.addSampleData <- function(object, sampleData, samples) {
 
-    object@colData <- data.frame(row.names = rownames(sampleData))
+    # check rownames
+    object@colData <- data.frame(row.names = samples)
     object@colData$proj.ident <- object@project
     object@active.ident <- "proj.ident"
+
+    # order sampleData according to samples
+    if(!all(rownames(sampleData) %in% object@colData)){
+        samples.col <- sapply(sampleData, function(x){all(x==samples)})
+        row.names(sampleData) <- sampleData[[names(samples.col)[samples.col]]]
+    }
 
     # convert strings to factors
     coltypes <- sapply(sampleData, class)
