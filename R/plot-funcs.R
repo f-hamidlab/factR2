@@ -1,3 +1,7 @@
+# TODO: fix error where AS input raised seq.default(error)
+# TODO: fix error upon multiple gene inputs
+
+
 #' Plot exon and domain architectures
 #'
 #' @param object factR object class
