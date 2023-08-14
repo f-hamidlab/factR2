@@ -35,7 +35,9 @@ devtools::install_github("f-hamidlab/factR2")
 
 ## Quickstart on using factR2
 factR2 requires a custom-assembled transcriptome in GTF format. 
-Below is a quick-start on using factR2 using your own GTF file:
+Below is a quick-start on using factR2 using your own GTF file to output
+(1) an updated GTF file with CDS and alternative splicing information,
+(2) metadata at the gene, transcript and alternative splicing levels. 
 ```r
 library(factR2)
 
