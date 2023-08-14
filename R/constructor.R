@@ -69,12 +69,12 @@ createfactRObject <- function(gtf, reference,
                                        use_own_genome, verbose)
 
     ## Count data input
-    if(!is.null(countData)){
-        # check if sampleData and design are given
-        if(is.null(sampleData)){
-            rlang::abort("Counts data provided, but sample data missing")
-        }
-    }
+    # if(!is.null(countData)){
+    #     # check if sampleData and design are given
+    #     if(is.null(sampleData)){
+    #         rlang::abort("Counts data provided, but sample data missing")
+    #     }
+    # }
 
 
     # create new factRObject
@@ -119,7 +119,7 @@ createfactRObject <- function(gtf, reference,
     if(!is.null(countData)){
         obj <- addTxCounts(obj, countData, sampleData)
     }
-
+    .msginfo("factRobject created!")
     return(obj)
 }
 
@@ -408,7 +408,7 @@ createfactRObject <- function(gtf, reference,
     ref.gtf <- object@reference$ranges
     ref.AS <- .runAS(ref.gtf[ref.gtf$type == "exon"])
 
-    AS.id <- ase(object) %>%
+    AS.id <- ase(object, show_more = TRUE) %>%
         dplyr::mutate(id = paste0(coord,gene_id,strand,AStype)) %>%
         dplyr::mutate(id = ifelse(AStype == "AF" & strand == "+",
                                   paste0(stringr::str_replace(
@@ -458,10 +458,6 @@ createfactRObject <- function(gtf, reference,
         dplyr::pull(id)
 
     object@sets$AS@rowData$novel <- ifelse(!AS.id %in% ref.AS.id, "yes", "no")
-
-
-
-    .msginfo("factRobject created!")
     object
 }
 

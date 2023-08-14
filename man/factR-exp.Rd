@@ -2,28 +2,45 @@
 % Please edit documentation in R/expression-methods.R
 \name{factR-exp}
 \alias{factR-exp}
+\alias{testGeneCorr,factR-method}
 \title{Expression/samples-related functions}
 \usage{
-\S4method{addTxCounts}{factR}(object, countData, sampleData, verbose = TRUE)
+\S4method{addTxCounts}{factR}(object, countData, sampleData = NULL, verbose = TRUE)
+
+\S4method{testGeneCorr}{factR}(object, vst = TRUE, min_n = 3, ...)
 }
 \arguments{
 \item{object}{factR object}
 
-\item{countData}{Matrix object containing transcript-level expression counts data.}
+\item{countData}{Can be one of the following:
+\itemize{
+ \item{}{Path to local count matrix file in .tsv or .csv format}
+ \item{}{Matrix object containing transcript-level expression counts data.}
+}}
 
-\item{sampleData}{Dataframe containing samples information. Dataframe rows
+\item{sampleData}{(Optional) Dataframe containing samples information. Dataframe rows
 can be named to match the sample names in `countData`. If `sampleData` has no
 row names, function will attempt to pick the column containing sample names
 and assign it as rownames.}
 
 \item{verbose}{Boolean value as to whether messages should be printed (Default: TRUE)}
+
+\item{vst}{whether to apply variance stabilization on splicing and expression levels}
+
+\item{min_n}{minimum number of non-NA samples required for correlation testing}
+
+\item{...}{additional arguments parsed to cor.test function}
 }
 \value{
 factRObject with updated counts data and samples metadata.
+
+factRObject with updated ASE metadata
 }
 \description{
 A set of functions to incorporate expression data into factR object and
 tests regulatory potential of alternative splicing events.
+
+Correlates exon inclusion levels with gene expression levels
 }
 \details{
 `addTxCounts` converts transcript-level expression counts into gene-level
@@ -37,6 +54,37 @@ and this function will search for column variable corresponding to sample names.
 If unsuccessful or if row names of "sampleData" does not match to column names
 of "countData", an error will be returned.
 }
+\examples{
+## get path to sample GTF and expression data
+gtf <- system.file("extdata", "pb_custom.gtf.gz", package = "factR2")
+counts <- system.file("extdata", "pb_expression.tsv.gz", package = "factR2")
+
+## create factRObject with expression counts
+factRObject <- createfactRObject(gtf, "vM33", countData = counts)
+
+### This can also be done post-creation of a factR object
+\dontrun{
+factRObject <- createfactRObject(gtf, "vM33")
+factRObject <- addTxCounts(factRObject, counts)}
+
+## access counts data
+counts(factRObject)  # returns normalised expression data from current Set
+counts(factRObject, "Ptbp1")  # same as above, but only for specific genes
+counts(factRObject, "Ptbp1", set = "transcript")  # get transcript-level expression
+counts(factRObject, "Ptbp1", set = "gene") # get gene-level expression
+counts(factRObject, "Ptbp1", set = "gene", slot = "counts") # get gene-level count
+
+## access samples metadata
+samples(factRObject)
+ident(factRObject)   # prints out the current identity
+
+## run correlation between gene expression and exon inclusion
+factRObject <- testGeneCorr(factRObject)
+ase(factRObject)
+
+}
 \seealso{
-\code{\link{factRObject-class}}
+\code{\link{factRObject-class}} \code{\link{factR-exp-meta}}
+
+\code{\link{cor.test}} \code{\link{factR-exp}}
 }
