@@ -32,15 +32,14 @@
 #' automatically by default.
 #' @param match_genes Boolean value as to whether genes in custom transcriptome
 #' is to be matched to reference (Default: TRUE)
-#' @param countData (Optional) Matrix of counts data
+#' @param countData (Optional) Matrix of transcript-level counts data
 #' @param sampleData (Optional) Dataframe containing sample metadata
-#' @param psi (Optional) Matrix of splicing PSI data
 #' @param verbose Boolean value as to whether messages should be printed (Default: TRUE)
 #'
 #' @return
 #' factRObject class.
 #'
-#' @seealso \code{\link{factRObject-class}}
+#' @seealso \code{\link{factRObject-class}} \code{\link{factR-exp}}
 #'
 #' @export
 #'

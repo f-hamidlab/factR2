@@ -50,11 +50,9 @@ automatically by default.}
 \item{match_genes}{Boolean value as to whether genes in custom transcriptome
 is to be matched to reference (Default: TRUE)}
 
-\item{countData}{(Optional) Matrix of counts data}
+\item{countData}{(Optional) Matrix of transcript-level counts data}
 
 \item{sampleData}{(Optional) Dataframe containing sample metadata}
-
-\item{psi}{(Optional) Matrix of splicing PSI data}
 
 \item{verbose}{Boolean value as to whether messages should be printed (Default: TRUE)}
 }
@@ -70,5 +68,5 @@ factR.object <- createfactRObject(gtf, "vM25")
 
 }
 \seealso{
-\code{\link{factRObject-class}}
+\code{\link{factRObject-class}} \code{\link{factR-exp}}
 }
