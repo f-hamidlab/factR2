@@ -127,7 +127,7 @@ setMethod("testASNMDevents", "factR", function(object, verbose = FALSE) {
     # get reference CDS transcript for each gene
 
     if(verbose){ .msgsubinfo("Getting best reference for AS-NMD testing")}
-    ref <- .getbestref(gtf, genes)
+    ref <- .getbestref(object@reference$ranges)
 
     # run core function
     if(verbose){ .msgsubinfo("Testing AS-NMD exons")}
@@ -158,23 +158,36 @@ setMethod("testASNMDevents", "factR", function(object, verbose = FALSE) {
 })
 
 
-.getbestref <- function(x, genes) {
+.getbestref <- function(gtf) {
+    # predict NMD on reference transcripts
+    coding.tx <- unique(gtf[gtf$type=="CDS"]$transcript_id)
+    gtf <- gtf[gtf$transcript_id %in% coding.tx]
+
+    ref.nmd <- suppressMessages(factR::predictNMD(gtf, progress_bar=FALSE))
+    tx2gene <- gtf %>%
+        as.data.frame() %>%
+        dplyr::filter(type=="transcript") %>%
+        dplyr::select(transcript=transcript_id, gene_id) %>%
+        dplyr::distinct()
+
     #rlang::inform("Selecting best reference mRNAs")
     # get reference CDS transcript for each gene
     ## get sizes of cdss
-    cds.sizes <- sum(BiocGenerics::width(S4Vectors::split(x[x$type == "CDS"],
+    cds.sizes <- sum(BiocGenerics::width(S4Vectors::split(gtf[gtf$type == "CDS"],
                                                           ~transcript_id)))
     ## shortlist non NMD transcripts
-    cds.reference <- genes %>%
-        dplyr::filter(nmd == "no", novel == "no", cds == "yes") %>%
+    cds.reference <- ref.nmd %>%
+        dplyr::filter(!is.na(stop_to_lastEJ), !is_NMD) %>%
         dplyr::left_join(as.data.frame(cds.sizes) %>%
-                             tibble::rownames_to_column("transcript_id"),
-                         by = "transcript_id") %>%
+                             tibble::rownames_to_column("transcript"),
+                         by = "transcript") %>%
+        dplyr::left_join(tx2gene, by = "transcript") %>%
         dplyr::group_by(gene_id) %>%
         dplyr::slice_max(n = 1, order_by = cds.sizes, with_ties = FALSE)
 
 
-    return(x[x$transcript_id %in% cds.reference$transcript_id & x$type != "AS"])
+    return(gtf[gtf$transcript_id %in% cds.reference$transcript &
+                   gtf$type %in% c("transcript", "exon","CDS")])
 }
 
 
