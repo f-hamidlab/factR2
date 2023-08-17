@@ -1,4 +1,4 @@
-setGeneric("addTxCounts", function(object, countData, sampleData,
+setGeneric("addTxCounts", function(object, countData, sampleData=NULL, psi=NULL,
                                    verbose = TRUE) standardGeneric("addTxCounts"))
 #' Expression/samples-related functions
 #'
@@ -29,6 +29,12 @@ setGeneric("addTxCounts", function(object, countData, sampleData,
 #' can be named to match the sample names in `countData`. If `sampleData` has no
 #' row names, function will attempt to pick the column containing sample names
 #' and assign it as rownames.
+#' @param psi (Optional) Exon-level splicing inclusion data. Can be one of the following:
+#' \itemize{
+#'  \item{}{Path to local file in .tsv or .csv format}
+#'  \item{}{Matrix object}
+#' }
+#' Rownames of matrix should be in chr:start-end format
 #' @param verbose Boolean value as to whether messages should be printed (Default: TRUE)
 #'
 #' @rdname factR-exp
@@ -67,7 +73,10 @@ setGeneric("addTxCounts", function(object, countData, sampleData,
 #' factRObject <- testGeneCorr(factRObject)
 #' ase(factRObject)
 #'
-setMethod("addTxCounts", "factR", function(object, countData, sampleData=NULL, verbose = TRUE) {
+setMethod("addTxCounts", "factR", function(object, countData,
+                                           sampleData=NULL,
+                                           psi=NULL,
+                                           verbose = TRUE) {
 
     # catch missing args
     mandargs <- c("countData")
@@ -82,6 +91,9 @@ setMethod("addTxCounts", "factR", function(object, countData, sampleData=NULL, v
     object <- .expimport(object, countData, verbose)
     object <- .addSampleData(object, sampleData, verbose)
     object <- .processCounts(object, verbose)
+    if(!is.null(psi)){
+        object <- .overwritepsi(object,psi, verbose)
+    }
 
     return(object)
 })
@@ -189,7 +201,7 @@ setMethod("testGeneCorr", "factR", function(
     object@colData$proj.ident <- object@project
     object@active.ident <- "proj.ident"
 
-    if(!missing(sampleData)){
+    if(!is.null(sampleData)){
         if(verbose){ .msgsubinfo("Adding provided samples information")}
         # order sampleData according to samples
         if(!all(rownames(sampleData) %in% object@colData)){
@@ -338,7 +350,59 @@ setMethod("testGeneCorr", "factR", function(
 
 
 
+.overwritepsi  <- function(object, countData, verbose){
 
+    if(verbose){ .msgheader("Using user-defined splicing data")}
+
+    # check if a path is given
+    countDat <- NULL
+    if("matrix" %in% class(countData)){
+        if(verbose){ .msgsubinfo("Using matrix object")}
+        countDat <- as.matrix(countData)
+    } else if("character" %in% class(countData)) {
+        if(file.exists(countData)){
+            if(verbose){ .msgsubinfo("Importing from local file")}
+            # check for tsv or csv
+            ext <- tools::file_ext(stringr::str_remove(countData, ".gz"))
+            if(ext=="tsv"){
+                countDat <- as.matrix(utils::read.delim(countData))
+            } else if(ext == "csv"){
+                countDat <- as.matrix(read.csv(countData))
+            }
+        }
+    }
+    if(is.null(countDat)){
+        rlang::abort("Input to `psi` not recognized or file does not exist")
+    }
+
+    as <- object[["AS"]]$coord
+    # check input counts features
+    if(is.null(rownames(countDat))){
+        rlang::abort("Input `psi` do not have feature names")
+    }
+    if(!all(as %in% rownames(countDat))){
+        rlang::warn("Some alternative exon features are missing in psi. Setting PSI to '0'")
+
+        # get txs missing from countData
+        missing.txs <- as[!as %in% rownames(countDat)]
+        missing.countData <- matrix(0,
+                                    nrow = length(missing.txs),
+                                    ncol = ncol(countDat))
+        rownames(missing.countData) <- missing.txs
+        colnames(missing.countData) <- colnames(countDat)
+        countDat <- rbind(countDat, missing.countData)
+        countDat <- countDat[as,]
+
+    }
+
+
+    # convert counts to integer
+    countDat <- as.matrix(countDat)
+    rownames(countDat) <- object[["AS"]]$AS_id
+
+    object@sets$AS@data <- countDat
+    object
+}
 
 
 

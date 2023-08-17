@@ -5,7 +5,7 @@
 \alias{testGeneCorr,factR-method}
 \title{Expression/samples-related functions}
 \usage{
-\S4method{addTxCounts}{factR}(object, countData, sampleData = NULL, verbose = TRUE)
+\S4method{addTxCounts}{factR}(object, countData, sampleData = NULL, psi = NULL, verbose = TRUE)
 
 \S4method{testGeneCorr}{factR}(object, vst = TRUE, min_n = 3, ...)
 }
@@ -22,6 +22,13 @@
 can be named to match the sample names in `countData`. If `sampleData` has no
 row names, function will attempt to pick the column containing sample names
 and assign it as rownames.}
+
+\item{psi}{(Optional) Exon-level splicing inclusion data. Can be one of the following:
+\itemize{
+ \item{}{Path to local file in .tsv or .csv format}
+ \item{}{Matrix object}
+}
+Rownames of matrix should be in chr:start-end format}
 
 \item{verbose}{Boolean value as to whether messages should be printed (Default: TRUE)}
 
