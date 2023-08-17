@@ -32,6 +32,7 @@
 #' is to be matched to reference (Default: TRUE)
 #' @param countData (Optional) Matrix of transcript-level counts data
 #' @param sampleData (Optional) Dataframe containing sample metadata
+#' @param psi (Optional) Matrix of exon inclusion data data
 #' @param verbose Boolean value as to whether messages should be printed (Default: TRUE)
 #'
 #' @return
@@ -117,7 +118,7 @@ createfactRObject <- function(gtf, reference,
 
     # add and prep counts data if given
     if(!is.null(countData)){
-        obj <- addTxCounts(obj, countData, sampleData)
+        obj <- addTxCounts(obj, countData, sampleData, psi, verbose)
     }
     .msginfo("factRobject created!")
     return(obj)

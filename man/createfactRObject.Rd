@@ -54,6 +54,8 @@ is to be matched to reference (Default: TRUE)}
 
 \item{sampleData}{(Optional) Dataframe containing sample metadata}
 
+\item{psi}{(Optional) Matrix of exon inclusion data data}
+
 \item{verbose}{Boolean value as to whether messages should be printed (Default: TRUE)}
 }
 \value{
