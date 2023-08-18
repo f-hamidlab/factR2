@@ -20,7 +20,7 @@ is_file <- function(x){
     tools::file_ext(x) != ""
 }
 
-
+#TODO: filter genomes by keywords
 
 #' List supported genomes
 #'

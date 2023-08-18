@@ -2,7 +2,7 @@
 # Class definitions
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-#' factRObject
+#' factRObject Class
 #'
 #' @description
 #' A container for storing and processing custom transcriptome.

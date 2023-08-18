@@ -14,8 +14,17 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup}
+```{r silent.setup, echo=FALSE}
 library(factR2)
+library(tidyverse)
+library(rtracklayer)
+```
+
+
+```{r setup, eval=FALSE}
+library(factR2)
+library(tidyverse)
+library(rtracklayer)
 ```
 
 ## Introduction 
@@ -24,53 +33,182 @@ library(factR2)
 
 ### Installing factR2
 
+```{r, eval=FALSE}
+# install.packages("devtools")
+devtools::install_github("f-hamidlab/factR2")
+```
+
+
+
 ### Materials needed
+
+```{r}
+gtf.file <-  system.file("extdata/pb_custom.gtf.gz", package = "factR2")
+gtf.gr <- import(gtf.file)
+
+head(gtf.gr)
+```
+
 
 ## Using factR2
 
-
 ### Creating factRObject
+
+```{r}
+listSupportedGenomes()
+```
+```{r}
+fobj <- createfactRObject(gtf.gr, reference = "vM33")
+```
+
 ### Interacting with factRObject
+
+```{r}
+fobj
+```
+
+```{r}
+listSets(fobj)
+```
+
+
+```{r}
+activeSet(fobj) <- "transcript"
+```
+
+
+```{r}
+features(fobj)
+```
+
+```{r}
+features(fobj, "U2af1")
+```
+
+```{r}
+ase(fobj)
+ase(fobj, "U2af1")
+```
+
+```{r}
+plotTranscripts(fobj, "U2af1")
+```
+
+
+```{r}
+plotTranscripts(fobj, "U2af1", rescale_introns = T)
+```
+
 ### Running factR pipeline
+
+```{r}
+features(fobj) %>% 
+  group_by(cds) %>% 
+  tally()
+```
+
+
+
+
+```{r}
+fobj <- runfactR(fobj)
+```
+
+```{r}
+features(fobj) %>% 
+  group_by(cds) %>% 
+  tally()
+```
+
+```{r}
+features(fobj) 
+```
+
+
+```{r}
+features(fobj) %>% 
+  group_by(nmd) %>% 
+  tally()
+```
+
+```{r}
+plotTranscripts(fobj, "U2af1", rescale_introns = T)
+```
+
+
+
+
+
 ### Quantifying additional conservation scores
+
+```{r}
+fobj <- getAScons(fobj, type = "flanks", padding = 50)
+ase(fobj)
+```
+
+```{r}
+fobj <- getAScons(fobj, type = c("upstream","downstream"), padding = c(50,100))
+```
+
+Rethink of what to plot here.
+
+```{r}
+ase(fobj) %>% 
+  filter(!is.na(ASNMDtype)) %>% 
+  ggplot(aes(x=AStype,fill=ASNMDtype)) +
+  geom_bar()
+```
+
+
+### Test correlation
+
+```{r}
+counts <- system.file("extdata/pb_expression.tsv.gz", package = "factR2")
+fobj <- addTxCounts(fobj, counts)
+```
+```{r}
+fobj <- testGeneCorr(fobj, alternative="greater")
+ase(fobj) %>% 
+  mutate(corr= ifelse(gene.cor.pval < 0.05, "corr", "not-corr")) %>% 
+  group_by(ASNMDtype, AStype, corr) %>% 
+  tally()
+```
+
+```{r}
+ase(fobj) %>% 
+  filter(gene.cor.pval<0.05, 
+         ASNMDtype=="Stimulating", 
+         AStype=="CE") %>% arrange(desc(gene.cor.estimate))
+```
+
+
+Plot trend?
+
+
 ### Predicting protein domains
 
+Print AA sequence?
 
-**factR2** requires a custom-assembled transcriptome in GTF format. Below is 
-a quick-start on using **factR2** using a sample GTF file:
-
-
-```r
-library(factR2)
-
-# get path to sample GTF file
-gtf <- system.file("extdata/sc_merged_sample.gtf.gz", package = "factR")
-
-# create factRObject
-factR.object <- createfactRObject(gtf, "vM25")
-
-# interacting with factRObject
-## print out metadata of various levels
-genes(factR.object)  # gene metadata
-txs(factR.object)  # transcript metadata
-ase(factR.object)  # alternative splicing metadata
-
-## print out transcript metadata for particular genes
-txs(factR.object, "Dab2")
-txs(factR.object, "Dab2", "Osmr")  # accepts multiple input genes
-
-## View transcript isoforms
-plotTranscripts(factR.object, "Dab2")  #from specific genes
-plotTranscripts(factR.object, "ENSMUST00000078019.12") # of specific transcripts
-### to rescale introns (useful for transcripts with long introns)
-plotTranscripts(factR.object, "ENSMUST00000078019.12", rescale_introns=TRUE) 
-plotTranscripts(factR.object, "AS00179")  # of specific AS events
-
-
-# run main factR pipeline
-factR.object <- runfactR(factR.object)
-
-# export alternative splicing metadata
-exportTable(factR.object, data = "AS")
-
+```{r}
+plotDomains(fobj, "U2af1")
 ```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

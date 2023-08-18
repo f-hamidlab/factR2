@@ -3,7 +3,7 @@
 \docType{class}
 \name{factRObject-class}
 \alias{factRObject-class}
-\title{factRObject}
+\title{factRObject Class}
 \description{
 A container for storing and processing custom transcriptome.
 }

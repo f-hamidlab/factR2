@@ -98,7 +98,7 @@ setMethod("addTxCounts", "factR", function(object, countData,
     return(object)
 })
 
-
+#TODO: add msgs for testGeneCorr
 setGeneric("testGeneCorr", function(
         object,
         vst = TRUE,

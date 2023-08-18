@@ -71,6 +71,7 @@ setMethod("getAAsequence", "factR", function(object, verbose = FALSE) {
     return(object)
 })
 
+#TODO: remove ase or feature somewhere in here
 setGeneric("predictDomains", function(object, ...,
                                       database = "superfamily",
                                       ncores = 4) standardGeneric("predictDomains"))
