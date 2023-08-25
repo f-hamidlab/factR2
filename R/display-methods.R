@@ -3,13 +3,13 @@
 #TODO: split genes, transcripts and ase
 show.factR <- function(object){
     cat(sprintf("class: factRObject [version %s]\n", object@version))
-    cat(sprintf("# transcriptome: "))
+    cat(sprintf("# transcriptome:\n   "))
     ngenes <- length(object[["gene"]]$gene_id)
     ntxs <- length(object[["transcript"]]$transcript_id)
     nnovel <- sum(object[["transcript"]]$novel == "yes")
     ncds <- sum(object[["transcript"]]$cds == "yes")
-    cat(sprintf("%s genes; ", ngenes))
-    cat(sprintf("%s transcripts [%s novel]; ", ntxs, nnovel))
+    cat(sprintf("%s genes; \n   ", ngenes))
+    cat(sprintf("%s transcripts [%s novel]; \n   ", ntxs, nnovel))
     cat(sprintf("%s coding transcripts \n", ncds))
     cat(sprintf("# active set: %s\n", object@active.set))
 

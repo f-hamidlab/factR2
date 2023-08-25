@@ -70,6 +70,7 @@ Collate:
     'expression-methods.R'
     'mutate.R'
     'plot-funcs.R'
+    'plot-twoway.R'
     'plotFeatures.R'
     'plotLevels.R'
     'protein-methods.R'

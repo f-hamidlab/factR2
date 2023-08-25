@@ -280,7 +280,7 @@ createfactRObject <- function(gtf, reference,
     if(matchgenes){
         ## try find variables that contain gene ids
         if(verbose){
-            .msgheader("Matching gene names")
+            .msgheader("Matching gene information")
         }
         if("ref_gene_id" %in% colnames(as.data.frame(object@transcriptome))){
             if(verbose){
