@@ -8,3 +8,4 @@
 ._.gitignore
 .Rbuildignore
 inst/doc
+docs/
