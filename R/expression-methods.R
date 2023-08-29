@@ -144,7 +144,6 @@ setMethod("testGeneCorr", "factR", function(
     psi <- psi[AS2gene$AS_id,]
 
     if(vst){
-        .msgheader("Creating samples metadata")
         psi <- suppressWarnings(.asinTransform(psi))
         ASNMD.stim <- AS2gene$ASNMDtype == "Stimulating"
         ASNMD.stim <- tidyr::replace_na(ASNMD.stim, FALSE)
@@ -156,7 +155,7 @@ setMethod("testGeneCorr", "factR", function(
     samples <- rownames(object@colData)
 
     # run correlation
-    .msgheader(stringr::str_glue("Running correlation on {nrow(AS2gene) events}"))
+    .msgheader(stringr::str_glue("Running correlation on {nrow(AS2gene)} events"))
     out <- do.call(rbind, pbapply::pbapply(AS2gene, 1, function(dat){
         AS <- dat[1]
         gene <- dat[2]

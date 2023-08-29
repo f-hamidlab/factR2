@@ -125,7 +125,7 @@ listSupportedGenomes()
 
 With these inputs, a _factRObject_ can be created as follows:
 
-```{r, warning=FALSE}
+```{r createobj, warning=FALSE}
 fobj <- createfactRObject(gtf.file, reference = "vM33")
 ```
 
@@ -140,7 +140,7 @@ in gene annotation to the reference transcriptome.
 _factRObject_. A preview of the object's contents can be printed by typing
 the variable name:
 
-```{r}
+```{r display}
 fobj
 ```
 
@@ -153,7 +153,7 @@ data in a _factRObject_. One of these "set" data will be assigned
 as the active "set" and users may switch the active "set" using the 
 `activeSet()` function:
 
-```{r}
+```{r setactiveSet}
 activeSet(fobj) <- "transcript"
 ```
 
@@ -166,32 +166,39 @@ listSets(fobj)
 The metadata associated with the current active "set" can be displayed as a 
 dataframe using the `features()` function:
 
-```{r, message=FALSE}
+```{r printfeat, message=FALSE}
 features(fobj)
 ```
+To show more columns as an R dataframe, set `show_more` argument to TRUE:
+
+```{r printmorefeat}
+features(fobj, show_more = TRUE)
+```
+
+
 
 To display transcripts expressed from a particular gene, users can provide
 IDs or names of genes as input to the second argument of `features()`. For
 example, to query for the transcripts from U2af1 gene, we can type:
-```{r, message=FALSE}
-features(fobj, "U2af1")
+```{r printgene, message=FALSE}
+features(fobj, "U2af1", show_more = TRUE)
 ```
 
 Multiple genes can be displayed by providing additional gene names:
 
-```{r, message=FALSE}
-features(fobj, "U2af1", "U2af2")
+```{r printmoregenes, message=FALSE}
+features(fobj, "U2af1", "U2af2", show_more = TRUE)
 ```
 
 To quickly display the metadata of a different "set", users may modify the `set`
 argument:
-```{r}
-features(fobj, "U2af1", set = "AS")
+```{r printAS}
+features(fobj, "U2af1", set = "AS", show_more = TRUE)
 ```
 
 or use convenient wrapper functions (see ?`factR-meta` for more):
-```{r}
-ase(fobj, "U2af1")
+```{r printAS2}
+ase(fobj, "U2af1", show_more = TRUE)
 ```
 
 Each alternative splicing event has been assigned a internal unique ID for easy 
@@ -203,7 +210,7 @@ Alternatively, the output dataframe can be directly piped to downstream
 functions. In the example below, we show how to quickly count the
 number of events by the splicing type (AStype):
 
-```{r}
+```{r tallyAS}
 ase(fobj) %>% 
   group_by(AStype) %>% 
   tally()
@@ -214,14 +221,14 @@ ase(fobj) %>%
 on an interactive plot:
 
 
-```{r fig.height=6, fig.width=8}
+```{r plotTx, fig.height=6, fig.width=8}
 plotTranscripts(fobj, "U2af1")
 ```
 Exon structures may sometimes appear thin and inconspicuous especially when 
 flanking introns are extremely long. To focus on the exon architectures, users
 may set the `rescale_introns` argument to `TRUE`:
 
-```{r fig.height=6, fig.width=8}
+```{r plotTX2, fig.height=6, fig.width=8}
 plotTranscripts(fobj, "U2af1", rescale_introns = T)
 ```
 
@@ -239,25 +246,25 @@ custom transcripts:
 The above functions can be simultaneously performed by running the `runfactR()`
 pipeline and this will update the metadata stored within the _factRObject_:
 
-```{r warning=FALSE}
+```{r runfactR, warning=FALSE}
 fobj <- runfactR(fobj)
 ```
 
 The number of newly-identified coding transcripts is now reflected in the
 object summary:
-```{r}
+```{r dispnew}
 fobj
 ```
 Coding transcripts that are predicted to be NMD-sensitive are now annotated
 as "yes" under the column "nmd" in the transcript metadata:
 
-```{r, message=FALSE}
-features(fobj, "U2af1") 
+```{r printnewgene, message=FALSE}
+features(fobj, "U2af1", show_more = TRUE)
 ```
 
 The total number of NMD-sensitive transcripts can be queried as such:
 
-```{r}
+```{r tallynmd}
 features(fobj) %>% 
   group_by(nmd) %>% 
   tally()
@@ -265,7 +272,7 @@ features(fobj) %>%
 
 Now, `plotTranscripts()` will distinguish between CDS and untranslated region (UTR)
 segments:
-```{r fig.height=6, fig.width=8}
+```{r plotTxnew, fig.height=6, fig.width=8}
 plotTranscripts(fobj, "U2af1", rescale_introns = T)
 ```
 
@@ -276,9 +283,9 @@ these alternative exons (50 base pairs on each side),
 users may rerun the `getAScons()` function and the newly-computed scores will
 be reflected as a separate column in the "AS" set metadata:
 
-```{r}
+```{r calcnewcons}
 fobj <- getAScons(fobj, type = "flanks", padding = 50)
-ase(fobj)
+ase(fobj, show_more = TRUE)
 ```
 
 
@@ -289,14 +296,15 @@ shorter form (exon skipping) of the transcript is NMD-sensitive. Both AS-NMD eve
 types were detected in the U2af1 example:
 
 
-```{r, message=FALSE}
-ase(fobj, "U2af1")
+```{r checkASNMD, message=FALSE}
+ase(fobj, "U2af1", show_more = TRUE)
 ```
 
-This can be visually verified by plotting the transcripts: 
+This can be visually verified by running `plotTranscripts()` with coordinates
+as input: 
 
-```{r, eval=FALSE}
-plotTranscripts(fobj, "AS10419")
+```{r plotzoom, eval=TRUE}
+plotTranscripts(fobj, "chr17:31870294-31873065")
 ```
 
 To further test the regulatory function of these AS-NMD events, we can
@@ -310,7 +318,7 @@ This count matrix can be added to the _factRObject_ using the `addTxCounts()`
 function:
 
 
-```{r}
+```{r addcounts}
 counts <- system.file("extdata/pb_expression.tsv.gz", package = "factR2")
 fobj <- addTxCounts(fobj, counts)
 ```
@@ -326,7 +334,7 @@ of the correlation test by parsing addition arguments to the R `cor.test()`
 function. In the example below, we show how one would modify the `testGeneCorr()`
 function to carry out one-sided test:
 
-```{r}
+```{r testcorr}
 fobj <- testGeneCorr(fobj, alternative="greater")
 ```
 
@@ -338,15 +346,15 @@ of values for `gene.cor.estimate` are positive. In our example below,
 the AS-NMD stimulating event `AS10419` showed significant correlation with 
 U2af gene expression.
 
-```{r, message=FALSE}
-ase(fobj, "U2af1")
+```{r checkgenecor, message=FALSE}
+ase(fobj, "U2af1", show_more = TRUE)
 ```
 
 We can plot a two-way plot of U2af1 expression against AS10419 PSI values 
-using the `.plot2way` function:
+using the `plot2way()` function:
 
 
-```{r, eval=TRUE}
+```{r plotcorr, eval=TRUE}
 plot2way(fobj, x="AS10419", y="U2af1", plot_trend=TRUE)
 ```
 
@@ -360,7 +368,7 @@ simultaneously. To quickly explore and visualise the output of the
 For example, the following will predict domain structure for all transcripts
 of the U2af1 gene:
 
-```{r fig.height=6, fig.width=8}
+```{r plotdom, fig.height=6, fig.width=8, message=FALSE}
 plotDomains(fobj, "U2af1")
 ```
 
