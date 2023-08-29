@@ -1,6 +1,5 @@
 #' @include factRObject-class.R
 
-#TODO: split genes, transcripts and ase
 show.factR <- function(object){
     cat(sprintf("class: factRObject [version %s]\n", object@version))
     cat(sprintf("# transcriptome:\n   "))

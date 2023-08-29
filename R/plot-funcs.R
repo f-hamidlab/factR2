@@ -1,12 +1,10 @@
-# TODO: fix error where AS input raised seq.default(error)
-# TODO: fix error upon multiple gene inputs
 # TODO: change track colours
 # TODO: change arrow design
 
 #' Plot exon and domain architectures
 #'
 #' @param object factR object class
-#' @param ... One or more features to plot. Can be the following:
+#' @param ... Feature to plot. Can be the following:
 #' \itemize{
 #'  \item{gene_id: }{ID of gene to plot}
 #'  \item{gene_name: }{Name of gene to plot}
@@ -58,7 +56,7 @@ setMethod("plotTranscripts", "factR", function(object, ...,
         x <- x[x$gene_name %in% genes & !x$type %in% c("AS", "gene")]
         xrange <-  stringr::str_split(..., ":|-")[[1]][c(2,3)]
     } else if(stringr::str_detect(..., "^AS[0-9]{5}")) {
-        exon <- ase(object)[...,]
+        exon <- object@sets$AS@rowData[...,]
         x <- x[x$gene_id %in% exon$gene_id & !x$type %in% c("AS", "gene")]
         xrange <-  stringr::str_split(exon$coord, ":|-")[[1]][c(2,3)]
 
@@ -109,7 +107,6 @@ setMethod("plotTranscripts", "factR", function(object, ...,
 
 # TODO: color reference transcript
 
-
 #' @param object factR object class
 #' @param ... One or more features to plot. Can be the following:
 #' \itemize{
@@ -130,7 +127,7 @@ setMethod("plotDomains", "factR", function(object, ..., ncol = 1){
 
 
     # get transcripts to test
-    genetxs <- features(object, ..., set = "transcript")
+    genetxs <- features(object, ..., set = "transcript", show_more = T)
     genetxs$gene_name <- ifelse(is.na(genetxs$gene_name), genetxs$gene_id, genetxs$gene_name)
     txs <- genetxs$transcript_id
 
@@ -274,6 +271,9 @@ setMethod("plotDomains", "factR", function(object, ..., ncol = 1){
             dplyr::mutate(new.end = new.start +width) %>%
             GenomicRanges::makeGRangesFromDataFrame(keep.extra.columns = T)
 
+
+
+
         exons <- gtf[gtf$type != "transcript"]
         new.gtf <- IRanges::mergeByOverlaps(exons, new.gtf) %>%
            as.data.frame() %>%
@@ -296,6 +296,10 @@ setMethod("plotDomains", "factR", function(object, ..., ncol = 1){
                              by = "transcript_id") %>%
             GenomicRanges::makeGRangesFromDataFrame(keep.extra.columns = T)
         gtf <- c(tx.gtf, new.gtf)
+        if(!is.null(xrange)){
+            xrange <- NULL
+        }
+
     }
 
     gtf <- as.data.frame(gtf)

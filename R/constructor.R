@@ -275,7 +275,6 @@ createfactRObject <- function(gtf, reference,
         factR::matchChromosomes(object@reference$ranges,
                                 object@reference$ranges))
 
-    #TODO: check why output messages are not formatted correctly
     # match gene ID if requested
     if(matchgenes){
         ## try find variables that contain gene ids

@@ -627,6 +627,10 @@ setGeneric("plotTranscripts", function(object, ...,
 setGeneric("plotDomains", function(object, ..., ncol = 1) standardGeneric("plotDomains"))
 
 
+### Two-way ####
+setGeneric("plot2way", function(object, x, y,
+                                   plot_trend = FALSE) standardGeneric("plot2way"))
+
 #XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 ## Validty ====
 #XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
@@ -641,6 +645,9 @@ setMethod("checkfactR", "factR", function(object){
 #XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 ## Exporters ====
 #XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+#TODO: export sequence?
+#TODO: export domains?
 
 setGeneric("exportGTF", function(object, out=getwd()) standardGeneric("exportGTF"))
 
