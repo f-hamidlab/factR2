@@ -38,5 +38,5 @@ devtools::install_github("f-hamidlab/factR2")
 ## Getting started
 
 See our 
-[full vignette](https://htmlpreview.github.io/?https://github.com/f-hamidlab/factR2/blob/master/vignettes/factR2.html) 
+[full vignette](https://f-hamidlab.github.io/factR2.html) 
 on how to use **factR2**.
