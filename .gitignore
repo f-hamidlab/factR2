@@ -9,3 +9,6 @@
 .Rbuildignore
 inst/doc
 docs/
+../f-hamidlab.github.io/factR2
+_pkgdown.yml
+vignettes/
