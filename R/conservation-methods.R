@@ -41,6 +41,7 @@ setGeneric("getAScons", function(
 #'
 #' @rdname getASCons
 #' @examples
+#' \dontrun{
 #' ## Load sample factRObject
 #' data(factRsample)
 #'
@@ -61,7 +62,7 @@ setGeneric("getAScons", function(
 #'
 #' ### 50bp Beginningg
 #' factRsample <- getAScons(factRsample, type = "upstream", padding = -50)
-#'
+#'}
 setMethod("getAScons", "factR", function(
           object,
           db = "phastCons",
