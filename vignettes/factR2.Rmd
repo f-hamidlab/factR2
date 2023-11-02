@@ -25,7 +25,7 @@ knitr::opts_knit$set(width=75)
 
 # library load
 library(factR2)
-library(tidyverse)
+library(dplyr)
 library(rtracklayer)
 ```  
 
@@ -95,7 +95,7 @@ The following packages are required to perform this workflow:
 
 ```{r loaddep, eval=FALSE}
 library(factR2)
-library(tidyverse)
+library(dplyr)
 ```
 
 ### Creating a _factRObject_
