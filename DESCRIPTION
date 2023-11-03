@@ -38,6 +38,7 @@ Suggests:
     IRanges,
     RCurl,
     S4Vectors,
+    phastCons35way.UCSC.mm39,
     rmarkdown
 VignetteBuilder: knitr
 LazyData: FALSE
