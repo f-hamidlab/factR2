@@ -190,6 +190,8 @@ setMethod("getAScons", "factR", function(
 
                 # check if db is installed
                 if(db %in% rownames(installed.packages())){
+                    .msgsubinfo(sprintf("Loading %s database",
+                                        db))
                     suppressPackageStartupMessages(require(db, character.only = T,
                                                            quietly = TRUE))
                     return(get(db))
