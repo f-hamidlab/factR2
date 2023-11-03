@@ -24,6 +24,8 @@ setGeneric("getAScons", function(
 #' @param type Feature to quantify conservation. Can be one of the following:
 #' \itemize{
 #'  \item{"exon"}{ : Sequence conservation of the entire exon}
+#'  \item{"intron"}{ : Sequence conservation of introns flanking exons. In the
+#'  case of intron retention events, the ends of the sequence will be scored}
 #'  \item{"flanks"}{ : Conservation of sequences flanking exons}
 #'  \item{"upstream"}{ : Conservation of sequences upstream of exons}
 #'  \item{"downstream"}{ : Conservation of sequences downstream of exons}
