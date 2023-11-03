@@ -43,7 +43,7 @@ setGeneric("getAScons", function(
 #'
 #' @rdname getASCons
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' ## Load sample factRObject
 #' data(factRsample)
 #'
@@ -76,7 +76,7 @@ setMethod("getAScons", "factR", function(
 
 .getASGScores <- function(object, db = "phastCons", type = "exon", padding = 50){
 
-    acceptedtypes <- c("exon","upstream", "downstream","flanks")
+    acceptedtypes <- c("exon","upstream", "downstream","flanks", "intron")
     if(!all(type %in% acceptedtypes)){
         unacceptedtype <- paste0(type[!type %in% acceptedtypes], collapse = ",")
         rlang::abort(stringr::str_glue("Input type(s) `{unacceptedtype}` not recognised"))
@@ -113,35 +113,39 @@ setMethod("getAScons", "factR", function(
         ConsScoresDF <- tryCatch(
             {
                 if(thistype == "flanks"){
-                    AS.exons.start <- GenomicRanges::flank(AS.exons, start = TRUE, width = thispadding, both = F)
-                    AS.exons.end <- GenomicRanges::flank(AS.exons, start = FALSE, width = thispadding, both = F)
+                    .scoreFlanks(AS.exons, thispadding, consDB)
 
-                    AS.exons.start <- GenomicScores::gscores(consDB, AS.exons.start)
-                    AS.exons.end <- GenomicScores::gscores(consDB, AS.exons.end)
-
-                    scores <- rowMeans(cbind(AS.exons.start$default,
-                                             AS.exons.end$default),
-                                       na.rm = TRUE)
-                    data.frame(scores = scores,
-                               row.names = AS.exons$AS_id)
                 } else if(thistype == "upstream"){
-                    AS.exons.start <- GenomicRanges::flank(AS.exons, start = TRUE, width = thispadding, both = F)
-                    AS.exons.start <- GenomicScores::gscores(consDB, AS.exons.start)
+                    .scoreUp(AS.exons, thispadding, consDB)
 
-                    data.frame(scores = AS.exons.start$default,
-                               row.names = AS.exons$AS_id)
 
                 } else if(thistype == "downstream"){
-                    AS.exons.end <- GenomicRanges::flank(AS.exons, start = FALSE, width = thispadding, both = F)
-                    AS.exons.end <- GenomicScores::gscores(consDB, AS.exons.end)
+                    .scoreDn(AS.exons, thispadding, consDB)
 
-                    data.frame(scores = AS.exons.end$default,
-                               row.names = AS.exons$AS_id)
 
                 } else if(thistype == "exon"){
                     scores <- GenomicScores::gscores(consDB, AS.exons+thispadding)
                     data.frame(scores = scores$default,
                                row.names = AS.exons$AS_id)
+                } else if(thistype == "intron"){
+                    AS.exons.by.AStype <- S4Vectors::split(AS.exons, ~AStype)
+
+                    do.call(rbind, lapply(names(AS.exons.by.AStype), function(type){
+                        this.exons <- AS.exons.by.AStype[[type]]
+                        if(type == "CE"){
+                            .scoreFlanks(this.exons, thispadding, consDB)
+
+                        } else if(type %in%  c("AA", "AL")){
+                            .scoreUp(this.exons, thispadding, consDB)
+
+                        } else if(type %in% c("AD", "AF")){
+                            .scoreDn(this.exons, thispadding, consDB)
+
+                        } else if(type == "RI"){
+                            .scoreFlanks(this.exons, -thispadding, consDB)
+                        }
+                    }))
+
                 } else {
                     rlang::abort()
                 }
@@ -183,6 +187,29 @@ setMethod("getAScons", "factR", function(
                 # TODO: check this upon adding other genomes
                 data("genomes")
                 db <- genomes[genomes$build == build,ConsScore][[1]]
+
+                # check if db is installed
+                if(db %in% rownames(installed.packages())){
+                    suppressPackageStartupMessages(require(db, character.only = T,
+                                                           quietly = TRUE))
+                    return(get(db))
+                }
+                # prompt to download database if available
+                if(db %in% suppressMessages(BiocManager::available())){
+                    .msgsubinfo(stringr::str_glue(
+                        "The GScore database '{db}' is available
+                for this annotation. Do you wish to download? [Y/N]"))
+                    resp <- stringr::str_to_upper(readline(prompt=""))
+                    if(resp=="Y"){
+                        suppressMessages(BiocManager::install(db,
+                                                              quiet=TRUE,
+                                                              ask=FALSE))
+                        return(get(db))
+
+                    }
+
+                }
+
                 if(!is.na(db)){
                     .msgsubinfo(sprintf("Retrieving %s scores",
                                         db))
@@ -227,4 +254,35 @@ setMethod("getAScons", "factR", function(
         .msgsubwarn("`db` input not recognised")
         return(NULL)
     }
+}
+
+
+.scoreFlanks <- function(AS.exons, thispadding, consDB){
+    AS.exons.start <- GenomicRanges::flank(AS.exons, start = TRUE, width = thispadding, both = F)
+    AS.exons.end <- GenomicRanges::flank(AS.exons, start = FALSE, width = thispadding, both = F)
+
+    AS.exons.start <- GenomicScores::gscores(consDB, AS.exons.start)
+    AS.exons.end <- GenomicScores::gscores(consDB, AS.exons.end)
+
+    scores <- rowMeans(cbind(AS.exons.start$default,
+                             AS.exons.end$default),
+                       na.rm = TRUE)
+    data.frame(scores = scores,
+               row.names = AS.exons$AS_id)
+}
+
+.scoreUp <- function(AS.exons, thispadding, consDB){
+    AS.exons.start <- GenomicRanges::flank(AS.exons, start = TRUE, width = thispadding, both = F)
+    AS.exons.start <- GenomicScores::gscores(consDB, AS.exons.start)
+
+    data.frame(scores = AS.exons.start$default,
+               row.names = AS.exons$AS_id)
+}
+
+.scoreDn <- function(AS.exons, thispadding, consDB){
+    AS.exons.end <- GenomicRanges::flank(AS.exons, start = FALSE, width = thispadding, both = F)
+    AS.exons.end <- GenomicScores::gscores(consDB, AS.exons.end)
+
+    data.frame(scores = AS.exons.end$default,
+               row.names = AS.exons$AS_id)
 }
