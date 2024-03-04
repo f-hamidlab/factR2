@@ -273,7 +273,8 @@ createfactRObject <- function(gtf, reference,
                                                     object@reference$genome))
     object@reference$ranges <- suppressWarnings(
         factR::matchChromosomes(object@reference$ranges,
-                                object@reference$ranges))
+                                object@reference$genome))
+    # Todo: Fixed bug above
 
     # match gene ID if requested
     if(matchgenes){
@@ -309,9 +310,14 @@ createfactRObject <- function(gtf, reference,
             }
         }
 
+    } else {
+        object@transcriptome$match_level <- NA
+        object@transcriptome$old_gene_id <- NA
+        object@transcriptome$ref_gene_id <- NA
     }
 
 
+    # TODO: added old_gene_id into gene meta. change this on changelog
     # Add 'gene' type in GTF
     if(!"gene" %in% object@transcriptome$type){
         genes.gtf <- object@transcriptome
@@ -321,7 +327,7 @@ createfactRObject <- function(gtf, reference,
             dplyr::arrange(dplyr::desc(match_level)) %>%
             dplyr::distinct(gene_id, gene_name, .keep_all = T) %>%
             dplyr::ungroup() %>%
-            dplyr::select(gene_id, gene_name, match_level)
+            dplyr::select(gene_id, gene_name, old_gene_id, match_level)
         genes.list <- range(
             S4Vectors::split(genes.gtf[genes.gtf$type %in% "transcript"],
                              ~gene_id))
@@ -351,7 +357,7 @@ createfactRObject <- function(gtf, reference,
     object@sets$gene <- methods::new("factRset")
     object@sets$gene@rowData <- as.data.frame(object@transcriptome) %>%
         dplyr::filter(type %in% "gene") %>%
-        dplyr::select(gene_id, gene_name, strand, width, match_level) %>%
+        dplyr::select(gene_id, gene_name, strand, width, old_gene_id, match_level) %>%
         dplyr::distinct()
     rownames(object@sets$gene@rowData) <- object@sets$gene@rowData$gene_id
     object@sets$gene@counts <- as.matrix(data.frame(row.names =  rownames(object[["gene"]])))
