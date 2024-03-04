@@ -173,6 +173,7 @@ setMethod("getAScons", "factR", function(
 }
 
 
+# TODO: handle genomes without GenomeDB scores
 .GScorecheck <- function(ConsScore, build){
     if("character" %in% is(ConsScore)){
 
@@ -188,65 +189,96 @@ setMethod("getAScons", "factR", function(
                 data("genomes")
                 db <- genomes[genomes$build == build,ConsScore][[1]]
 
-                # check if db is installed
-                if(db %in% rownames(installed.packages())){
-                    .msgsubinfo(sprintf("Loading %s database",
-                                        db))
-                    suppressPackageStartupMessages(require(db, character.only = T,
-                                                           quietly = TRUE))
-                    return(get(db))
-                }
-                # prompt to download database if available
-                if(db %in% suppressMessages(BiocManager::available())){
-                    .msgsubinfo(stringr::str_glue(
-                        "The GScore database '{db}' is available
-                for this annotation. Do you wish to download? [Y/N]"))
-                    resp <- stringr::str_to_upper(readline(prompt=""))
-                    if(resp=="Y"){
-                        suppressMessages(BiocManager::install(db,
-                                                              quiet=TRUE,
-                                                              ask=FALSE))
-                        return(get(db))
-
-                    }
-
-                }
-
-                if(!is.na(db)){
-                    .msgsubinfo(sprintf("Retrieving %s scores",
-                                        db))
-                    phast <- suppressMessages(GenomicScores::getGScores(db))
-                    return(phast)
-                } else {
-                    # raise warning and skip gscoring
-                    .msgsubwarn(stringr::str_glue("GScore database for {build} is unavailable"))
+                # return if db is an empty string
+                if(db == "" | is.na(db)){
+                    org <- genomes[genomes$build == build,build][[1]]
+                    .msgsubwarn(stringr::str_glue("Conservation scores for {org} is unavailable"))
                     return(NULL)
                 }
+                .msgsubinfo(sprintf("Getting %s database",db))
+                db <- tryCatch(
+                    {
+
+                        suppressPackageStartupMessages(require(db, character.only = T,
+                                                               quietly = TRUE))
+                        return(get(db))
+                    },
+                    error = function(cond){
+                        GScoresList <- rownames(GenomicScores::availableGScores())
+                        if(db %in% GScoresList){
+
+
+                            suppressMessages(GenomicScores::getGScores(db))
+                        } else {
+                            # raise warning and skip gscoring
+                            .msgsubwarn(stringr::str_glue("GScore database for {build} is unavailable"))
+                            return(NULL)
+                        }
+                    })
+                return(db)
+
+
+                ### OLD code to chek for
+                # # check if db is installed
+                # if(db %in% rownames(installed.packages())){
+                #     .msgsubinfo(sprintf("Loading %s database",
+                #                         db))
+                #     suppressPackageStartupMessages(require(db, character.only = T,
+                #                                            quietly = TRUE))
+                #     return(get(db))
+                # }
+                # # prompt to download database if available
+                # if(db %in% suppressMessages(BiocManager::available())){
+                #     .msgsubinfo(stringr::str_glue(
+                #         "The GScore database '{db}' is available
+                # for this annotation. Do you wish to download? [Y/N]"))
+                #     resp <- stringr::str_to_upper(readline(prompt=""))
+                #     if(resp=="Y"){
+                #         suppressMessages(BiocManager::install(db,
+                #                                               quiet=TRUE,
+                #                                               ask=FALSE))
+                #         return(get(db))
+                #
+                #     }
+                #
+                # }
+                #
+                # if(!is.na(db)){
+                #     .msgsubinfo(sprintf("Retrieving %s scores",
+                #                         db))
+                #     phast <- suppressMessages(GenomicScores::getGScores(db))
+                #     return(phast)
+                # } else {
+                #     # raise warning and skip gscoring
+                #     .msgsubwarn(stringr::str_glue("GScore database for {build} is unavailable"))
+                #     return(NULL)
+                # }
+
             }
 
         } else{
             ## try loading GScore package
-            phast <- tryCatch(
+            .msgsubinfo(sprintf("Getting %s database",ConsScore))
+            db <- tryCatch(
                 {
-                    library(ConsScore, character.only = T )
-                    .msgsubinfo(sprintf("Loaded %s package",
-                                        ConsScore))
-                    get(ConsScore)
+
+                    suppressPackageStartupMessages(require(ConsScore, character.only = T,
+                                                           quietly = TRUE))
+                    return(get(ConsScore))
                 },
                 error = function(cond){
                     GScoresList <- rownames(GenomicScores::availableGScores())
                     if(ConsScore %in% GScoresList){
-                        .msgsubinfo(sprintf("Retrieving %s package",
-                                            ConsScore))
+
 
                         suppressMessages(GenomicScores::getGScores(ConsScore))
                     } else {
-                        rlang::abort(sprintf("%s score database not found",
-                                             ConsScore))
+                        # raise warning and skip gscoring
+                        .msgsubwarn(stringr::str_glue("GScore database for {build} is unavailable"))
                         return(NULL)
                     }
                 })
-            return(phast)
+            return(db)
         }
     }
     else if("GScores" %in% is(ConsScore)){
