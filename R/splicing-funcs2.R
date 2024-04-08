@@ -1,4 +1,4 @@
-.findAS2 <- function(gtf){
+.runAS2 <- function(gtf){
    
   ## Check for GenomicRanges object or a valid GTF file 
   if(!class(gtf) %in% "GRanges"){
