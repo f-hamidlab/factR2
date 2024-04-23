@@ -2,6 +2,12 @@
     gtf <- slot(object, "transcriptome")
     gtf <- c(gtf[gtf$type != "AS"], .runAS(gtf[gtf$type == "exon"]))
     slot(object, "transcriptome") <- gtf
+    object@sets$AS@rowData <- as.data.frame(object@transcriptome) %>%
+      dplyr::filter(type %in% "AS") %>%
+      dplyr::mutate(coord = paste0(seqnames, ":", start, "-", end)) %>%
+      dplyr::select(AS_id, gene_id, gene_name, coord, AStype, strand, width) %>%
+      dplyr::distinct() %>%
+      dplyr::mutate(AStype = factor(AStype, levels = c("CE", "AD","AA","AF","AL","RI")))
     return(object)
 }
 

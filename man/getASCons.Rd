@@ -14,6 +14,8 @@
 \item{type}{Feature to quantify conservation. Can be one of the following:
 \itemize{
  \item{"exon"}{ : Sequence conservation of the entire exon}
+ \item{"intron"}{ : Sequence conservation of introns flanking exons. In the
+ case of intron retention events, the ends of the sequence will be scored}
  \item{"flanks"}{ : Conservation of sequences flanking exons}
  \item{"upstream"}{ : Conservation of sequences upstream of exons}
  \item{"downstream"}{ : Conservation of sequences downstream of exons}
@@ -43,6 +45,7 @@ on both sides of the exon to include in the quantification. If `type` is
 of intronic sequnce to
 }
 \examples{
+\donttest{
 ## Load sample factRObject
 data(factRsample)
 
@@ -57,13 +60,13 @@ factRsample <- getAScons(factRsample, type = "flanks", padding = 100)
 factRsample <- getAScons(factRsample, type = "upstream", padding = 50)
 
 ## To quantify conservation of sequences at the beginning and/or at the
-end of an exon
+## end of an exon
 ### 50bp Beginning and ending
 factRsample <- getAScons(factRsample, type = "flanks", padding = -50)
 
 ### 50bp Beginningg
 factRsample <- getAScons(factRsample, type = "upstream", padding = -50)
-
+}
 }
 \seealso{
 \code{\link{runfactR}}

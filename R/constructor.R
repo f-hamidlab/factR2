@@ -381,13 +381,8 @@ createfactRObject <- function(gtf, reference,
         .msgsubinfo("Adding alternative splicing information")
     }
     object@sets$AS <- methods::new("factRset")
-    object <- .findAS(object)
-    object@sets$AS@rowData <- as.data.frame(object@transcriptome) %>%
-        dplyr::filter(type %in% "AS") %>%
-        dplyr::mutate(coord = paste0(seqnames, ":", start, "-", end)) %>%
-        dplyr::select(AS_id, gene_id, gene_name, coord, AStype, strand, width) %>%
-        dplyr::distinct() %>%
-        dplyr::mutate(AStype = factor(AStype, levels = c("CE", "AD","AA","AF","AL","RI")))
+    object <- .findAS2(object)
+
     rownames(object@sets$AS@rowData) <- object@sets$AS@rowData$AS_id
     object@sets$AS@counts <- as.matrix(data.frame(row.names =  rownames(object[["AS"]])))
     object@sets$AS@data <- as.matrix(data.frame(row.names =  rownames(object[["AS"]])))
@@ -413,7 +408,7 @@ createfactRObject <- function(gtf, reference,
         .msgheader("Annotating novel AS events")
     }
     ref.gtf <- object@reference$ranges
-    ref.AS <- .runAS(ref.gtf[ref.gtf$type == "exon"])
+    ref.AS <- .runAS2(ref.gtf[ref.gtf$type == "exon"])
 
     AS.id <- ase(object, show_more = TRUE) %>%
         dplyr::mutate(id = paste0(coord,gene_id,strand,AStype)) %>%

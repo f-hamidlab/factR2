@@ -58,7 +58,7 @@ setGeneric("getAScons", function(
 #' factRsample <- getAScons(factRsample, type = "upstream", padding = 50)
 #'
 #' ## To quantify conservation of sequences at the beginning and/or at the
-#' end of an exon
+#' ## end of an exon
 #' ### 50bp Beginning and ending
 #' factRsample <- getAScons(factRsample, type = "flanks", padding = -50)
 #'

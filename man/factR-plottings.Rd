@@ -43,6 +43,8 @@ extremely long introns, this will place emphasis on the exon architectures}
  \item{sample: }{Column name from sample metadata}
 }}
 
+\item{y}{Same as x}
+
 \item{plot_trend}{Whether to plot trendline (Default: FALSE)}
 }
 \value{

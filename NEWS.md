@@ -21,3 +21,6 @@
 to download available databases.
 
     
+# factR2 0.99.3
+
+* Improved method to classify alternative splicing events
