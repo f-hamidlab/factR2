@@ -74,20 +74,25 @@
   # trim-off TS and TE
   x %>%
     as.data.frame() %>%
+    dplyr::mutate(transcript_to_name = transcript_id) %>%
     dplyr::group_by(transcript_id) %>%
     dplyr::arrange(start) %>%
     dplyr::mutate(pos = dplyr::row_number()) %>%
-    dplyr::mutate(pos = dplyr::case_when(pos == 1 ~ "first",
-                                         pos == dplyr::n() ~ "last",
-                                         .default = "a.internal")) %>%
+    dplyr::mutate(pos = ifelse(pos == 1, "first",
+                               ifelse(pos == dplyr::n(),
+                                      "last","a.internal"))) %>%
     dplyr::group_by(seqnames, end, gene_id) %>%
     dplyr::arrange(pos, start) %>%
-    dplyr::mutate(start = ifelse(pos == "first", start[1], start)) %>%
+    dplyr::mutate(new.start = ifelse(pos == "first", start[1], start)) %>%
+    dplyr::mutate(transcript_to_name = ifelse(start != new.start, "", transcript_to_name)) %>%
+    dplyr::mutate(start = new.start) %>%
     dplyr::group_by(seqnames, start, gene_id) %>%
     dplyr::arrange(dplyr::desc(pos), dplyr::desc(end)) %>%
-    dplyr::mutate(end = ifelse(pos == "last", end[dplyr::n()], end)) %>%
+    dplyr::mutate(new.end = ifelse(pos == "last", end[dplyr::n()], end)) %>%
+    dplyr::mutate(transcript_to_name = ifelse(end != new.end, "", transcript_to_name)) %>%
+    dplyr::mutate(end = new.end) %>%
     dplyr::ungroup() %>%
-    dplyr::select(-pos) %>%
+    dplyr::select(-pos,-new.end,-new.start) %>%
     dplyr::arrange(seqnames, gene_id, transcript_id, start) %>%
     GenomicRanges::makeGRangesFromDataFrame(keep.extra.columns = T)
 
@@ -98,13 +103,12 @@
   y <- x %>%
     as.data.frame() %>%
     dplyr::group_by(transcript_id) %>%
-    dplyr::mutate(exon_pos = dplyr::case_when(
-      start==min(start) ~ "first",
-      end==max(end)  ~ "last",
+    dplyr::mutate(exon_pos = ifelse(
+      start==min(start), "first",
+      ifelse(end==max(end), "last", "internal"
       # start==min(start) & strand == "-" ~ "last",
       # end==max(end) & strand == "-" ~ "first",
-      .default = "internal"
-    ))
+    )))
   x$exon_pos <- y$exon_pos
   return(x)
 }
@@ -131,8 +135,9 @@
     as.data.frame() %>%
     dplyr::select(order = first.order,
                   gene_name = second.gene_name,
-                  transcript_id = second.transcript_id,
+                  transcript_id = second.transcript_to_name,
                   exon_pos = second.exon_pos) %>%
+    dplyr::filter(transcript_id != "") %>%
     dplyr::mutate(exon_pos = factor(exon_pos, c("internal", "first","last"))) %>%
     dplyr::group_by(order) %>%
     dplyr::arrange(exon_pos) %>%
@@ -283,12 +288,12 @@
   # classify events based on exon_pos and presence of Upstream and Downstream junc
   # the last bit handles AD and AA events on the negative strand
   x.classified <- x.pivoted %>%
-    dplyr::mutate(AStype = dplyr::case_when(
-      Skipped & Downstream & Upstream ~"CE",
-      Skipped & Downstream & exon_pos=="first" & !common.edge ~ "Af",
-      Skipped & Upstream & exon_pos=="last" & !common.edge~ "Al",
-      Skipped & Downstream & common.edge ~ "Ad",
-      Skipped & Upstream & common.edge ~ "Aa"
+    dplyr::mutate(AStype =
+                    ifelse(Skipped & Downstream & Upstream , "CE",
+                    ifelse(Skipped & Downstream & exon_pos=="first" & !common.edge, "Af",
+                    ifelse(Skipped & Upstream & exon_pos=="last" & !common.edge, "Al",
+                    ifelse(Skipped & Downstream & common.edge, "Ad",
+                    ifelse(Skipped & Upstream & common.edge, "Aa",""))))
     )) %>%
     dplyr::mutate(AStype = ifelse(strand == "-", chartr("adfl", "dalf", AStype), AStype)) %>%
     dplyr::mutate(AStype = toupper(AStype)) %>%
@@ -320,7 +325,7 @@
 
 .prepASgtf <- function(x){
   x %>%
-    tidyr::separate(exon_coord, c("seqnames", "start", "end")) %>%
+    tidyr::separate(exon_coord, c("seqnames", "start", "end"), sep = ":|-") %>%
     dplyr::mutate(transcript_id = stringr::str_split(transcript_ids, ";")) %>%
     dplyr::mutate(type="AS") %>%
     dplyr::select(seqnames, start, end, gene_id, type, gene_name, transcript_id,
