@@ -132,7 +132,7 @@ setMethod("testGeneCorr", "factR", function(
 
     # TODO: test if all genes/events are in object
     psi <- object@sets$AS@data
-    n.psi.NA <- rowSums(!is.na(psi))
+    n.psi.NA <- rowSums(!is.nan(psi))
     passed.ASevents <- names(n.psi.NA[n.psi.NA >= min_n])
 
     normexp <- object@sets$gene@data
@@ -159,6 +159,7 @@ setMethod("testGeneCorr", "factR", function(
     out <- do.call(rbind, pbapply::pbapply(AS2gene, 1, function(dat){
         AS <- dat[1]
         gene <- dat[2]
+
 
         psi.dat <- psi[AS,samples]
         exp.dat <- normexp[gene, samples]
