@@ -343,7 +343,7 @@ which returns the correlation coefficient of the test and `gene.cor.pval` which
 returns the unadjusted significant level. For AS-NMD events of type "Stimulating",
 the PSI values have been transformed to `1-PSI` so that the correlation coefficient
 of values for `gene.cor.estimate` are positive. In our example below,
-the AS-NMD stimulating event `AS10419` showed significant correlation with 
+the AS-NMD stimulating event `AS06865` showed significant correlation with 
 U2af gene expression.
 
 ```{r checkgenecor, message=FALSE}
@@ -355,7 +355,7 @@ using the `plot2way()` function:
 
 
 ```{r plotcorr, eval=TRUE}
-plot2way(fobj, x="AS10419", y="U2af1", plot_trend=TRUE)
+plot2way(fobj, x="AS06865", y="U2af1", plot_trend=TRUE)
 ```
 
 ### Predicting protein domains  
