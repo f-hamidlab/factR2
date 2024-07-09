@@ -24,9 +24,14 @@ show.factR <- function(object){
 }
 
 granges.factR <- function(object, ..., set = NULL){
+
+    accepted.sets <- c(listSets(object), "all", "CDS",
+                      "tx_start", "tx_end", "cds_start", "cds_end")
+
+
     if(is.null(set)){
         set <- slot(object, "active.set")
-    } else if(!set %in% c(listSets(object), "all")){
+    } else if(any(!set %in% accepted.sets)){
         rlang::warn("Incorrect set name or index, using active set")
         set <- slot(object, "active.set")
     }
