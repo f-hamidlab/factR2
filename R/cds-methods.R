@@ -52,6 +52,12 @@ setMethod("buildCDS", "factR", function(object, verbose = FALSE) {
                             slot(object, "reference")$genome)))
     }
     out.gtf <- out.gtf[out.gtf$type %in% "CDS"]
+    # fix somemetadata in out.gtf
+    meta <- gtf[gtf$type == "transcript"]@elementMetadata
+    rownames(meta) <- meta$transcript_id
+    out.gtf$match_level <- meta[out.gtf$transcript_id,]$match_level
+    out.gtf$old_gene_id <- meta[out.gtf$transcript_id,]$old_gene_id
+
     gtf <- c(gtf, out.gtf)
     slot(object, "transcriptome") <- gtf
 
