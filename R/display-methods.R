@@ -23,10 +23,10 @@ show.factR <- function(object){
     cat(sprintf("# samples (%s): %s\n", nsamples, samples))
 }
 
-granges.factR <- function(object, ..., set = NULL){
+granges.factR <- function(object, ..., set = NULL, sort = TRUE){
 
-    accepted.sets <- c(listSets(object), "all", "CDS",
-                      "tx_start", "tx_end", "cds_start", "cds_end")
+    accepted.sets <- c("all", "gene", "transcript","exon",  "CDS",
+                      "start_codon", "stop_codon", "AS")
 
 
     if(is.null(set)){
@@ -36,14 +36,24 @@ granges.factR <- function(object, ..., set = NULL){
         set <- slot(object, "active.set")
     }
     gtf <- methods::slot(object, "transcriptome")
-    out.type <- ifelse(set %in% c("transcript"), "transcript_id", "gene_id")
-    feat <- .getFeat(object, ..., out = out.type)
+    # get type of input
 
-    if(set == "all"){
-        return(gtf[S4Vectors::mcols(gtf)[[out.type]] %in% feat])
-    } else if(set == "transcript") {
-        return(gtf[S4Vectors::mcols(gtf)[[out.type]] %in% feat & gtf$type %in% c("transcript", "exon")])
+    if(!missing(...)){
+        in.type <- S4Vectors::mcols(gtf)[,c("gene_id", "transcript_id", "gene_name")] %>%
+            as.data.frame %>%
+            tidyr::pivot_longer(gene_id:gene_name) %>%
+            dplyr::filter(!is.na(value)) %>%
+            dplyr::filter(value %in% c(...)) %>%
+            dplyr::pull(name) %>%
+            unique()
+        gtf <- gtf[S4Vectors::mcols(gtf)[[in.type[1]]] %in% ...]
+    }
+
+
+
+    if("all" %in% set){
+        return(gtf)
     } else {
-        return(gtf[S4Vectors::mcols(gtf)[[out.type]] %in% feat & gtf$type %in% set])
+        return(gtf[gtf$type %in% set])
     }
 }
