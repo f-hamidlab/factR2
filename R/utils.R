@@ -68,6 +68,45 @@ factR2version <- "0.99.0"
     }
 }
 
+.sortGTF <- function(x){
+  type.order <- c("gene", "transcript", "exon",
+                  "start_codon", "CDS", "stop_codon", "AS")
+
+  gene.order <- x %>%
+    as.data.frame() %>%
+    dplyr::filter(type %in% "gene") %>%
+    dplyr::arrange(seqnames, start) %>%
+    dplyr::mutate(gene_order = dplyr::row_number()) %>%
+    dplyr::select(gene_id, gene_order)
+
+  tx.order <- x %>%
+    as.data.frame() %>%
+    dplyr::filter(type %in% "transcript") %>%
+    dplyr::group_by(gene_id) %>%
+    dplyr::arrange(ifelse(strand == "-", dplyr::desc(end), start),
+                   ifelse(strand == "-", start, dplyr::desc(end) )) %>%
+    dplyr::mutate(tx_order = row_number()) %>%
+    dplyr::ungroup() %>%
+    dplyr::select(transcript_id, tx_order)
+
+  x$gene_order <- gene.order$gene_order[match(x$gene_id, gene.order$gene_id)]
+  x$tx_order <- tx.order$tx_order[match(x$transcript_id, tx.order$transcript_id)]
+  x$tx_order <- ifelse(is.na(x$tx_order), 0, x$tx_order)
+  x$type <- factor(as.character(x$type), type.order)
+
+  x.order <- x %>%
+    as.data.frame() %>%
+    dplyr::select(gene_order, tx_order, type, strand, start) %>%
+    dplyr::mutate(i = dplyr::row_number()) %>%
+    dplyr::arrange(gene_order, tx_order, type,
+                   ifelse(strand == "-", dplyr::desc(start), start))
+  x$gene_order <- NULL
+  x$tx_order <- NULL
+
+  x[x.order$i]
+}
+
+
 .get_coord <- function(x){
   paste0(GenomicRanges::seqnames(x), ":",
          GenomicRanges::start(x), "-",
