@@ -52,6 +52,8 @@ createfactRObject <- function(gtf, reference,
                               project_name = "factRProject",
                               genome_build = "auto",
                               match_genes = TRUE,
+                              report_novel_txs = TRUE,
+                              report_novel_ase = FALSE,
                               countData = NULL,
                               sampleData = NULL,
                               psi = NULL,
@@ -114,7 +116,8 @@ createfactRObject <- function(gtf, reference,
 
 
     # run object prepration function
-    obj <- .prepfactR(obj, match_genes, verbose)
+    obj <- .prepfactR(obj, match_genes, report_novel_txs,
+                      report_novel_ase, verbose)
 
     # add and prep counts data if given
     if(!is.null(countData)){
@@ -255,7 +258,8 @@ createfactRObject <- function(gtf, reference,
 
 
 
-.prepfactR <-  function(object, matchgenes, verbose = FALSE) {
+.prepfactR <-  function(object, matchgenes, report_novel_txs,
+                        report_novel_ase,verbose = FALSE) {
 
     # check chromosome overlap
     `your custom GTF` <- object@transcriptome
@@ -388,78 +392,46 @@ createfactRObject <- function(gtf, reference,
     object@sets$AS@data <- as.matrix(data.frame(row.names =  rownames(object[["AS"]])))
 
     # annotate new transcripts
-    if(verbose){
-        .msgheader("Annotating novel transcripts")
+    if(report_novel_txs){
+        if(verbose){
+            .msgheader("Annotating novel transcripts")
+        }
+        gtf <- granges(object, set = "transcript")
+        newtxs <- suppressMessages(suppressWarnings(
+            factR::subsetNewTranscripts(gtf,
+                                        object@reference$ranges,
+                                        refine.by = "intron")))
+        object <- addMeta(object,
+                          meta="transcript",
+                          novel = ifelse(transcript_id %in% newtxs$transcript_id,
+                                         "yes","no"),
+                          cds = "no",
+                          nmd = "no")
     }
-    gtf <- granges(object, set = "transcript")
-    newtxs <- suppressMessages(suppressWarnings(
-        factR::subsetNewTranscripts(gtf,
-                                    object@reference$ranges,
-                                    refine.by = "intron")))
-    object <- addMeta(object,
-                      meta="transcript",
-                      novel = ifelse(transcript_id %in% newtxs$transcript_id,
-                                     "yes","no"),
-                      cds = "no",
-                      nmd = "no")
+
 
     # annotate new events
-    if(verbose){
-        .msgheader("Annotating novel AS events")
+    if(report_novel_ase){
+        if(verbose){
+            .msgheader("Annotating novel AS events")
+        }
+        ref.gtf <- object@reference$ranges
+        ref.AS <- .runAS2(ref.gtf[ref.gtf$type == "exon"])
+
+        AS.id <- ase(object, show_more = TRUE) %>%
+            dplyr::mutate(id = paste0(coord,gene_id,strand,AStype)) %>%
+            dplyr::pull(id)
+        ref.AS.id <- ref.AS %>%
+            as.data.frame() %>%
+            dplyr::mutate(coord = exon_coord) %>%
+            dplyr::mutate(id = paste0(coord,gene_id,strand,AStype)) %>%
+            dplyr::pull(id)
+
+        object@sets$AS@rowData$novel <- ifelse(!AS.id %in% ref.AS.id, "yes", "no")
     }
-    ref.gtf <- object@reference$ranges
-    ref.AS <- .runAS2(ref.gtf[ref.gtf$type == "exon"])
 
-    AS.id <- ase(object, show_more = TRUE) %>%
-        dplyr::mutate(id = paste0(coord,gene_id,strand,AStype)) %>%
-        # dplyr::mutate(id = ifelse(AStype == "AF" & strand == "+",
-        #                           paste0(stringr::str_replace(
-        #                               coord, ":[0-9]+-",":"),
-        #                               gene_id,strand,AStype),
-        #                           id)) %>%
-        # dplyr::mutate(id = ifelse(AStype == "AF" & strand == "-",
-        #                           paste0(stringr::str_replace(
-        #                               coord, "-[0-9]+$",""),
-        #                               gene_id,strand,AStype),
-        #                           id)) %>%
-        # dplyr::mutate(id = ifelse(AStype == "AL" & strand == "+",
-        #                           paste0(stringr::str_replace(
-        #                               coord, "-[0-9]+$",""),
-        #                               gene_id,strand,AStype),
-        #                           id))  %>%
-        # dplyr::mutate(id = ifelse(AStype == "AL" & strand == "-",
-        #                           paste0(stringr::str_replace(
-        #                               coord, ":[0-9]+-",":"),
-        #                               gene_id,strand,AStype),
-        #                           id)) %>%
-         dplyr::pull(id)
-    ref.AS.id <- ref.AS %>%
-        as.data.frame() %>%
-        dplyr::mutate(coord = exon_coord) %>%
-        dplyr::mutate(id = paste0(coord,gene_id,strand,AStype)) %>%
-        # dplyr::mutate(id = ifelse(AStype == "AF" & strand == "+",
-        #                           paste0(stringr::str_replace(
-        #                               coord, ":[0-9]+-",":"),
-        #                               gene_id,strand,AStype),
-        #                           id)) %>%
-        # dplyr::mutate(id = ifelse(AStype == "AF" & strand == "-",
-        #                           paste0(stringr::str_replace(
-        #                               coord, "-[0-9]+$",""),
-        #                               gene_id,strand,AStype),
-        #                           id)) %>%
-        # dplyr::mutate(id = ifelse(AStype == "AL" & strand == "+",
-        #                           paste0(stringr::str_replace(
-        #                               coord, "-[0-9]+$",""),
-        #                               gene_id,strand,AStype),
-        #                           id))  %>%
-        # dplyr::mutate(id = ifelse(AStype == "AL" & strand == "-",
-        #                           paste0(stringr::str_replace(
-        #                               coord, ":[0-9]+-",":"),
-        #                               gene_id,strand,AStype),
-        #                           id)) %>%
-         dplyr::pull(id)
-
-    object@sets$AS@rowData$novel <- ifelse(!AS.id %in% ref.AS.id, "yes", "no")
+    #sorts GTF transcriptome
+    object@transcriptome <- .sortGTF(object@transcriptome)
     object
 }
 
