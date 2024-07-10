@@ -2,7 +2,7 @@
   gtf <- slot(object, "transcriptome")
   splice.out <- .runAS2(gtf[gtf$type == "exon"])
   object@sets$AS@rowData <- .prepColData(splice.out)
-  slot(object, "transcriptome") <- c(gtf, .prepASgtf(splice.out))
+  slot(object, "transcriptome") <- .sortGTF(c(gtf, .prepASgtf(splice.out)))
 
   return(object)
 
