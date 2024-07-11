@@ -38,8 +38,7 @@ setGeneric("buildCDS", function(object, verbose = FALSE) standardGeneric("buildC
 setMethod("buildCDS", "factR", function(object, verbose = FALSE) {
 
     if(verbose){.msgheader("Building CDS information")}
-    gtf <- granges(object, set = "all")
-    gtf <- gtf[!gtf$type %in% "CDS"]
+    gtf <- granges(object, set = c("gene", "transcript", "exon"))
 
     if(verbose){
         out.gtf <- suppressWarnings(factR::buildCDS(gtf,
@@ -52,7 +51,25 @@ setMethod("buildCDS", "factR", function(object, verbose = FALSE) {
                             slot(object, "reference")$genome)))
     }
     out.gtf <- out.gtf[out.gtf$type %in% "CDS"]
-    gtf <- c(gtf, out.gtf)
+
+    # fix somemetadata in out.gtf
+    meta <- gtf[gtf$type == "transcript"]@elementMetadata
+    rownames(meta) <- meta$transcript_id
+    out.gtf$match_level <- meta[out.gtf$transcript_id,]$match_level
+    out.gtf$old_gene_id <- meta[out.gtf$transcript_id,]$old_gene_id
+
+    # append start_codon and stop_codon information
+    cds <- S4Vectors::split(out.gtf, ~transcript_id)
+    cds.lengths <- sum(IRanges::width(cds))
+    cds.start <- unlist(factR::trimTranscripts(cds, end = cds.lengths - 3))
+    names(cds.start) <- NULL
+    cds.start$type <- "start_codon"
+    cds.end <- unlist(factR::trimTranscripts(cds, start = cds.lengths - 3))
+    names(cds.end) <- NULL
+    cds.end$type <- "stop_codon"
+
+    gtf <- .sortGTF(c(granges(object, set = c("gene", "transcript", "exon", "AS")),
+                      out.gtf, cds.start, cds.end))
     slot(object, "transcriptome") <- gtf
 
     # update cds transcripts
