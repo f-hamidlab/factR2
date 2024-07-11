@@ -85,7 +85,7 @@ factR2version <- "0.99.0"
     dplyr::group_by(gene_id) %>%
     dplyr::arrange(ifelse(strand == "-", dplyr::desc(end), start),
                    ifelse(strand == "-", start, dplyr::desc(end) )) %>%
-    dplyr::mutate(tx_order = row_number()) %>%
+    dplyr::mutate(tx_order = dplyr::row_number()) %>%
     dplyr::ungroup() %>%
     dplyr::select(transcript_id, tx_order)
 
